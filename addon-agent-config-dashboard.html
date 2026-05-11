@@ -545,8 +545,10 @@
 
       <div class="profile-card">
         <strong>模拟用户画像 <span class="help-icon" data-tip-id="profile">?</span></strong>
-        32 岁 · 男性 · 已婚 · 消费层级 L4（中等购买力）· 有规律体检意向<br>
-        <span style="color:#a0aec0;font-size:11px;">上游 M_level / S_level 已固化为模拟样本数据</span>
+        44 岁 · 女性 · 已婚 · 消费层级 <b>L5（高购买力）</b><br>
+        <span style="color:#718096">行为标签：规律体检 + 癌症筛查意向 + Hp 筛查意向</span><br>
+        <span style="color:#c05621;font-size:11.5px;">关键阳性史：肺 4mm 磨玻璃结节、宫颈赘生物 2mm、乳腺腺体紊乱、甲状腺多发结节、腰椎间盘突出、血脂升高（TC 5.98）、BMI 26.3</span><br>
+        <span style="color:#a0aec0;font-size:11px;">案例来源：真实评测样本（评测表 v5 · 用户 #2）</span>
       </div>
 
       <div class="form-group">
@@ -957,25 +959,26 @@ const PRIORITY_COEF = {
   default:    { 'P0': 1.30, 'P1': 1.15, 'P2': 1.00, 'P3': 0.85 },
   '新品推广': { 'P0': 1.45, 'P1': 1.25, 'P2': 1.00, 'P3': 0.85 }
 };
+// 项目候选池：基于评测表 v5 用户 #2（44 岁已婚女性、L5 高购买力、转化优先 KPI、丰富阳性史）
 const ITEMS = [
-  { id: 'I001', name: '胸部低剂量螺旋 CT',     M: 5, S: 4, channel: 'both',          margin: '高毛利', priority: 'P0' },
-  { id: 'I002', name: '乳腺彩色多普勒超声',     M: 4, S: 4, channel: 'both',          margin: '中毛利', priority: 'P1' },
-  { id: 'I003', name: '甲状腺彩超',             M: 3, S: 4, channel: 'both',          margin: '中毛利', priority: 'P0' },
-  { id: 'I004', name: '血脂四项',               M: 4, S: 3, channel: 'both',          margin: '低毛利', priority: 'P2' },
-  { id: 'I005', name: '肿瘤标志物十二项(男)',   M: 4, S: 5, channel: 'both',          margin: '高毛利', priority: 'P1' },
-  { id: 'I006', name: 'HPV28 分型',             M: 3, S: 5, channel: 'both',          margin: '高毛利', priority: 'P0' },
-  { id: 'I007', name: '颈动脉彩超',             M: 4, S: 3, channel: 'both',          margin: '中毛利', priority: 'P2' },
-  { id: 'I008', name: '肝功十二项',             M: 3, S: 3, channel: 'both',          margin: '中毛利', priority: 'P2' },
-  { id: 'I009', name: '心脏彩超',               M: 5, S: 3, channel: 'both',          margin: '高毛利', priority: 'P1' },
-  { id: 'I010', name: '头颅核磁血管成像 MRA',   M: 4, S: 2, channel: 'medical_only',  margin: '高毛利', priority: 'P2' },
-  { id: 'I011', name: '25 羟基维生素 D',        M: 2, S: 4, channel: 'consumer_only', margin: '低毛利', priority: 'P3' },
-  { id: 'I012', name: '人体成分分析',           M: 1, S: 5, channel: 'consumer_only', margin: '低毛利', priority: 'P2' },
-  { id: 'I013', name: '糖化血红蛋白 HbA1c',     M: 4, S: 3, channel: 'both',          margin: '中毛利', priority: 'P1' },
-  { id: 'I014', name: 'Hp 呼气试验 C-13',       M: 3, S: 4, channel: 'both',          margin: '中毛利', priority: 'P1' },
-  { id: 'I015', name: '防癌基因风险评估 (BA)',  M: 2, S: 4, channel: 'both',          margin: '高毛利', priority: 'P0' },
-  { id: 'I016', name: '营养减重咨询',           M: 1, S: 3, channel: 'consumer_only', margin: '赠品',   priority: 'P3' },
-  { id: 'I017', name: '经颅多普勒',             M: 3, S: 2, channel: 'both',          margin: '低毛利', priority: 'P3' },
-  { id: 'I018', name: '同型半胱氨酸 Hcy',       M: 2, S: 2, channel: 'medical_only',  margin: '中毛利', priority: 'P2' }
+  { id: 'I001', name: '胸部低剂量螺旋 CT',         M: 4, S: 4, channel: 'both',          margin: '高毛利', priority: 'P0' }, // 4mm 肺磨玻璃结节随访
+  { id: 'I002', name: '颈动脉彩色多普勒超声',       M: 5, S: 3, channel: 'both',          margin: '中毛利', priority: 'P1' }, // 颈动脉粥样硬化高风险
+  { id: 'I003', name: '血脂八项',                  M: 5, S: 3, channel: 'both',          margin: '低毛利', priority: 'P2' }, // 高脂血症（TC 5.98）
+  { id: 'I004', name: '腰椎核磁平扫-MRI',          M: 4, S: 3, channel: 'both',          margin: '高毛利', priority: 'P0' }, // 腰椎间盘突出复查
+  { id: 'I005', name: '妇科液基薄层细胞 (TCT)',     M: 4, S: 4, channel: 'both',          margin: '中毛利', priority: 'P1' }, // 宫颈赘生物追踪
+  { id: 'I006', name: '乳腺彩色多普勒超声',         M: 4, S: 4, channel: 'both',          margin: '中毛利', priority: 'P1' }, // 乳腺腺体紊乱 + 高发年龄
+  { id: 'I007', name: '甲状腺彩色多普勒超声',       M: 3, S: 4, channel: 'both',          margin: '中毛利', priority: 'P1' }, // 甲状腺多发结节
+  { id: 'I008', name: 'HPV28 分型检测',           M: 3, S: 4, channel: 'both',          margin: '高毛利', priority: 'P0' }, // 已婚女宫颈筛查
+  { id: 'I009', name: '经阴道彩色多普勒超声',       M: 3, S: 4, channel: 'both',          margin: '中毛利', priority: 'P1' }, // 已婚女妇科常规
+  { id: 'I010', name: '同型半胱氨酸 (Hcy)',        M: 4, S: 2, channel: 'medical_only',  margin: '中毛利', priority: 'P2' }, // 心血管延伸
+  { id: 'I011', name: '动脉硬化检测',              M: 4, S: 2, channel: 'medical_only',  margin: '中毛利', priority: 'P2' }, // 心血管延伸
+  { id: 'I012', name: '头颅 CT 平扫',             M: 2, S: 4, channel: 'consumer_only', margin: '高毛利', priority: 'P0' }, // 高消费意向匹配
+  { id: 'I013', name: '胃功能三项',                M: 2, S: 4, channel: 'consumer_only', margin: '中毛利', priority: 'P1' }, // Hp 筛查意向
+  { id: 'I014', name: '碳14 尿素呼气试验',         M: 2, S: 4, channel: 'consumer_only', margin: '低毛利', priority: 'P2' }, // Hp 筛查意向
+  { id: 'I015', name: '肿瘤标志物三项',            M: 2, S: 4, channel: 'consumer_only', margin: '中毛利', priority: 'P2' }, // 癌症筛查意向
+  { id: 'I016', name: '肺功能检测',                M: 3, S: 3, channel: 'both',          margin: '中毛利', priority: 'P2' },
+  { id: 'I017', name: '人体成分分析',              M: 1, S: 3, channel: 'consumer_only', margin: '低毛利', priority: 'P2' }, // BMI 26.3
+  { id: 'I018', name: '营养减重咨询',              M: 1, S: 2, channel: 'consumer_only', margin: '赠品',   priority: 'P3' }
 ];
 
 const state = {
