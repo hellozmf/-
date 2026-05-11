@@ -239,7 +239,16 @@
     font-weight: 500;
     font-variant-numeric: tabular-nums;
   }
-  .item-name { font-weight: 500; color: #2d3748; font-size: 13px; }
+  .item-name {
+    font-weight: 500;
+    color: #2d3748;
+    font-size: 13px;
+    cursor: help;
+    display: inline-block;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.15s;
+  }
+  .item-name:hover { border-bottom-color: #cbd5e0; }
   .item-meta {
     font-size: 11px;
     color: #a0aec0;
@@ -981,6 +990,29 @@ const ITEMS = [
   { id: 'I018', name: '营养减重咨询',              M: 1, S: 2, channel: 'consumer_only', margin: '赠品',   priority: 'P3' }
 ];
 
+// 用户端话术（按提示词四要素结构生成 · 既往异常已溯源）
+// hit_channel = consumer_only 的项目按规则不生成用户端话术
+const USER_SCRIPTS = {
+  I001: '上次报告显示左肺 4mm 磨玻璃微小结节，此类影像需通过 CT 连续观察形态变化；低剂量 CT 能识别微小病灶演变，本次复查有助于确认稳定性，便于后续判断。',
+  I002: '40 岁后女性合并血脂偏高，颈动脉斑块检出率上升；本项超声能识别血管壁内中膜厚度与斑块形态，本次同步检查为后续心血管风险评估提供依据。',
+  I003: '既往总胆固醇 5.98 偏高，需进一步识别脂蛋白亚组分；血脂八项能区分高/低密度脂蛋白与小而密颗粒，本次空腹抽血即可完成，便于针对性干预。',
+  I004: '既往报告显示腰 4-5、腰 5-骶 1 椎间盘突出且硬膜囊受压；核磁能清晰呈现神经根受压情况，本次检查可评估病情进展，为康复方案提供依据。',
+  I005: '上次检查提示宫颈 2mm 赘生物，需通过细胞形态识别性质；TCT 能发现早期细胞异常，本次同步检查可明确赘生物来源，便于后续随访。',
+  I006: '40 岁后女性进入乳腺疾病高发期，既往乳腺腺体结构紊乱可能掩盖微小病灶；超声对结节形态识别度高，本次同步检查可确认乳腺状态。',
+  I007: '既往报告显示甲状腺多发低回声结节最大 11×6mm，需定期观察形态变化；超声对微小结节敏感度高，本次复查有助于评估稳定性。',
+  I008: '已婚女性宫颈病变与高危型 HPV 持续感染相关；HPV28 分型能识别 14 种高危亚型并明确具体型别，本次检查为宫颈管理提供病原学依据。',
+  I009: '40 岁后已婚女性子宫肌瘤、卵巢囊肿检出率上升；经阴道超声分辨率高于经腹，本次检查可全面评估子宫与附件状态。',
+  I010: '40 岁后女性合并血脂偏高，Hcy 水平升高与心脑血管事件风险相关；本项空腹抽血即可完成，可补充心血管风险评估的代谢指标。',
+  I011: '既往血脂偏高 + 40 岁后女性，动脉早期硬化常无症状；本检测通过脉搏波速度评估血管弹性，为生活方式干预提供量化依据。',
+  I012: '',
+  I013: '',
+  I014: '',
+  I015: '',
+  I016: '40 岁后女性建议建立肺功能基线，便于后续异常对照；本检测为常规吹气测试，通气与小气道指标可反映呼吸系统功能状态。',
+  I017: '',
+  I018: ''
+};
+
 const state = {
   kpi: '毛利优先',
   promo: new Set(['I001', 'I006']),
@@ -1142,10 +1174,14 @@ function render() {
         ceilMark = `<span class="ceil-mark" data-tip="${ceilReason}">置信度上限 ${it.levelRaw}→${it.level}</span>`;
       }
       const scoreCalcTip = `final_score = ${it.base.toFixed(2)} × ${it.ops.toFixed(2)} = ${it.finalScore.toFixed(2)}<br>base = ${alpha} × ${it.M} + ${beta} × ${it.S}<br>ops = ${it.oMargin} × ${it.oPriority} × ${it.oCampaign}`;
+      const userScript = USER_SCRIPTS[it.id];
+      const scriptTip = userScript
+        ? `<b style="color:#ffd">用户端话术</b><div style="margin-top:6px;line-height:1.75;color:#f7fafc">${userScript}</div><div style="margin-top:6px;font-size:10.5px;color:#a0aec0">字数 ${userScript.replace(/[，。、；：（）()「」 \s]/g, '').length} · 已按四要素结构 + 既往异常溯源</div>`
+        : `<b style="color:#ffd">用户端话术</b><div style="margin-top:6px;line-height:1.75;color:#feb">（hit_channel = consumer_only，按提示词规则不生成用户端话术）</div>`;
       tr.innerHTML = `
         <td class="rank">${i + 1}</td>
         <td>
-          <div class="item-name">${it.name}</div>
+          <span class="item-name" data-tip="${scriptTip.replace(/"/g, '&quot;')}">${it.name}</span>
           <div class="item-meta">
             <span class="ms-info" data-tip-id="msInfo">M=${it.M} · S=${it.S}</span>
             <span class="channel-badge channel-${it.channel}" data-tip-id="${CHANNEL_TIP[it.channel]}">${it.channel}</span>
