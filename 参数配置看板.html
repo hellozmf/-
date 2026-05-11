@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>加项决策智能体 · 参数配置看板</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f6f8;
+    color: #1a202c;
+    line-height: 1.5;
+    font-size: 13px;
+  }
+  header {
+    padding: 18px 28px;
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  header h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a202c;
+    display: flex;
+    align-items: center;
+  }
+  header .subtitle {
+    font-size: 12px;
+    color: #718096;
+    margin-top: 4px;
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .panel {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .panel-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid #edf2f7;
+    background: #fafbfc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+  }
+  .panel-title-meta {
+    font-size: 11px;
+    color: #a0aec0;
+    font-weight: normal;
+  }
+  .panel-body { padding: 16px; }
+
+  /* Help icon system */
+  .help-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #cbd5e0;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: help;
+    margin-left: 5px;
+    vertical-align: middle;
+    transition: background 0.15s;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .help-icon:hover { background: #2b6cb0; }
+  .help-icon.lg { width: 16px; height: 16px; font-size: 11px; }
+
+  #global-tooltip {
+    position: fixed;
+    display: none;
+    max-width: 340px;
+    padding: 10px 14px;
+    background: #1a202c;
+    color: #f7fafc;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.7;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    z-index: 1000;
+    pointer-events: none;
+  }
+  #global-tooltip b { color: #ffd; font-weight: 600; }
+
+  /* Form controls */
+  .form-group { margin-bottom: 18px; }
+  .form-label {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 6px;
+  }
+  .form-hint {
+    font-size: 11px;
+    color: #a0aec0;
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  select {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 13px;
+    color: #2d3748;
+    cursor: pointer;
+  }
+  select:focus { outline: none; border-color: #4299e1; }
+
+  .slider-row { display: flex; align-items: center; gap: 12px; }
+  input[type="range"] { flex: 1; height: 4px; accent-color: #2b6cb0; }
+  .slider-value {
+    min-width: 32px;
+    text-align: right;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2b6cb0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-top: 1px solid #f1f3f5;
+  }
+  .toggle-row:first-of-type { border-top: none; }
+  .toggle-row .form-label { margin-bottom: 2px; }
+  .toggle {
+    flex-shrink: 0;
+    margin-left: 12px;
+    margin-top: 2px;
+    position: relative;
+    width: 36px;
+    height: 20px;
+    background: #cbd5e0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle.on { background: #2b6cb0; }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    transition: left 0.2s;
+  }
+  .toggle.on::after { left: 18px; }
+
+  .tag-list { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag {
+    padding: 3px 9px;
+    border: 1px solid #cbd5e0;
+    border-radius: 12px;
+    background: #fff;
+    font-size: 11.5px;
+    color: #4a5568;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .tag:hover { border-color: #4299e1; }
+  .tag.selected { background: #2b6cb0; color: #fff; border-color: #2b6cb0; }
+  .tag.selected.danger { background: #c53030; border-color: #c53030; }
+
+  /* Results summary */
+  .summary-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom: 1px solid #edf2f7;
+  }
+  .summary-item { text-align: center; padding: 14px 8px; border-right: 1px solid #f1f3f5; }
+  .summary-item:last-child { border-right: none; }
+  .summary-value {
+    font-size: 22px;
+    font-weight: 600;
+    color: #2b6cb0;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .summary-label {
+    font-size: 11px;
+    color: #718096;
+    margin-top: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Result table */
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead { background: #fafbfc; border-bottom: 1px solid #edf2f7; }
+  th {
+    padding: 9px 10px;
+    text-align: left;
+    font-weight: 600;
+    color: #4a5568;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+  }
+  th .help-icon { background: #a0aec0; }
+  td { padding: 11px 10px; border-bottom: 1px solid #f1f3f5; vertical-align: middle; }
+  tbody tr:hover { background: #fafbfc; }
+
+  .rank {
+    width: 28px;
+    text-align: center;
+    color: #a0aec0;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .item-name { font-weight: 500; color: #2d3748; font-size: 13px; }
+  .item-meta {
+    font-size: 11px;
+    color: #a0aec0;
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .item-meta .ms-info { cursor: help; border-bottom: 1px dashed #cbd5e0; }
+
+  .level-badge {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    text-align: center;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 13px;
+    color: #fff;
+    cursor: help;
+  }
+  .level-5 { background: #c53030; }
+  .level-4 { background: #dd6b20; }
+  .level-3 { background: #2b6cb0; }
+  .level-2 { background: #718096; }
+  .level-1 { background: #cbd5e0; }
+
+  .score-cell { font-variant-numeric: tabular-nums; font-weight: 600; color: #2d3748; font-size: 13px; }
+  .score-detail {
+    font-size: 10.5px;
+    color: #a0aec0;
+    margin-top: 2px;
+    cursor: help;
+    border-bottom: 1px dashed #e2e8f0;
+    display: inline-block;
+  }
+
+  .reason-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .reason-tag {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10.5px;
+    background: #edf2f7;
+    color: #4a5568;
+    white-space: nowrap;
+    cursor: help;
+  }
+  .reason-tag.boost { background: #c6f6d5; color: #22543d; }
+  .reason-tag.cut { background: #fed7d7; color: #742a2a; }
+  .reason-tag.promo { background: #feebc8; color: #744210; font-weight: 600; }
+
+  .floor-mark, .ceil-mark {
+    display: inline-block;
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 4px;
+    cursor: help;
+  }
+  .floor-mark { background: #c6f6d5; color: #22543d; }
+  .ceil-mark { background: #fed7d7; color: #742a2a; }
+
+  .channel-badge {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 500;
+    cursor: help;
+  }
+  .channel-both { background: #c6f6d5; color: #22543d; }
+  .channel-medical_only { background: #bee3f8; color: #2a4365; }
+  .channel-consumer_only { background: #feebc8; color: #744210; }
+
+  .removed-section { border-top: 8px solid #f5f6f8; }
+  .removed-list { padding: 8px 16px 16px; }
+  .removed-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    font-size: 12px;
+    color: #718096;
+    border-bottom: 1px dashed #edf2f7;
+  }
+  .removed-item:last-child { border-bottom: none; }
+  .removed-meta {
+    color: #cbd5e0;
+    font-size: 11px;
+    margin-left: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+  .removed-reason {
+    color: #c53030;
+    font-size: 11px;
+    background: #fff5f5;
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+
+  .footer-note {
+    margin: 16px;
+    padding: 14px 18px;
+    background: #fffbeb;
+    border: 1px solid #fbd38d;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #744210;
+    line-height: 1.9;
+  }
+  .footer-note strong {
+    display: block;
+    color: #5b3d10;
+    margin-bottom: 2px;
+    font-size: 12.5px;
+  }
+  .footer-note .footer-hint {
+    font-size: 11px;
+    color: #a08560;
+    margin-bottom: 8px;
+  }
+  .footer-note ul { margin: 0 0 0 18px; }
+  .footer-note li { margin-bottom: 5px; }
+
+  /* Clickable parameter link */
+  .param-link {
+    cursor: pointer;
+    border-bottom: 1px dashed #b7791f;
+    padding: 1px 3px;
+    border-radius: 2px;
+    transition: all 0.15s;
+    color: #5b3d10;
+  }
+  .param-link:hover {
+    background: #fef5e7;
+    border-bottom-color: #b7791f;
+    border-bottom-style: solid;
+  }
+  .param-link::before {
+    content: '?';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    line-height: 12px;
+    text-align: center;
+    border-radius: 50%;
+    background: #d69e2e;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    margin-right: 4px;
+    vertical-align: 1px;
+  }
+
+  .profile-card {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 10px 12px;
+    margin-bottom: 18px;
+    font-size: 12px;
+    color: #4a5568;
+    line-height: 1.7;
+  }
+  .profile-card strong {
+    color: #2d3748;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 32, 44, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(2px);
+    animation: fadeIn 0.15s ease-out;
+  }
+  .modal-overlay.show { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .modal {
+    background: #fff;
+    border-radius: 8px;
+    width: 580px;
+    max-width: 92vw;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.2s ease-out;
+  }
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #edf2f7;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: #fafbfc;
+  }
+  .modal-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2d3748;
+    line-height: 1.4;
+  }
+  .modal-category {
+    font-size: 11px;
+    color: #718096;
+    margin-top: 4px;
+    letter-spacing: 0.3px;
+  }
+  .modal-close {
+    font-size: 22px;
+    color: #a0aec0;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    line-height: 1;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    margin-left: 12px;
+  }
+  .modal-close:hover { color: #2d3748; background: #edf2f7; }
+
+  .modal-body {
+    padding: 20px;
+    overflow-y: auto;
+  }
+  .modal-section { margin-bottom: 20px; }
+  .modal-section:last-child { margin-bottom: 0; }
+  .modal-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    padding: 4px 0 4px 10px;
+    border-left: 3px solid;
+  }
+  .modal-section-title.def    { border-color: #2b6cb0; color: #2b6cb0; }
+  .modal-section-title.val    { border-color: #2f855a; color: #2f855a; }
+  .modal-section-title.impact { border-color: #c05621; color: #c05621; }
+
+  .modal-section-content {
+    font-size: 13px;
+    line-height: 1.8;
+    color: #2d3748;
+    padding-left: 13px;
+  }
+  .modal-section-content b {
+    color: #1a202c;
+    font-weight: 600;
+  }
+  .modal-section.val .modal-section-content {
+    background: #f0fff4;
+    padding: 12px 14px;
+    border-radius: 4px;
+    margin-left: 13px;
+    padding-left: 14px;
+    font-size: 12.5px;
+  }
+  .modal-section.def .modal-section-content {
+    color: #2d3748;
+  }
+  .modal-section.impact .modal-section-content {
+    color: #4a5568;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>
+    加项决策智能体 · 参数配置看板
+    <span class="help-icon lg" data-tip-id="dashboard">?</span>
+  </h1>
+  <div class="subtitle">基于上游医学评估 + 转化评估输出，模拟运营侧调控对最终推荐结果的影响（参数变更实时重算）</div>
+</header>
+
+<main>
+  <section class="panel">
+    <div class="panel-header">
+      <div class="panel-title">参数配置</div>
+      <div class="panel-title-meta">运营侧可调</div>
+    </div>
+    <div class="panel-body">
+
+      <div class="profile-card">
+        <strong>模拟用户画像 <span class="help-icon" data-tip-id="profile">?</span></strong>
+        32 岁 · 男性 · 已婚 · 消费层级 L4（中等购买力）· 有规律体检意向<br>
+        <span style="color:#a0aec0;font-size:11px;">上游 M_level / S_level 已固化为模拟样本数据</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">KPI 经营导向 <span class="help-icon" data-tip-id="kpi">?</span></label>
+        <select id="kpi">
+          <option value="毛利优先">毛利优先（默认）</option>
+          <option value="转化优先">转化优先</option>
+          <option value="清库存">清库存</option>
+          <option value="新品推广">新品推广</option>
+        </select>
+        <div class="form-hint" id="kpi-hint"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">主推项目（活动加成 ×1.25）<span class="help-icon" data-tip-id="promo">?</span></label>
+        <div class="tag-list" id="promo-tags"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">售罄项目（硬过滤 · 一票否决）<span class="help-icon" data-tip-id="oos">?</span></label>
+        <div class="tag-list" id="oos-tags"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">运营黑名单（硬过滤 · 一票否决）<span class="help-icon" data-tip-id="blacklist">?</span></label>
+        <div class="tag-list" id="black-tags"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">推荐数量上限 <span class="help-icon" data-tip-id="topN">?</span></label>
+        <div class="slider-row">
+          <input type="range" id="topN" min="3" max="30" value="10">
+          <span class="slider-value" id="topN-val">10</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">最低推荐等级门槛 <span class="help-icon" data-tip-id="minLevel">?</span></label>
+        <div class="slider-row">
+          <input type="range" id="minLevel" min="1" max="5" value="3">
+          <span class="slider-value" id="minLevel-val">3</span>
+        </div>
+        <div class="form-hint">默认 3：仅输出 recommend_level ≥ 3 的项目</div>
+      </div>
+
+      <div class="toggle-row">
+        <div>
+          <div class="form-label">医学地板规则 <span class="help-icon" data-tip-id="medFloor">?</span></div>
+          <div class="form-hint">M=5+both 强制 5；M=4+both 强制 ≥4 等</div>
+        </div>
+        <div class="toggle on" id="medFloor"></div>
+      </div>
+
+      <div class="toggle-row">
+        <div>
+          <div class="form-label">置信度上限规则 <span class="help-icon" data-tip-id="confCeil">?</span></div>
+          <div class="form-hint">单通道命中且 M、S 双低强制 ≤2</div>
+        </div>
+        <div class="toggle on" id="confCeil"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div class="panel-title">推荐结果</div>
+      <div class="panel-title-meta" id="kpi-echo">KPI: 毛利优先</div>
+    </div>
+
+    <div class="summary-bar">
+      <div class="summary-item">
+        <div class="summary-value" id="stat-count">0</div>
+        <div class="summary-label">推荐项目数 <span class="help-icon" data-tip-id="statCount">?</span></div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-value" id="stat-avg-score">0.00</div>
+        <div class="summary-label">平均 final_score <span class="help-icon" data-tip-id="statAvgScore">?</span></div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-value" id="stat-avg-level">0.0</div>
+        <div class="summary-label">平均 recommend_level <span class="help-icon" data-tip-id="statAvgLevel">?</span></div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-value" id="stat-removed">0</div>
+        <div class="summary-label">被过滤数 <span class="help-icon" data-tip-id="statRemoved">?</span></div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="rank">#</th>
+          <th>项目</th>
+          <th>等级 <span class="help-icon" data-tip-id="thLevel">?</span></th>
+          <th>final_score <span class="help-icon" data-tip-id="thScore">?</span></th>
+          <th>调权明细 <span class="help-icon" data-tip-id="thReason">?</span></th>
+        </tr>
+      </thead>
+      <tbody id="result-tbody"></tbody>
+    </table>
+
+    <div class="removed-section">
+      <div class="panel-header">
+        <div class="panel-title">未进入推荐</div>
+        <div class="panel-title-meta">含过滤原因</div>
+      </div>
+      <div class="removed-list" id="removed-list"></div>
+    </div>
+
+    <div class="footer-note">
+      <strong>未暴露参数 · 全部采用提示词中的默认值</strong>
+      <div class="footer-hint">点击下方任一参数可查看「参数释义 / 当前默认值 / 调整后可能的影响」详细说明</div>
+      <ul>
+        <li><b>上游医学评估</b>：
+          <span class="param-link" data-param-id="fd_weight">fd_weight 评分规则</span>、
+          <span class="param-link" data-param-id="multifactor_bonus">多因素叠加加分表</span>、
+          <span class="param-link" data-param-id="high_positive_floor">高频阳性项目兜底清单</span>、
+          <span class="param-link" data-param-id="disease_item_map">疾病-项目映射表</span>
+        </li>
+        <li><b>上游转化评估</b>：
+          <span class="param-link" data-param-id="three_dim_weight">三维权重 0.45/0.45/0.10</span>、
+          <span class="param-link" data-param-id="a_layer_threshold">A 层置信度阈值</span>、
+          <span class="param-link" data-param-id="signal_layer_range">信号层 A-E 评分区间</span>、
+          <span class="param-link" data-param-id="l_value_price_map">L 值-价格区间映射</span>、
+          <span class="param-link" data-param-id="c_correction">C 值修正 +0.5</span>
+        </li>
+        <li><b>下游决策</b>：
+          <span class="param-link" data-param-id="alpha_beta">KPI 权重表 α/β</span>、
+          <span class="param-link" data-param-id="omega_table">Ω_margin / Ω_priority 系数表</span>、
+          <span class="param-link" data-param-id="omega_campaign">Ω_campaign = 1.25</span>、
+          <span class="param-link" data-param-id="level_thresholds">recommend_level 主映射阈值</span>、
+          <span class="param-link" data-param-id="tie_breaker">排序 tie-breaker</span>
+        </li>
+        <li><b>话术与置信度</b>：
+          <span class="param-link" data-param-id="reason_word_count">recommend_reason 字数 20-50</span>、
+          <span class="param-link" data-param-id="user_script_red_lines">user_script 字数 30-75 与红线清单</span>、
+          <span class="param-link" data-param-id="decision_confidence">decision_confidence 高/中/低判定条件</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<div id="global-tooltip"></div>
+
+<!-- Parameter Detail Modal -->
+<div class="modal-overlay" id="param-modal">
+  <div class="modal" id="modal-card">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-category" id="modal-category"></div>
+      </div>
+      <button class="modal-close" id="modal-close" type="button">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section def">
+        <div class="modal-section-title def">参数释义</div>
+        <div class="modal-section-content" id="modal-def"></div>
+      </div>
+      <div class="modal-section val">
+        <div class="modal-section-title val">当前默认值</div>
+        <div class="modal-section-content" id="modal-val"></div>
+      </div>
+      <div class="modal-section impact">
+        <div class="modal-section-title impact">调整后可能的影响</div>
+        <div class="modal-section-content" id="modal-impact"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== Tooltip 文案库 ==========
+const TIPS = {
+  dashboard: '本看板模拟<b>加项决策智能体</b>的推荐输出。系统由三个智能体组成：上游"医学评估"和"转化评估"并行打分，下游"决策智能体"叠加运营调权后输出最终推荐。这里你可以调整运营侧参数，看推荐结果如何实时变化。',
+  profile: '这是预设的模拟用户画像。真实场景下，用户画像会从基础信息、历史体检报告、问卷主诉等数据源中获取。本看板为简化演示，将用户固化，仅模拟运营侧调控的影响。',
+  kpi: '<b>本期经营策略方向</b>。切换 KPI 会自动联动调整三组系数：<br>① 医学评分 vs 转化评分的权重 (α / β)<br>② 高/中/低毛利项目的加成系数<br>③ P0~P3 主推等级项目的加成系数<br><br><b>毛利优先</b>：高毛利项目最大加成 ×1.35<br><b>转化优先</b>：转化权重更高 β=0.55<br><b>清库存</b>：转化权重最高 β=0.60，毛利系数差异最小<br><b>新品推广</b>：医学权重最高 α=0.55，P0 项目加成提升至 ×1.45',
+  promo: '<b>当期重点推广的项目</b>，例如：与厂商签了营销合作、有库存压力、配合活动等。被选中的项目获得 ×1.25 活动加成，在排序中获得提升。可同时选多个。',
+  oos: '<b>当前供应不足或无货的项目</b>。一旦标记，无论医学/转化评分多高都强制移除，不进入推荐列表。这是优先级最高的硬过滤。',
+  blacklist: '<b>因合规风险、质量投诉、临时下架等原因不允许推荐的项目</b>。一旦标记，强制移除。<br><br>与"售罄"的区别：售罄是供应侧问题（暂时性），黑名单是运营/合规问题（管控性）。',
+  topN: '<b>最终推荐项目数量上限</b>。设置过多会让用户决策疲劳、转化反而下降；过少则潜在转化机会流失。<br><br>一般场景建议 8-15 个。',
+  minLevel: '<b>低于此等级的项目不进入最终推荐</b>。等级含义：<br><b>5 强推</b>：医学+转化双高，运营加成显著<br><b>4 优先推荐</b>：双视角达标或单边突出<br><b>3 常规推荐</b>：基本面尚可<br><b>2 弱推</b>：仅作补充供选<br><b>1 不主推</b>：仅在凑单/兜底场景出现<br><br>设为 3 表示只输出"常规推荐"及以上。',
+  medFloor: '<b>保护机制 · 防止高医学价值项目被运营调权压制</b>。<br><br><b>例</b>：某项目医学评分=5（极高阳性检出风险）但毛利低、不在主推，正常计算后等级可能被压到 3，开启此规则会强制提升为 5（保证医学价值不被牺牲）。<br><br><b>关闭后</b>：所有项目纯按 final_score 排序，可能出现"高医学风险项目排名靠后"。',
+  confCeil: '<b>抑制机制 · 防止低质量推荐被运营拉高</b>。<br><br><b>例</b>：转化智能体匹配到"人体成分分析"，但医学价值=1，且只有转化通道命中。如果允许它通过运营调权拿到高等级，会损害推荐的医学可信度。开启此规则会限制其等级 ≤2。<br><br><b>关闭后</b>：单通道+双低评分的项目可能因高毛利或主推被拉到等级 4-5。',
+  statCount: '当前参数下最终输出给用户/医生的推荐项目数量。',
+  statAvgScore: '推荐列表的平均 final_score，反映推荐整体质量。一般 >5 表示推荐质量较高。',
+  statAvgLevel: '推荐列表的平均 recommend_level，反映推荐整体强度。',
+  statRemoved: '被各类规则过滤掉的项目数（含售罄、黑名单、等级门槛、Top 上限）。',
+  thLevel: '<b>recommend_level（1-5 整数）</b><br>前端按星级展示的推荐强度等级。<br><br>计算路径：<br>① final_score 按阈值映射到 1-5<br>② 应用医学地板（取较大值，保护医学高分）<br>③ 应用置信度上限（取较小值，抑制低质量）',
+  thScore: '<b>final_score = 基础评分 × 商业调权乘子</b><br><br>基础评分 = α × M_level + β × S_level<br>调权乘子 = 毛利系数 × 主推等级系数 × 活动系数<br><br>用于精细排序，推荐顺序由此决定。',
+  thReason: '影响该项目排名的<b>运营侧调权因素</b>。<br><span style="background:#c6f6d5;color:#22543d;padding:1px 4px;border-radius:2px">绿色</span> 正向加成 (×&gt;1)<br><span style="background:#fed7d7;color:#742a2a;padding:1px 4px;border-radius:2px">红色</span> 负向削减 (×&lt;1)<br><span style="background:#feebc8;color:#744210;padding:1px 4px;border-radius:2px">橙色</span> 当期主推 (×1.25)',
+  channelBoth: '<b>双通道命中</b>：医学评估和转化评估两个智能体都推荐了这个项目，可信度最高。',
+  channelMedical: '<b>仅医学命中</b>：只有医学评估推荐，转化评估未识别。可能是用户消费意愿不强或行为信号不足。',
+  channelConsumer: '<b>仅转化命中</b>：只有转化评估推荐，医学评估未识别到对应风险。多见于"用户喜欢买但医学必要性弱"的项目（如人体成分分析）。',
+  msInfo: '<b>M_level</b> = 医学评估智能体打分（1-5），越高表示该项目对此用户的<b>阳性检出率</b>越高<br><b>S_level</b> = 转化评估智能体打分（1-5），越高表示用户<b>购买可能性</b>越高',
+  levelBadge: 'recommend_level（1-5）<br><b>5</b> 强推 / <b>4</b> 优先推荐 / <b>3</b> 常规推荐<br><b>2</b> 弱推 / <b>1</b> 不主推',
+  marginHigh: '<b>高毛利项目</b>：单次销售利润空间大，运营层面优先推荐。',
+  marginMid: '<b>中毛利项目</b>：常规盈利项目，无特殊加权。',
+  marginLow: '<b>低毛利项目</b>：单次利润有限，运营层面会适度抑制。',
+  marginGift: '<b>赠品/低毛利</b>：用于活动赠送或凑单，运营层面强抑制。',
+  priorityP0: '<b>P0 战略主推</b>：公司层面战略优先推广的项目（如新业务线、核心套餐组件）。',
+  priorityP1: '<b>P1 优先推荐</b>：日常运营优先推送的高价值项目。',
+  priorityP2: '<b>P2 常规供应</b>：常规库存项目，无特殊调权。',
+  priorityP3: '<b>P3 长尾项目</b>：销量低、生命周期末期项目，运营层面适度抑制。',
+  campaignBoost: '该项目当期被纳入<b>主推清单</b>，获得 ×1.25 活动加成。',
+  floorMark: '该项目命中了<b>医学地板规则</b>，等级被强制提升以保护医学价值。鼠标显示具体的提升过程。',
+  ceilMark: '该项目命中了<b>置信度上限规则</b>，等级被强制压低以避免低质量推荐。'
+};
+
+// ========== 未暴露参数 · 详细说明库 ==========
+const PARAM_DETAILS = {
+  fd_weight: {
+    title: 'fd_weight 评分规则（年龄/暴露阈值）',
+    category: '上游医学评估 · 风险因素打分',
+    definition: '单个风险因素对单个疾病的"关注度"评分（1-5 分制）。每识别出一个风险因素，根据其与目标疾病的医学关联强度打分，分值越高表示该疾病越值得关注。是医学评估的最底层评分单元。',
+    currentValue: '<b>5 分</b>（极高关注）：吸烟 40 年→肺癌、母亲 BRCA 阳性→乳腺癌、确诊高血压未控制→脑卒中<br><b>4 分</b>（高关注）：肥胖 BMI≥28→2 型糖尿病、65 岁→结直肠癌、父亲患肺癌→肺癌<br><b>3 分</b>（中等关注）：50 岁→结直肠癌筛查、血脂多年偏高→高脂血症<br><b>2 分</b>（一般关注）：仅一次血压偏高、长期夜班→甲状腺结节<br><b>1 分</b>（基线关注）：仅年龄达筛查起始且无其他风险因素叠加',
+    impact: '<b>调高某档门槛</b>（如要求吸烟≥50 年才给 5 分）→ 疾病评分整体下移 → 4 级以上推荐变少、推荐更保守、商业转化下降。<br><br><b>调低门槛</b>（如吸烟≥10 年即给 5 分）→ 推荐更激进，但误推非真实高风险用户的概率上升，可能损害医学公信力。<br><br><b>典型应用</b>：临床指南更新（如新增筛查起始年龄）后需同步该表。'
+  },
+  multifactor_bonus: {
+    title: '多因素叠加加分表',
+    category: '上游医学评估 · 疾病聚合公式',
+    definition: '当一个疾病同时被多个独立风险因素关联时，在最强因素的基础上给予的边际加分。控制"多维度印证"的边际效应强度，是"单因素主导 vs 多因素累加"的关键调节参数。',
+    currentValue: '<b>1 层因素 +0</b>（不加分，仅最强因素决定）<br><b>2 层因素 +0.5</b>（轻度加成）<br><b>≥3 层因素 +1</b>（封顶）<br><br>公式：<code>disease_score = min(5, 最高 fd_weight + 叠加加分)</code><br><br><b>例</b>：某用户对"肺癌"同时有吸烟（5 分）+ 父亲肺癌（4 分）+ 矿山作业（2 分），3 个因素 → 5 + 1 = 6 → min(5, 6) = 5 分',
+    impact: '<b>加大叠加</b>（如 ≥3 层 +2）→ 多风险用户的疾病评分普涨 → 推荐更激进，可能让"中等风险但叠加多"的用户被过度推荐。<br><br><b>减小叠加</b>（如全部 +0）→ 强调"单一最强因素主导"，推荐更保守，但可能漏掉真实多维风险用户。<br><br><b>设计原理</b>：第三个及以上因素的医学边际贡献已很微小，固定加分足够表达"多维度印证"的信号。'
+  },
+  high_positive_floor: {
+    title: '高频阳性项目兜底清单',
+    category: '上游医学评估 · 兜底机制',
+    definition: '一组在普通人群中阳性检出率较高、医学价值通用的"必查项目"。无论用户画像是否命中具体疾病，只要通过性别/婚姻硬过滤就强制进入推荐（最低等级 2）。是保证"基础体检质量"的安全网。',
+    currentValue: '<b>共 19 项</b>，包括：一般检查、口腔检查、耳鼻喉科检查、血脂四项、全血细胞计数+五分类、眼科常规、妇科检查、经阴道彩超、十二通道心电图、乳腺彩超、胸部低剂量螺旋 CT、尿液干化学、肾功三项、前列腺彩超、碳 14 呼气试验、人体成分分析、肛门指诊（女）、DR 腰椎侧位、头颅核磁平扫',
+    impact: '<b>扩大清单</b>（如增至 30 项）→ 推荐底部更稳定，但个性化弱、列表"千人一面"，老用户每次推荐都差不多、体验下降。<br><br><b>缩小清单</b>（如减至 5 项）→ 个性化更强，但常规体检的基础项目可能漏推，对低画像信号的新用户不友好。<br><br><b>典型应用</b>：根据当期阳性数据回流，每季度复盘清单覆盖度。'
+  },
+  disease_item_map: {
+    title: '疾病 → 项目映射表',
+    category: '上游医学评估 · 知识库',
+    definition: '每个疾病对应可用于筛查/辅助诊断的项目清单。是医学评估能否将"识别到的疾病风险"转化为"具体推荐项目"的关键中间表。系统中最难维护但最关键的"知识资产"。',
+    currentValue: '隐式医学知识，覆盖常见慢病（高血压、糖尿病、高血脂、高尿酸等）、重疾（癌症、中风、肝硬化、肾衰竭等）、肿瘤标志物、影像学项目等。在提示词中以"疾病-项目"映射段落形式呈现。',
+    impact: '<b>映射缺失</b>（如新疾病无对应项目）→ 该疾病无论风险多高，永远不会被推荐对应项目，<b>推荐链路在此断裂</b>。<br><br><b>映射过宽</b>（一个疾病关联过多项目）→ 推荐项目数量增多但相关性下降，用户感知"不精准"。<br><br><b>典型应用</b>：新增体检项目上线时必须同步更新；需医学知识库治理流程支撑。'
+  },
+  three_dim_weight: {
+    title: '三维权重 D1×0.45 + D2×0.45 + D3×0.10',
+    category: '上游转化评估 · 综合评分',
+    definition: '转化评估三个维度的权重分配——D1 健康需求匹配度（医学相关性）、D2 消费能力适配度（价格匹配）、D3 行为意愿度（体检偏好）。决定转化评分的"重心"。',
+    currentValue: '<b>D1 × 0.45</b>（健康需求匹配度，权重最高）<br><b>D2 × 0.45</b>（消费能力适配度，与 D1 等权）<br><b>D3 × 0.10</b>（行为意愿度，仅微调）<br><br>反映"医学相关性 + 价格匹配同等重要，行为意愿仅作调味"的设计哲学。',
+    impact: '<b>提升 D1 权重</b>（如 0.55）→ 转化评估更看重医学需求，与医学评估趋同，下游决策时两个智能体的差异性减弱。<br><br><b>提升 D2 权重</b>（如 0.55）→ 价格匹配主导，低消费用户被推贵项目变少，但可能错过"用户实际能负担的高价值项目"。<br><br><b>提升 D3 权重</b>（如 0.30）→ 体检意愿强的用户能拿更高分，但偏离"项目维度"评分本意。'
+  },
+  a_layer_threshold: {
+    title: 'A 层置信度阈值（< 3 视为无效）',
+    category: '上游转化评估 · 信号过滤',
+    definition: '用户疾病标签的可信度（0-10 整数）。低于此阈值的疾病标签视为噪声，不参与转化评估的项目匹配。是"标签数据质量门槛"。',
+    currentValue: '<b>阈值 = 3</b>（即置信度 &lt; 3 的疾病标签全部忽略）<br><br>具体分档：<br><b>8-10 → 5 分</b>（高度可信，刚性需求）<br><b>6-7 → 4 分</b>（较强信号）<br><b>3-5 → 3 分</b>（弱信号）<br><b>0-2 → 不命中</b>',
+    impact: '<b>提高阈值</b>（如 &lt; 5 无效）→ hit_labs 减少、整体 S_level 下移、转化推荐更保守，但漏推真实有需要但标签置信度中等的用户。<br><br><b>降低阈值</b>（如 &lt; 1 无效）→ 标签命中更多、推荐更激进，但低置信度噪声标签会带来误推。<br><br><b>典型应用</b>：用户标签系统精度提升后可适度降低阈值。'
+  },
+  signal_layer_range: {
+    title: '信号层 A-E 评分区间',
+    category: '上游转化评估 · 信号层强度',
+    definition: '转化评估的 5 个信号层各自的最高分上限。决定每类标签信号在转化评分中能贡献的"天花板"。',
+    currentValue: '<b>A 疾病标签：3-5 分</b>（最强信号）<br><b>B 生活风险：2-4 分</b><br><b>C 筛查意向：1-3 分</b><br><b>D 年龄性别医学常识：2-3 分</b><br><b>E 健康需求偏好：2-3 分</b>（最弱信号）<br><br>当前层级关系体现"<b>疾病信号 &gt; 生活风险 &gt; 筛查意向 ≈ 年龄 ≈ 偏好</b>"',
+    impact: '<b>抬高某层上限</b>（如 E 偏好提到 4）→ 该类标签命中的项目排名上升，但弱化了"疾病信号优先"的设计原则。<br><br><b>压低某层</b>（如 A 疾病降到 4）→ 即使疾病置信度再高也拿不到 5 分，会让"明确刚需"项目失去高优先级。<br><br><b>典型应用</b>：当行为类标签数据质量大幅提升时，可适度抬高 B/C 层。'
+  },
+  l_value_price_map: {
+    title: 'L 值 - 价格区间映射',
+    category: '上游转化评估 · 消费能力',
+    definition: '用户消费层级（L1-L5）对应的最优价格带和可接受价格带。决定"这个价位的项目对该用户合不合适"。',
+    currentValue: '<b>L1 流失</b>：最优 ≤100 / 可接受 ≤200<br><b>L2 极低购买力</b>：最优 ≤200 / 可接受 ≤350<br><b>L3 低购买力</b>：最优 100-500 / 可接受 ≤700<br><b>L4 中等购买力</b>：最优 200-800 / 可接受 ≤1200<br><b>L5 高购买力</b>：不设上限<br><b>缺失</b>：按 L3 处理',
+    impact: '<b>收紧某档区间</b>（如 L3 最优收紧到 200-300）→ 中等消费用户被推贵项目变少、转化提升但客单价下降。<br><br><b>放宽区间</b>（如 L2 可接受拉到 ≤500）→ 推荐覆盖更广，但容易超出用户实际支付意愿、转化下降。<br><br><b>典型应用</b>：项目调价或新增高端项目时需同步刷新映射。'
+  },
+  c_correction: {
+    title: 'C 值修正 +0.5',
+    category: '上游转化评估 · 消费能力修正',
+    definition: '用户品类宽度（购买的健康品类多样性）的修正项。品类宽的用户对价格不敏感、消费意愿强，给消费能力评分额外加分。',
+    currentValue: '<b>C = 0 或 1（品类宽）</b>→ 消费能力评分 +0.5<br><b>C = 2 或 3（品类窄）</b>→ +0<br><b>C = -1 或缺失</b>→ +0',
+    impact: '<b>加大修正</b>（如 +1.0）→ 品类宽用户能接受更贵的项目、客单价上升、复购率高。<br><br><b>取消修正</b>（设为 0）→ 消费能力纯按 L 值评估，但忽略了"高消费意愿"这个隐性信号。<br><br><b>设计原理</b>：品类宽 = 在体检/医美/保健等多领域都消费过 = 健康消费心智成熟。'
+  },
+  alpha_beta: {
+    title: 'KPI 权重表 α / β',
+    category: '下游决策 · 基础评分权重',
+    definition: '决策智能体计算 base_score 时医学侧（α）与转化侧（β）的权重。每种 KPI 下 α + β = 1.0。已通过看板顶部 KPI 下拉自动联动，不需手动调整。',
+    currentValue: '<b>转化优先</b>：α = 0.45 / β = 0.55<br><b>毛利优先</b>：α = 0.50 / β = 0.50（默认平衡）<br><b>清库存</b>：α = 0.40 / β = 0.60<br><b>新品推广</b>：α = 0.55 / β = 0.45',
+    impact: '<b>手动调高 α</b>（如毛利优先改成 0.6 / 0.4）→ 强迫医学价值占主导，但可能与"毛利优先"的 KPI 名义冲突，造成策略错位。<br><br><b>手动调高 β</b> → 转化导向更强烈，但医学评分高的项目可能被牺牲。<br><br><b>建议</b>：通过切换 KPI 类型来调整，而非手动改权重。'
+  },
+  omega_table: {
+    title: 'Ω_margin / Ω_priority 系数表',
+    category: '下游决策 · 商业调权',
+    definition: '商业调权的两组核心系数。Ω_margin 按毛利档位（高/中/低/赠品）取值；Ω_priority 按主推等级（P0/P1/P2/P3）取值。已通过 KPI 下拉自动联动。',
+    currentValue: '<b>Ω_margin（毛利系数）</b>：<br>· 高毛利在毛利优先下 = 1.35（最大加成）<br>· 赠品在毛利优先下 = 0.60（最强抑制）<br><br><b>Ω_priority（主推系数）</b>：<br>· P0 在新品推广下 = 1.45（最大加成）<br>· P3 = 0.85（抑制）<br><br>组合最大乘子（不含活动）≈ 1.35 × 1.45 ≈ 1.96',
+    impact: '<b>抬高高毛利系数</b>（如 1.35 → 1.5）→ 高毛利项目排名进一步上升，但低毛利的医学高分项目（如血脂四项）可能被压制。<br><br><b>压平系数差异</b>（如全部接近 1.0）→ 商业调权失效，回归"纯医学+转化"评分，运营策略难以体现。<br><br><b>典型应用</b>：毛利结构调整或主推策略调整时需同步该表。'
+  },
+  omega_campaign: {
+    title: 'Ω_campaign = 1.25',
+    category: '下游决策 · 活动加成',
+    definition: '主推清单内项目获得的活动加成系数。固定值，不区分 KPI。是运营干预最直接的"杠杆"。',
+    currentValue: '<b>固定 1.25</b><br>· 在主推清单内 → ×1.25<br>· 不在主推清单 → ×1.00（无加成）',
+    impact: '<b>调高至 1.5</b> → 主推项目几乎必然进入 Top 3，运营推什么用户就看什么，但医学/转化评分话语权被稀释。<br><br><b>调低至 1.1</b> → 主推效果弱化，运营干预力度不足，可能无法完成销售目标。<br><br><b>设计原理</b>：1.25 是相对平衡的取值——既能让主推项目获得明显提升，又不至于完全压制其他高分项目。'
+  },
+  level_thresholds: {
+    title: 'recommend_level 主映射阈值',
+    category: '下游决策 · 等级映射',
+    definition: '将连续型 final_score 映射到 1-5 整数等级的边界阈值。决定"多少分能拿到几星"。',
+    currentValue: '<b>≥ 5.5</b> → 5 星（强推）<br><b>4.0 ~ 5.5</b> → 4 星（优先推荐）<br><b>2.8 ~ 4.0</b> → 3 星（常规推荐）<br><b>1.8 ~ 2.8</b> → 2 星（弱推）<br><b>&lt; 1.8</b> → 1 星（不主推）',
+    impact: '<b>全部下调</b>（如 5.0 / 3.5 / 2.5 / 1.5）→ 高等级项目变多，推荐更激进，但用户可能感觉"什么都强推不够聚焦"。<br><br><b>全部上调</b>（如 6.0 / 4.5 / 3.5 / 2.5）→ 高等级稀缺，推荐更保守，但等级标签的"区分度"提升。<br><br><b>设计原理</b>：当前阈值取 base ≈ 3 × ops ≈ 1.0 ≈ 3.0 落入 3 档为锚点。'
+  },
+  tie_breaker: {
+    title: '排序 tie-breaker',
+    category: '下游决策 · 排序细节',
+    definition: 'final_score 相同时的次级排序规则。决定"分数并列时谁排前"。',
+    currentValue: '排序顺序：<b>final_score → M_level → max_disease_score → S_level</b><br><br>体现"<b>医学优先</b>"的设计原则：同分时医学评分高者优先；医学评分仍同时，最强疾病评分高者优先；最后才考虑转化评分。',
+    impact: '<b>改为 S 优先</b>（final → S → M）→ 同分时转化能力强的项目排前，更利于销售但可能弱化医学公信力。<br><br><b>改为价格优先</b>（final → 价格升序）→ 便宜的项目排前，转化门槛更低但客单价下降。<br><br><b>注意</b>：影响仅在并列项目较多时显著（如新用户、信号稀疏场景）。'
+  },
+  reason_word_count: {
+    title: 'recommend_reason 字数 20-50',
+    category: '话术与置信度 · 医生端',
+    definition: '医生/运营端的推荐理由话术字数限制。给医生看的"为什么推这个项目"。',
+    currentValue: '<b>20-50 字</b><br>结构：风险因素简述 + 目标疾病 + 评分摘要 + 运营卖点<br>融合素材：医学侧 doctor_term + 转化侧 recommend_reason + 运营侧主推/活动卖点',
+    impact: '<b>放宽至 100 字</b> → 理由更详细，可以列出多个疾病和风险因素，但医生快速浏览时阅读成本上升、效率下降。<br><br><b>收紧至 30 字</b> → 理由太简略，可能信息不足以让医生判断推荐合理性。'
+  },
+  user_script_red_lines: {
+    title: 'user_script 字数 30-75 与红线清单',
+    category: '话术与置信度 · 用户端',
+    definition: '用户端话术字数 + 一系列禁用规则。控制 AI 生成话术的"安全性 + 可读性 + 信息密度"，是话术质量治理的核心机制。',
+    currentValue: '<b>字数：30-75 字</b><br><b>四要素结构</b>：个体特征锚点 + 中间机制 + 项目医学功能 + 行动建议<br><br><b>8 类红线</b>：<br>① 禁比喻拟人（"血管年龄""守门员"等）<br>② 禁情感修饰客套（"亲爱的""更安心"）<br>③ 禁空话套话（"性价比""黄金期"）<br>④ 禁绝对化（"一定""精准""错过"）<br>⑤ 禁个体事实幻觉（编造用户行为）<br>⑥ 既往异常必须溯源（"上次报告显示"）<br>⑦ 通俗化覆盖全句（医学名词配白话）<br>⑧ 弱化表达禁用（"可能""或许""不妨"）',
+    impact: '<b>收紧字数</b>（如 30-50 字）→ 话术更精炼但可能信息不全。<br><br><b>放松红线</b>（如允许比喻）→ 话术风格更自由生动，但容易出现"AI 味"、恐吓诉求或不切实际的承诺。<br><br><b>增加红线</b>（如禁数字描述）→ 话术更安全但生成失败率上升、改写迭代次数增多。<br><br><b>典型应用</b>：客诉中收集典型反例后，迭代红线清单。'
+  },
+  decision_confidence: {
+    title: 'decision_confidence 高/中/低判定条件',
+    category: '话术与置信度 · 决策置信度',
+    definition: '给运营/医生展示的"决策置信度"标记。基于 hit_channel + M_level + S_level 组合判定。用于辅助审核者快速识别"哪些推荐需要重点复核"。',
+    currentValue: '<b>高</b>：hit_channel = both 且 M ≥ 4 且 S ≥ 4<br><b>中</b>：hit_channel = both 但不完全满足"高"；或 M ≥ 4、S ≥ 4 之一成立<br><b>低</b>：hit_channel ≠ both 且 M ≤ 2 且 S ≤ 2',
+    impact: '<b>收紧"高"条件</b>（如要求 M ≥ 5）→ 高置信项目变少、标记的筛选意义增强，但运营/医生看到的"可信推荐"变少。<br><br><b>放宽"高"条件</b>（如 both 且 M ≥ 3 即可）→ 高置信标记泛滥、失去筛选意义。<br><br><b>注意</b>：该字段不影响推荐结果本身，仅影响后台审核效率。'
+  }
+};
+
+// ========== 全局 Tooltip 控制 ==========
+const tooltip = document.getElementById('global-tooltip');
+function showTooltip(target) {
+  const tipId = target.dataset.tipId;
+  const tipContent = tipId ? TIPS[tipId] : target.dataset.tip;
+  if (!tipContent) return;
+  tooltip.innerHTML = tipContent;
+  tooltip.style.display = 'block';
+  tooltip.style.opacity = '0';
+  tooltip.style.left = '0px';
+  tooltip.style.top = '0px';
+  requestAnimationFrame(() => {
+    const rect = target.getBoundingClientRect();
+    const ttRect = tooltip.getBoundingClientRect();
+    let top = rect.top - ttRect.height - 10;
+    if (top < 10) top = rect.bottom + 10;
+    let left = rect.left + rect.width / 2 - ttRect.width / 2;
+    left = Math.max(10, Math.min(window.innerWidth - ttRect.width - 10, left));
+    tooltip.style.top = top + 'px';
+    tooltip.style.left = left + 'px';
+    tooltip.style.opacity = '1';
+  });
+}
+function hideTooltip() { tooltip.style.display = 'none'; }
+document.addEventListener('mouseover', e => {
+  const target = e.target.closest('[data-tip-id], [data-tip]');
+  if (target) showTooltip(target);
+});
+document.addEventListener('mouseout', e => {
+  const target = e.target.closest('[data-tip-id], [data-tip]');
+  if (target) hideTooltip();
+});
+
+// ========== 参数详情弹窗控制 ==========
+const modal = document.getElementById('param-modal');
+const modalCard = document.getElementById('modal-card');
+function openModal(paramId) {
+  const detail = PARAM_DETAILS[paramId];
+  if (!detail) return;
+  document.getElementById('modal-title').textContent = detail.title;
+  document.getElementById('modal-category').textContent = detail.category;
+  document.getElementById('modal-def').innerHTML = detail.definition;
+  document.getElementById('modal-val').innerHTML = detail.currentValue;
+  document.getElementById('modal-impact').innerHTML = detail.impact;
+  modal.classList.add('show');
+  hideTooltip();
+}
+function closeModal() { modal.classList.remove('show'); }
+modal.addEventListener('click', closeModal);
+modalCard.addEventListener('click', e => e.stopPropagation());
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.addEventListener('click', e => {
+  const link = e.target.closest('.param-link');
+  if (link) openModal(link.dataset.paramId);
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ========== 业务数据 ==========
+const KPI_TABLE = {
+  '转化优先': { alpha: 0.45, beta: 0.55 },
+  '毛利优先': { alpha: 0.50, beta: 0.50 },
+  '清库存':   { alpha: 0.40, beta: 0.60 },
+  '新品推广': { alpha: 0.55, beta: 0.45 }
+};
+const MARGIN_COEF = {
+  '高毛利': { '转化优先': 1.20, '毛利优先': 1.35, '清库存': 1.10, '新品推广': 1.20 },
+  '中毛利': { '转化优先': 1.00, '毛利优先': 1.05, '清库存': 1.00, '新品推广': 1.00 },
+  '低毛利': { '转化优先': 0.85, '毛利优先': 0.75, '清库存': 0.90, '新品推广': 0.90 },
+  '赠品':   { '转化优先': 0.70, '毛利优先': 0.60, '清库存': 0.80, '新品推广': 0.70 }
+};
+const PRIORITY_COEF = {
+  default:    { 'P0': 1.30, 'P1': 1.15, 'P2': 1.00, 'P3': 0.85 },
+  '新品推广': { 'P0': 1.45, 'P1': 1.25, 'P2': 1.00, 'P3': 0.85 }
+};
+const ITEMS = [
+  { id: 'I001', name: '胸部低剂量螺旋 CT',     M: 5, S: 4, channel: 'both',          margin: '高毛利', priority: 'P0' },
+  { id: 'I002', name: '乳腺彩色多普勒超声',     M: 4, S: 4, channel: 'both',          margin: '中毛利', priority: 'P1' },
+  { id: 'I003', name: '甲状腺彩超',             M: 3, S: 4, channel: 'both',          margin: '中毛利', priority: 'P0' },
+  { id: 'I004', name: '血脂四项',               M: 4, S: 3, channel: 'both',          margin: '低毛利', priority: 'P2' },
+  { id: 'I005', name: '肿瘤标志物十二项(男)',   M: 4, S: 5, channel: 'both',          margin: '高毛利', priority: 'P1' },
+  { id: 'I006', name: 'HPV28 分型',             M: 3, S: 5, channel: 'both',          margin: '高毛利', priority: 'P0' },
+  { id: 'I007', name: '颈动脉彩超',             M: 4, S: 3, channel: 'both',          margin: '中毛利', priority: 'P2' },
+  { id: 'I008', name: '肝功十二项',             M: 3, S: 3, channel: 'both',          margin: '中毛利', priority: 'P2' },
+  { id: 'I009', name: '心脏彩超',               M: 5, S: 3, channel: 'both',          margin: '高毛利', priority: 'P1' },
+  { id: 'I010', name: '头颅核磁血管成像 MRA',   M: 4, S: 2, channel: 'medical_only',  margin: '高毛利', priority: 'P2' },
+  { id: 'I011', name: '25 羟基维生素 D',        M: 2, S: 4, channel: 'consumer_only', margin: '低毛利', priority: 'P3' },
+  { id: 'I012', name: '人体成分分析',           M: 1, S: 5, channel: 'consumer_only', margin: '低毛利', priority: 'P2' },
+  { id: 'I013', name: '糖化血红蛋白 HbA1c',     M: 4, S: 3, channel: 'both',          margin: '中毛利', priority: 'P1' },
+  { id: 'I014', name: 'Hp 呼气试验 C-13',       M: 3, S: 4, channel: 'both',          margin: '中毛利', priority: 'P1' },
+  { id: 'I015', name: '防癌基因风险评估 (BA)',  M: 2, S: 4, channel: 'both',          margin: '高毛利', priority: 'P0' },
+  { id: 'I016', name: '营养减重咨询',           M: 1, S: 3, channel: 'consumer_only', margin: '赠品',   priority: 'P3' },
+  { id: 'I017', name: '经颅多普勒',             M: 3, S: 2, channel: 'both',          margin: '低毛利', priority: 'P3' },
+  { id: 'I018', name: '同型半胱氨酸 Hcy',       M: 2, S: 2, channel: 'medical_only',  margin: '中毛利', priority: 'P2' }
+];
+
+const state = {
+  kpi: '毛利优先',
+  promo: new Set(['I001', 'I006']),
+  oos: new Set(),
+  blacklist: new Set(),
+  topN: 10,
+  minLevel: 3,
+  medFloor: true,
+  confCeil: true
+};
+
+function initTags(containerId, stateKey, tagClass) {
+  const container = document.getElementById(containerId);
+  ITEMS.forEach(item => {
+    const tag = document.createElement('div');
+    tag.className = 'tag' + (state[stateKey].has(item.id) ? ' selected ' + tagClass : '');
+    tag.textContent = item.name;
+    tag.onclick = () => {
+      if (state[stateKey].has(item.id)) {
+        state[stateKey].delete(item.id);
+        tag.className = 'tag';
+      } else {
+        state[stateKey].add(item.id);
+        tag.className = 'tag selected ' + tagClass;
+      }
+      render();
+    };
+    container.appendChild(tag);
+  });
+}
+
+initTags('promo-tags', 'promo', '');
+initTags('oos-tags', 'oos', 'danger');
+initTags('black-tags', 'blacklist', 'danger');
+
+document.getElementById('kpi').onchange = e => { state.kpi = e.target.value; render(); };
+document.getElementById('topN').oninput = e => {
+  state.topN = +e.target.value;
+  document.getElementById('topN-val').textContent = state.topN;
+  render();
+};
+document.getElementById('minLevel').oninput = e => {
+  state.minLevel = +e.target.value;
+  document.getElementById('minLevel-val').textContent = state.minLevel;
+  render();
+};
+document.getElementById('medFloor').onclick = function() {
+  state.medFloor = !state.medFloor;
+  this.className = 'toggle' + (state.medFloor ? ' on' : '');
+  render();
+};
+document.getElementById('confCeil').onclick = function() {
+  state.confCeil = !state.confCeil;
+  this.className = 'toggle' + (state.confCeil ? ' on' : '');
+  render();
+};
+
+function calculate(item) {
+  const { alpha, beta } = KPI_TABLE[state.kpi];
+  const base = alpha * item.M + beta * item.S;
+  const oMargin = MARGIN_COEF[item.margin][state.kpi];
+  const priorityTable = state.kpi === '新品推广' ? PRIORITY_COEF['新品推广'] : PRIORITY_COEF.default;
+  const oPriority = priorityTable[item.priority];
+  const oCampaign = state.promo.has(item.id) ? 1.25 : 1.0;
+  const ops = oMargin * oPriority * oCampaign;
+  const finalScore = base * ops;
+  let levelRaw;
+  if (finalScore >= 5.5) levelRaw = 5;
+  else if (finalScore >= 4.0) levelRaw = 4;
+  else if (finalScore >= 2.8) levelRaw = 3;
+  else if (finalScore >= 1.8) levelRaw = 2;
+  else levelRaw = 1;
+  let level = levelRaw;
+  let floorApplied = false;
+  let ceilApplied = false;
+  if (state.medFloor) {
+    let floor = 0;
+    if (item.M === 5 && item.channel === 'both') floor = 5;
+    else if (item.M === 5) floor = 4;
+    else if (item.M === 4 && item.channel === 'both') floor = 4;
+    else if (item.M === 4) floor = 3;
+    if (floor > level) { level = floor; floorApplied = true; }
+  }
+  if (state.confCeil) {
+    if (item.channel !== 'both' && item.M <= 2 && item.S <= 2 && level > 2) {
+      level = 2;
+      ceilApplied = true;
+    }
+  }
+  return { ...item, base, ops, finalScore, levelRaw, level, oMargin, oPriority, oCampaign, floorApplied, ceilApplied };
+}
+
+const MARGIN_TIP = { '高毛利': 'marginHigh', '中毛利': 'marginMid', '低毛利': 'marginLow', '赠品': 'marginGift' };
+const PRIORITY_TIP = { 'P0': 'priorityP0', 'P1': 'priorityP1', 'P2': 'priorityP2', 'P3': 'priorityP3' };
+const CHANNEL_TIP = { 'both': 'channelBoth', 'medical_only': 'channelMedical', 'consumer_only': 'channelConsumer' };
+
+function render() {
+  const { alpha, beta } = KPI_TABLE[state.kpi];
+  const highMargin = MARGIN_COEF['高毛利'][state.kpi];
+  const p0 = (state.kpi === '新品推广' ? PRIORITY_COEF['新品推广'] : PRIORITY_COEF.default)['P0'];
+  document.getElementById('kpi-hint').textContent =
+    `α = ${alpha.toFixed(2)} / β = ${beta.toFixed(2)}；高毛利系数 ${highMargin}；P0 系数 ${p0}`;
+  document.getElementById('kpi-echo').textContent = `KPI: ${state.kpi}`;
+
+  let scored = ITEMS.map(calculate);
+  const removed = [];
+
+  scored = scored.filter(it => {
+    if (state.oos.has(it.id))       { removed.push({ ...it, reason: '硬过滤 · 售罄' });   return false; }
+    if (state.blacklist.has(it.id)) { removed.push({ ...it, reason: '硬过滤 · 黑名单' }); return false; }
+    return true;
+  });
+
+  scored.sort((a, b) => b.finalScore - a.finalScore || b.M - a.M || b.S - a.S);
+
+  const accepted = [];
+  scored.forEach(it => {
+    if (it.level < state.minLevel) {
+      removed.push({ ...it, reason: `等级 ${it.level} < 门槛 ${state.minLevel}` });
+    } else if (accepted.length >= state.topN) {
+      removed.push({ ...it, reason: `超出 Top ${state.topN}` });
+    } else {
+      accepted.push(it);
+    }
+  });
+
+  document.getElementById('stat-count').textContent = accepted.length;
+  document.getElementById('stat-avg-score').textContent = accepted.length
+    ? (accepted.reduce((s, it) => s + it.finalScore, 0) / accepted.length).toFixed(2)
+    : '0.00';
+  document.getElementById('stat-avg-level').textContent = accepted.length
+    ? (accepted.reduce((s, it) => s + it.level, 0) / accepted.length).toFixed(1)
+    : '0.0';
+  document.getElementById('stat-removed').textContent = removed.length;
+
+  const tbody = document.getElementById('result-tbody');
+  tbody.innerHTML = '';
+  if (accepted.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#a0aec0;">无项目通过当前筛选条件</td></tr>`;
+  } else {
+    accepted.forEach((it, i) => {
+      const tr = document.createElement('tr');
+      const reasonTags = [];
+      const marginCls = it.oMargin > 1 ? 'boost' : it.oMargin < 1 ? 'cut' : '';
+      reasonTags.push(`<span class="reason-tag ${marginCls}" data-tip-id="${MARGIN_TIP[it.margin]}">${it.margin} ×${it.oMargin}</span>`);
+      const pCls = it.oPriority > 1 ? 'boost' : it.oPriority < 1 ? 'cut' : '';
+      reasonTags.push(`<span class="reason-tag ${pCls}" data-tip-id="${PRIORITY_TIP[it.priority]}">${it.priority} ×${it.oPriority}</span>`);
+      if (it.oCampaign > 1) {
+        reasonTags.push(`<span class="reason-tag promo" data-tip-id="campaignBoost">主推 ×${it.oCampaign}</span>`);
+      }
+      let floorMark = '';
+      if (it.floorApplied) {
+        const floorReason = `命中医学地板规则：M=${it.M}${it.channel === 'both' ? '+both' : ''}，等级从 ${it.levelRaw} 强制提升至 ${it.level}`;
+        floorMark = `<span class="floor-mark" data-tip="${floorReason}">医学地板 ${it.levelRaw}→${it.level}</span>`;
+      }
+      let ceilMark = '';
+      if (it.ceilApplied) {
+        const ceilReason = `命中置信度上限：单通道(${it.channel})且 M=${it.M}≤2 且 S=${it.S}≤2，等级从 ${it.levelRaw} 强制压低至 ${it.level}`;
+        ceilMark = `<span class="ceil-mark" data-tip="${ceilReason}">置信度上限 ${it.levelRaw}→${it.level}</span>`;
+      }
+      const scoreCalcTip = `final_score = ${it.base.toFixed(2)} × ${it.ops.toFixed(2)} = ${it.finalScore.toFixed(2)}<br>base = ${alpha} × ${it.M} + ${beta} × ${it.S}<br>ops = ${it.oMargin} × ${it.oPriority} × ${it.oCampaign}`;
+      tr.innerHTML = `
+        <td class="rank">${i + 1}</td>
+        <td>
+          <div class="item-name">${it.name}</div>
+          <div class="item-meta">
+            <span class="ms-info" data-tip-id="msInfo">M=${it.M} · S=${it.S}</span>
+            <span class="channel-badge channel-${it.channel}" data-tip-id="${CHANNEL_TIP[it.channel]}">${it.channel}</span>
+            ${floorMark}${ceilMark}
+          </div>
+        </td>
+        <td><span class="level-badge level-${it.level}" data-tip-id="levelBadge">${it.level}</span></td>
+        <td>
+          <div class="score-cell">${it.finalScore.toFixed(2)}</div>
+          <div class="score-detail" data-tip="${scoreCalcTip}">${it.base.toFixed(2)} × ${it.ops.toFixed(2)}</div>
+        </td>
+        <td><div class="reason-tags">${reasonTags.join('')}</div></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  const removedList = document.getElementById('removed-list');
+  removedList.innerHTML = '';
+  if (removed.length === 0) {
+    removedList.innerHTML = '<div style="color:#a0aec0;font-size:12px;text-align:center;padding:8px;">无被过滤项目</div>';
+  } else {
+    removed.sort((a, b) => (b.finalScore || 0) - (a.finalScore || 0));
+    removed.forEach(it => {
+      const div = document.createElement('div');
+      div.className = 'removed-item';
+      div.innerHTML = `
+        <span>${it.name}<span class="removed-meta">final=${(it.finalScore || 0).toFixed(2)} · L${it.level || '-'}</span></span>
+        <span class="removed-reason">${it.reason}</span>
+      `;
+      removedList.appendChild(div);
+    });
+  }
+}
+
+render();
+</script>
+</body>
+</html>
