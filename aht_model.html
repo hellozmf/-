@@ -1,0 +1,2413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>总审 AHT 参数化建模 · F-05</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F2EBDD;
+  --paper-soft:#FBF7EF;
+  --ink:#2A2118;
+  --ink-soft:#5C4A3A;
+  --ink-faint:#8A7560;
+  --accent:#8B4513;
+  --accent-bg:#E8DCC4;
+  --highlight:#F0E2C0;
+  --data:#9B2D1F;
+  --success:#5A7048;
+  --warn:#A66D2F;
+  --rule:#C9BBA1;
+  --rule-soft:#DDD0B5;
+  --serif:'EB Garamond','Noto Serif SC',Georgia,serif;
+  --sans:'IBM Plex Sans','Noto Sans SC',-apple-system,sans-serif;
+  --mono:'IBM Plex Mono','SF Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.65;
+  font-size:14.5px;
+  font-weight:300;
+  background-image:
+    radial-gradient(circle at 20% 30%,rgba(139,69,19,0.025) 0%,transparent 50%),
+    radial-gradient(circle at 80% 70%,rgba(139,69,19,0.018) 0%,transparent 50%);
+  min-height:100vh;
+}
+.page{max-width:920px;margin:0 auto;padding:56px 48px 80px;position:relative}
+@media(max-width:700px){.page{padding:32px 22px 60px}}
+
+/* MASTHEAD */
+.masthead{border-bottom:1px solid var(--ink);padding-bottom:32px;margin-bottom:42px}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:0.22em;
+  color:var(--ink-soft);text-transform:uppercase;margin-bottom:24px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.eyebrow .dot{width:3px;height:3px;background:var(--accent);border-radius:50%}
+h1.title{
+  font-family:var(--serif);font-weight:500;font-size:46px;
+  line-height:1.08;letter-spacing:-0.015em;color:var(--ink);margin-bottom:18px;
+}
+@media(max-width:700px){h1.title{font-size:32px}}
+.deck{
+  font-family:var(--serif);font-style:italic;font-size:18px;font-weight:400;
+  color:var(--ink-soft);line-height:1.5;max-width:680px;
+}
+.deck em{font-style:normal;background:var(--highlight);padding:1px 5px;color:var(--ink)}
+.meta{
+  margin-top:28px;display:flex;flex-wrap:wrap;gap:28px;
+  font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:0.05em;
+}
+.meta strong{color:var(--ink-soft);font-weight:500;margin-right:6px}
+
+/* SECTION */
+section{margin-bottom:54px}
+h2.section-title{
+  font-family:var(--serif);font-weight:600;font-size:26px;letter-spacing:-0.005em;
+  color:var(--ink);margin-bottom:6px;display:flex;align-items:baseline;gap:16px;
+}
+h2.section-title .num{
+  font-family:var(--mono);font-size:12px;color:var(--accent);
+  font-weight:500;letter-spacing:0.15em;
+}
+.section-sub{
+  font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink-soft);
+  margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--rule-soft);
+}
+h3.sub-title{
+  font-family:var(--sans);font-weight:500;font-size:14px;color:var(--ink);
+  text-transform:uppercase;letter-spacing:0.12em;margin:28px 0 14px;
+  display:flex;align-items:center;gap:10px;
+}
+h3.sub-title::before{content:'';width:14px;height:1px;background:var(--accent)}
+h4.sub-sub{
+  font-family:var(--serif);font-weight:600;font-size:16px;color:var(--ink);
+  margin:18px 0 8px;
+}
+p{margin-bottom:14px;color:var(--ink-soft);font-size:14px;line-height:1.7}
+p.lede{font-size:15px;color:var(--ink)}
+.mark{background:var(--highlight);padding:1px 5px;color:var(--ink);font-weight:400}
+.mark-strong{background:var(--accent-bg);padding:1px 6px;color:var(--ink);font-weight:500}
+strong{color:var(--ink);font-weight:500}
+.num-data{font-family:var(--mono);font-weight:500;color:var(--data)}
+.num-success{font-family:var(--mono);font-weight:500;color:var(--success)}
+
+/* TABLE */
+table{
+  width:100%;border-collapse:collapse;margin:8px 0;font-size:13.5px;
+  background:var(--paper-soft);border:1px solid var(--rule);
+}
+th{
+  font-family:var(--sans);font-weight:500;font-size:11px;letter-spacing:0.1em;
+  text-transform:none;color:var(--ink-soft);text-align:left;padding:11px 14px;
+  background:rgba(139,69,19,0.04);border-bottom:1px solid var(--rule);
+}
+td{padding:11px 14px;border-bottom:1px solid var(--rule-soft);vertical-align:top;color:var(--ink)}
+tr:last-child td{border-bottom:none}
+td.num,th.num{font-family:var(--mono);text-align:center}
+td.center,th.center{text-align:center}
+td.label{color:var(--ink-soft);font-weight:400}
+tr.highlight td{background:var(--highlight)}
+tr.highlight td.label,tr.highlight td:first-child{font-weight:500;color:var(--ink)}
+tr.success td{background:rgba(90,112,72,0.08)}
+tr.fail td{background:rgba(155,45,31,0.05)}
+
+/* ABSTRACT TABLE */
+.abstract-table{border:1px solid var(--ink);background:var(--paper-soft)}
+.abstract-table th{
+  background:var(--ink);color:var(--paper);border-bottom:none;padding:13px 16px;
+}
+.abstract-table td{padding:14px 16px;font-size:13.5px}
+.abstract-table td:first-child{
+  font-family:var(--serif);font-style:italic;font-weight:500;color:var(--ink);
+  width:30%;background:rgba(139,69,19,0.04);border-right:1px solid var(--rule);
+}
+
+/* FIGURE */
+figure{
+  margin:22px 0;background:var(--paper-soft);border:1px solid var(--rule);padding:24px;
+}
+figcaption{
+  font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);
+  letter-spacing:0.08em;text-transform:uppercase;margin-bottom:18px;
+  padding-bottom:12px;border-bottom:1px solid var(--rule-soft);
+  display:flex;align-items:center;gap:10px;
+}
+figcaption::before{
+  content:'FIG';background:var(--ink);color:var(--paper);
+  padding:2px 6px;font-size:9px;letter-spacing:0.1em;
+}
+figure svg{display:block;width:100%;height:auto;max-width:100%}
+figure .note{
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--rule-soft);
+  font-family:var(--serif);font-style:italic;font-size:13px;color:var(--ink-soft);
+}
+
+/* MATH BLOCKS */
+.math{
+  font-family:var(--mono);background:var(--paper-soft);
+  padding:14px 18px;margin:12px 0;border-left:2px solid var(--accent);
+  font-size:13px;color:var(--ink);line-height:1.7;overflow-x:auto;
+}
+.math-display{text-align:center;font-size:14px;padding:18px;letter-spacing:0.02em}
+.math .sub{font-size:0.75em;vertical-align:sub}
+.math .sup{font-size:0.75em;vertical-align:super}
+.math .frac{display:inline-block;vertical-align:middle;text-align:center;margin:0 4px}
+.math .frac .top{display:block;border-bottom:1px solid var(--ink);padding:0 4px}
+.math .frac .bot{display:block;padding:0 4px}
+
+/* EXPANDABLE DETAILS */
+details.expandable{
+  margin:14px 0;background:var(--paper-soft);border:1px solid var(--rule);
+}
+details.expandable summary{
+  padding:14px 18px;cursor:pointer;font-family:var(--sans);
+  font-weight:500;font-size:13.5px;color:var(--accent);
+  list-style:none;display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid transparent;transition:border 0.2s;
+  letter-spacing:0.02em;
+}
+details.expandable summary::-webkit-details-marker{display:none}
+details.expandable summary::before{
+  content:'+';display:inline-block;font-family:var(--mono);font-size:18px;
+  color:var(--accent);width:18px;height:18px;line-height:18px;text-align:center;
+  border:1px solid var(--accent);transition:transform 0.2s;
+}
+details.expandable[open] summary::before{content:'−'}
+details.expandable[open] summary{border-bottom:1px solid var(--rule)}
+details.expandable .detail-content{padding:18px 22px;font-size:13.5px}
+details.expandable .detail-content h5{
+  font-family:var(--serif);font-weight:600;font-size:15px;color:var(--ink);
+  margin:12px 0 6px;
+}
+details.expandable .detail-content h5:first-child{margin-top:0}
+details.expandable .detail-content p{margin-bottom:10px}
+
+/* INTERACTIVE PANEL */
+.interactive{
+  margin:20px 0;background:var(--paper-soft);border:1px solid var(--ink);
+}
+.interactive-header{
+  background:var(--ink);color:var(--paper);padding:12px 18px;
+  font-family:var(--mono);font-size:11px;letter-spacing:0.15em;
+  text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;
+}
+.interactive-header .badge{
+  background:var(--paper);color:var(--ink);padding:2px 8px;font-size:9px;letter-spacing:0.1em;
+}
+.interactive-body{
+  display:grid;grid-template-columns:1.4fr 1fr;gap:0;
+}
+@media(max-width:780px){.interactive-body{grid-template-columns:1fr}}
+.params-panel{padding:22px 24px;border-right:1px solid var(--rule)}
+@media(max-width:780px){.params-panel{border-right:none;border-bottom:1px solid var(--rule)}}
+.results-panel{padding:22px 24px;background:#FAF4E8}
+
+.param-group{margin-bottom:20px}
+.param-group:last-child{margin-bottom:0}
+.param-label{
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;
+  font-size:13px;
+}
+.param-name{
+  font-family:var(--sans);color:var(--ink);font-weight:500;
+  display:flex;align-items:center;gap:8px;cursor:help;position:relative;
+}
+.param-symbol{
+  font-family:var(--mono);color:var(--accent);font-weight:600;font-size:13.5px;
+}
+.param-value{
+  font-family:var(--mono);color:var(--ink);font-weight:500;font-size:14px;
+  background:var(--paper);padding:2px 10px;border:1px solid var(--rule);min-width:55px;text-align:center;
+}
+.param-slider{
+  width:100%;-webkit-appearance:none;appearance:none;height:3px;
+  background:var(--rule);outline:none;border-radius:0;cursor:pointer;
+}
+.param-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:14px;height:14px;
+  background:var(--accent);border:2px solid var(--paper);cursor:pointer;
+  box-shadow:0 0 0 1px var(--accent);
+}
+.param-slider::-moz-range-thumb{
+  width:14px;height:14px;background:var(--accent);border:2px solid var(--paper);
+  cursor:pointer;box-shadow:0 0 0 1px var(--accent);
+}
+.param-range{
+  display:flex;justify-content:space-between;font-family:var(--mono);
+  font-size:9.5px;color:var(--ink-faint);margin-top:4px;letter-spacing:0.05em;
+}
+
+/* TOOLTIP */
+.param-name .tooltip{
+  position:absolute;bottom:calc(100% + 8px);left:0;
+  background:var(--ink);color:var(--paper);padding:12px 14px;
+  font-size:11.5px;line-height:1.55;font-family:var(--sans);font-weight:300;
+  width:280px;z-index:100;opacity:0;visibility:hidden;
+  transition:opacity 0.18s,visibility 0.18s;pointer-events:none;
+  box-shadow:0 4px 14px rgba(0,0,0,0.15);
+}
+.param-name .tooltip::before{
+  content:'';position:absolute;top:100%;left:18px;
+  border:5px solid transparent;border-top-color:var(--ink);
+}
+.param-name:hover .tooltip{opacity:1;visibility:visible}
+.tooltip strong{color:#F5C97A;font-weight:500;display:block;margin-bottom:4px;letter-spacing:0.04em}
+.tooltip em{font-style:italic;color:#DDC9A8;font-family:var(--serif)}
+.tooltip .rec{
+  margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.15);
+  font-family:var(--mono);font-size:10.5px;color:#F5C97A;
+}
+
+/* PRESETS */
+.presets{
+  display:flex;gap:6px;flex-wrap:wrap;margin-top:16px;
+  padding-top:16px;border-top:1px solid var(--rule-soft);
+}
+.preset-btn{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;
+  padding:7px 12px;background:var(--paper);border:1px solid var(--ink-soft);
+  color:var(--ink);cursor:pointer;transition:all 0.15s;
+}
+.preset-btn:hover{background:var(--ink);color:var(--paper)}
+.preset-btn.active{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+
+/* RESULTS */
+.result-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--rule-soft);font-size:13px;
+}
+.result-row:last-of-type{border-bottom:none}
+.result-key{
+  font-family:var(--sans);color:var(--ink-soft);font-weight:400;
+  display:flex;align-items:center;gap:8px;
+}
+.result-key .sym{font-family:var(--mono);color:var(--accent);font-weight:500;width:24px}
+.result-val{font-family:var(--mono);font-weight:500;color:var(--ink);font-size:13.5px}
+.result-bar{
+  width:50px;height:4px;background:var(--rule);margin-right:10px;display:inline-block;
+}
+.result-bar .fill{display:block;height:100%;background:var(--accent);transition:width 0.25s}
+
+.result-main{
+  margin-top:18px;padding:18px;background:var(--paper);border:1px solid var(--ink);
+  text-align:center;
+}
+.result-main .label{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.18em;
+  color:var(--ink-faint);text-transform:uppercase;margin-bottom:8px;
+}
+.result-main .value{
+  font-family:var(--serif);font-size:38px;font-weight:500;color:var(--ink);
+  line-height:1;margin-bottom:6px;
+}
+.result-main .value .unit{font-size:16px;color:var(--ink-soft);margin-left:4px;font-style:italic}
+.result-main .status{
+  display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:0.1em;
+  padding:4px 12px;margin-top:8px;text-transform:uppercase;
+}
+.result-main .status.success{background:var(--success);color:var(--paper)}
+.result-main .status.warn{background:var(--warn);color:var(--paper)}
+.result-main .status.fail{background:var(--data);color:var(--paper)}
+
+.terminal-check{
+  margin-top:14px;padding:12px 14px;background:var(--paper);
+  border:1px solid var(--rule);font-size:12.5px;
+}
+.terminal-check .row{display:flex;justify-content:space-between;align-items:center}
+.terminal-check .label{font-family:var(--sans);color:var(--ink-soft)}
+.terminal-check .val{font-family:var(--mono);font-weight:500}
+.terminal-check .status{
+  display:inline-block;padding:2px 8px;font-family:var(--mono);font-size:10px;
+  letter-spacing:0.08em;margin-left:8px;
+}
+.terminal-check .status.ok{background:var(--success);color:var(--paper)}
+.terminal-check .status.bad{background:var(--data);color:var(--paper)}
+
+/* TORNADO CHART */
+.tornado{margin:18px 0}
+.tornado-row{display:flex;align-items:center;gap:12px;padding:6px 0;font-size:13px}
+.tornado-label{
+  width:160px;text-align:right;font-family:var(--sans);color:var(--ink-soft);
+  display:flex;justify-content:flex-end;align-items:center;gap:6px;font-size:12.5px;
+}
+.tornado-label .sym{font-family:var(--mono);color:var(--accent);font-weight:600}
+.tornado-bar-container{
+  flex:1;position:relative;height:22px;display:flex;align-items:center;
+}
+.tornado-center{
+  position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--ink);z-index:2;
+}
+.tornado-bar{
+  position:absolute;top:4px;bottom:4px;background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:10px;color:var(--paper);
+}
+.tornado-bar.low{background:var(--ink-soft)}
+.tornado-bar.high{background:var(--accent)}
+.tornado-axis{
+  display:flex;justify-content:space-between;margin-top:8px;margin-left:172px;
+  font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:0.05em;
+}
+
+/* HEATMAP */
+.heatmap{margin:18px 0}
+.heatmap-table{border-collapse:collapse;margin:0 auto}
+.heatmap-table td{
+  width:62px;height:38px;text-align:center;font-family:var(--mono);
+  font-size:11.5px;border:1px solid var(--paper-soft);
+  font-weight:500;padding:0;cursor:default;
+}
+.heatmap-table td.header{
+  background:transparent;border:none;color:var(--ink-faint);font-size:10.5px;
+  letter-spacing:0.05em;
+}
+.heatmap-table td.row-header{
+  width:42px;background:transparent;border:none;color:var(--ink-faint);
+  font-size:10.5px;text-align:right;padding-right:8px;
+}
+.heatmap-table td.cell-success{background:#9FB888;color:var(--ink)}
+.heatmap-table td.cell-good{background:#C5D6AF;color:var(--ink)}
+.heatmap-table td.cell-warn{background:#E8D5A8;color:var(--ink)}
+.heatmap-table td.cell-bad{background:#E0B89C;color:var(--ink)}
+.heatmap-table td.cell-fail{background:#C68870;color:var(--paper)}
+.heatmap-legend{
+  display:flex;justify-content:center;gap:14px;margin-top:14px;
+  font-family:var(--mono);font-size:10px;color:var(--ink-soft);letter-spacing:0.05em;
+}
+.heatmap-legend .swatch{
+  display:inline-block;width:12px;height:12px;vertical-align:middle;margin-right:5px;
+}
+
+/* LIST */
+ul.clean{list-style:none;padding-left:0;margin:8px 0}
+ul.clean li{
+  padding:10px 0 10px 22px;position:relative;font-size:13.5px;
+  color:var(--ink-soft);border-bottom:1px solid var(--rule-soft);line-height:1.6;
+}
+ul.clean li:last-child{border-bottom:none}
+ul.clean li::before{
+  content:'';position:absolute;left:0;top:20px;width:10px;height:1px;background:var(--accent);
+}
+
+/* PHILOSOPHY */
+.philosophy{
+  background:linear-gradient(180deg,var(--paper-soft) 0%,#F5EDDD 100%);
+  border:1px solid var(--ink);padding:0;margin:24px 0;
+}
+.philosophy-header{
+  padding:18px 24px;border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--ink-soft);
+}
+.philosophy-body{padding:24px 28px}
+.philosophy-body h4{
+  font-family:var(--serif);font-weight:600;font-size:18px;color:var(--ink);
+  margin:18px 0 10px;
+}
+.philosophy-body h4:first-child{margin-top:0}
+.philosophy-body p{font-size:14px;line-height:1.7;color:var(--ink)}
+.philosophy-body p.first{
+  font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink);
+  border-left:2px solid var(--accent);padding-left:16px;margin-bottom:18px;
+}
+
+/* CALLOUT */
+.callout{
+  background:var(--accent-bg);border-left:2px solid var(--accent);
+  padding:14px 18px;margin:18px 0;
+}
+.callout-label{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--accent);font-weight:500;margin-bottom:6px;
+}
+.callout p{margin:0;color:var(--ink);font-size:13.5px;line-height:1.6}
+.callout p strong{font-weight:600}
+
+/* BIZMODEL GRID */
+.bizmodel-section{margin-bottom:28px}
+.bizmodel-section:first-of-type{margin-top:18px}
+.bizmodel-title{
+  font-family:var(--serif);font-weight:600;font-size:18px;
+  color:var(--ink);margin-bottom:12px;
+  display:flex;align-items:baseline;gap:14px;
+}
+.bizmodel-title .num{
+  font-family:var(--mono);font-size:11px;color:var(--accent);
+  letter-spacing:0.12em;font-weight:500;
+}
+.bizmodel-grid{
+  display:grid;grid-template-columns:1.1fr 0.9fr;gap:0;
+  border:1px solid var(--rule);background:var(--paper-soft);
+}
+@media(max-width:780px){.bizmodel-grid{grid-template-columns:1fr}}
+.biz-side{
+  padding:18px 22px;border-right:1px solid var(--rule);
+}
+@media(max-width:780px){.biz-side{border-right:none;border-bottom:1px solid var(--rule)}}
+.model-side{padding:18px 22px;background:rgba(139,69,19,0.025)}
+.col-label{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.15em;
+  text-transform:uppercase;color:var(--ink-faint);
+  margin-bottom:12px;padding-bottom:8px;
+  border-bottom:1px solid var(--rule-soft);
+  display:flex;align-items:center;gap:8px;
+}
+.col-label::before{content:'';width:8px;height:1px;background:var(--accent)}
+.col-label .tag{margin-left:auto;color:var(--accent);letter-spacing:0.18em;font-size:9px;font-weight:500}
+.biz-side p{font-size:13.5px;line-height:1.7;color:var(--ink);margin-bottom:10px}
+.biz-side p:last-child{margin-bottom:0}
+.biz-side .biz-emph{background:var(--highlight);padding:1px 5px;color:var(--ink);font-weight:500}
+.model-side p{
+  font-size:12.5px;color:var(--ink-soft);margin-bottom:8px;
+  font-family:var(--serif);font-style:italic;line-height:1.6;
+}
+.model-side p:last-child{margin-bottom:0}
+.model-side .math{
+  font-style:normal;background:rgba(255,255,255,0.5);
+  border-left:2px solid var(--accent);padding:10px 14px;
+  font-size:12px;margin:8px 0;font-family:var(--mono);
+  color:var(--ink);line-height:1.75;
+}
+.model-side .math-strong{color:var(--data);font-weight:500}
+.biz-side ul.clean{margin:6px 0}
+.biz-side ul.clean li{padding:7px 0 7px 18px;font-size:13px;color:var(--ink);line-height:1.6;border-bottom:1px solid var(--rule-soft)}
+.biz-side ul.clean li:last-child{border-bottom:none}
+.biz-side ul.clean li::before{top:15px;width:8px}
+
+/* CELL TOOLTIP (for tables) */
+.param-cell{
+  display:inline-flex;align-items:center;gap:7px;
+  cursor:help;position:relative;
+  border-bottom:1px dotted var(--rule);padding-bottom:1px;
+}
+.param-cell:hover{border-bottom-color:var(--accent)}
+.param-cell .sym{font-family:var(--mono);color:var(--accent);font-weight:600;font-size:13px}
+.param-cell .tooltip-box{
+  position:absolute;bottom:calc(100% + 8px);left:-10px;
+  background:var(--ink);color:var(--paper);
+  padding:12px 14px;font-size:11.5px;line-height:1.55;
+  width:300px;z-index:200;opacity:0;visibility:hidden;
+  transition:opacity 0.18s,visibility 0.18s;pointer-events:none;
+  font-family:var(--sans);font-weight:300;
+  box-shadow:0 4px 14px rgba(0,0,0,0.18);
+}
+.param-cell .tooltip-box::before{
+  content:'';position:absolute;top:100%;left:20px;
+  border:5px solid transparent;border-top-color:var(--ink);
+}
+.param-cell:hover .tooltip-box{opacity:1;visibility:visible}
+.param-cell .tooltip-box strong{
+  display:block;color:#F5C97A;font-weight:500;
+  margin-bottom:5px;letter-spacing:0.04em;font-size:10.5px;
+}
+.param-cell .tooltip-box em{
+  font-style:italic;color:#DDC9A8;font-family:var(--serif);
+  display:block;margin-top:4px;
+}
+.param-cell .tooltip-box .rec{
+  margin-top:8px;padding-top:8px;
+  border-top:1px solid rgba(255,255,255,0.15);
+  font-family:var(--mono);font-size:10.5px;color:#A8D080;
+}
+.param-cell .tooltip-box .warn{
+  margin-top:6px;font-family:var(--mono);font-size:10.5px;color:#E8A878;
+}
+
+/* BLOCKER CARDS */
+.blocker-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:18px 0}
+@media(max-width:780px){.blocker-grid{grid-template-columns:1fr}}
+.blocker-card{
+  background:var(--paper-soft);border:1px solid var(--rule);
+  padding:18px 20px;position:relative;
+}
+.blocker-card.severity-high{border-left:3px solid var(--data)}
+.blocker-card.severity-medium{border-left:3px solid var(--warn)}
+.blocker-card.severity-low{border-left:3px solid var(--success)}
+.blocker-tag{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:0.15em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.blocker-tag .severity{padding:2px 7px;color:var(--paper);font-weight:500;font-size:9px}
+.blocker-tag .severity.high{background:var(--data)}
+.blocker-tag .severity.medium{background:var(--warn)}
+.blocker-tag .severity.low{background:var(--success)}
+.blocker-card h4{
+  font-family:var(--serif);font-weight:600;font-size:16px;
+  color:var(--ink);margin-bottom:8px;line-height:1.3;
+}
+.blocker-card p{font-size:12.5px;line-height:1.6;color:var(--ink-soft);margin-bottom:8px}
+.blocker-card .mitigation{
+  margin-top:10px;padding-top:10px;
+  border-top:1px solid var(--rule-soft);
+  font-size:12px;line-height:1.55;color:var(--ink);
+}
+.blocker-card .mitigation strong{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:0.15em;
+  color:var(--accent);display:block;margin-bottom:4px;text-transform:uppercase;
+}
+
+
+/* MODAL */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(42,33,24,0.6);z-index:500;display:none;align-items:center;justify-content:center;padding:24px}
+.modal-overlay.active{display:flex}
+.modal-box{background:var(--paper-soft);border:1px solid var(--ink);max-width:680px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;border-bottom:1px solid var(--rule);font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-soft);position:sticky;top:0;background:var(--paper-soft);z-index:1}
+.modal-close{width:28px;height:28px;border:1px solid var(--ink-soft);background:none;cursor:pointer;font-size:18px;color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--mono);transition:all 0.15s}
+.modal-close:hover{background:var(--ink);color:var(--paper)}
+.modal-body{padding:22px 24px;font-size:13.5px;line-height:1.65;color:var(--ink)}
+.modal-body h5{font-family:var(--serif);font-weight:600;font-size:15px;color:var(--ink);margin:14px 0 6px}
+.modal-body h5:first-child{margin-top:0}
+.modal-body p{margin-bottom:10px;color:var(--ink-soft)}
+.modal-trigger{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:var(--paper);border:1px solid var(--accent);cursor:pointer;font-family:var(--sans);font-size:13px;color:var(--accent);font-weight:500;transition:all 0.15s;margin:10px 0}
+.modal-trigger:hover{background:var(--accent);color:var(--paper)}
+.modal-trigger::before{content:'+';font-family:var(--mono);font-size:16px;width:18px;height:18px;line-height:18px;text-align:center;border:1px solid currentColor}
+.aht-clickable{cursor:pointer;border-bottom:2px dotted var(--accent);transition:opacity 0.15s}
+.aht-clickable:hover{opacity:0.7}
+
+/* preserve lowercase for parameter names against text-transform:uppercase parents */
+.lc{text-transform:none !important}
+
+/* heatmap cell two-line layout */
+.heatmap-table td .aht{display:block;font-size:11.5px;font-weight:500;line-height:1.1}
+.heatmap-table td .fp{display:block;font-size:9px;font-weight:400;opacity:0.7;line-height:1.1;margin-top:2px;letter-spacing:0}
+.heatmap-table td{height:46px}
+
+/* FP readout under P slider */
+.fp-readout{
+  margin-top:6px;font-family:var(--mono);font-size:10.5px;
+  color:var(--ink-soft);letter-spacing:0.04em;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:4px 8px;background:rgba(139,69,19,0.04);border-left:2px solid var(--accent);
+}
+.fp-readout .label{color:var(--ink-faint);text-transform:uppercase;font-size:9.5px;letter-spacing:0.12em}
+.fp-readout .value{color:var(--data);font-weight:600;font-size:11px}
+
+
+/* SIDEBARS */
+.sidebar{
+  position:fixed;top:60px;width:280px;max-height:calc(100vh - 80px);
+  overflow-y:auto;z-index:50;transition:transform 0.3s ease;
+  background:var(--paper-soft);border:1px solid var(--rule);
+  box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+.sidebar.left{left:0;border-left:none;border-radius:0 4px 4px 0}
+.sidebar.right{right:0;border-right:none;border-radius:4px 0 0 4px}
+.sidebar.collapsed.left{transform:translateX(-100%)}
+.sidebar.collapsed.right{transform:translateX(100%)}
+.sidebar-toggle{
+  position:absolute;top:12px;width:28px;height:28px;
+  background:var(--ink);color:var(--paper);border:none;cursor:pointer;
+  font-family:var(--mono);font-size:14px;display:flex;
+  align-items:center;justify-content:center;z-index:51;
+}
+.sidebar.left .sidebar-toggle{right:-29px}
+.sidebar.right .sidebar-toggle{left:-29px}
+.sidebar-header{
+  padding:10px 14px;border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-size:9px;letter-spacing:0.18em;
+  text-transform:uppercase;color:var(--ink-faint);
+  position:sticky;top:0;background:var(--paper-soft);z-index:1;
+}
+.sidebar-body{padding:12px 14px;font-size:12px}
+.sidebar-body .mini-section{margin-bottom:14px}
+.sidebar-body .mini-title{
+  font-family:var(--mono);font-size:9px;letter-spacing:0.12em;
+  color:var(--accent);font-weight:600;margin-bottom:6px;
+  text-transform:uppercase;
+}
+.sidebar-body .mini-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:3px 0;font-size:11px;color:var(--ink-soft);
+  border-bottom:1px solid var(--rule-soft);
+}
+.sidebar-body .mini-row .sym{
+  font-family:var(--mono);color:var(--accent);font-weight:600;width:18px;
+}
+.sidebar-body .mini-row .val{
+  font-family:var(--mono);color:var(--ink);font-weight:500;
+}
+.sidebar-body .mini-formula{
+  font-family:var(--mono);font-size:10.5px;color:var(--ink);
+  padding:8px 10px;background:rgba(255,255,255,0.5);
+  border-left:2px solid var(--accent);margin:6px 0;line-height:1.6;
+}
+@media(max-width:1200px){.sidebar{display:none}}
+
+/* META PARAMS */
+.meta-params{
+  margin-top:16px;padding-top:16px;border-top:1px solid var(--rule);
+}
+.meta-params-header{
+  display:flex;justify-content:space-between;align-items:center;
+  cursor:pointer;padding:8px 0;
+}
+.meta-params-header span{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.meta-params-header .toggle-icon{
+  font-family:var(--mono);font-size:14px;color:var(--accent);
+  transition:transform 0.2s;
+}
+.meta-params-body{display:none;padding-top:8px}
+.meta-params-body.open{display:block}
+.meta-param-row{
+  display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;
+}
+.meta-param-row label{
+  width:120px;font-family:var(--sans);color:var(--ink-soft);font-size:11.5px;
+  display:flex;align-items:center;gap:4px;
+}
+.meta-param-row label .sym{font-family:var(--mono);color:var(--accent);font-weight:600}
+.meta-param-row input[type="range"]{flex:1;height:2px}
+.meta-param-row .val{
+  font-family:var(--mono);font-size:11px;color:var(--ink);
+  width:36px;text-align:right;font-weight:500;
+}
+
+/* COLOPHON */
+.colophon{
+  margin-top:72px;padding-top:24px;border-top:1px solid var(--ink);
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);
+  letter-spacing:0.1em;text-transform:uppercase;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ============ MASTHEAD ============ -->
+<header class="masthead">
+  <div class="eyebrow">
+    <span>F-05</span><span class="dot"></span>
+    <span>QUANTITATIVE MODEL</span><span class="dot"></span>
+    <span>INTERACTIVE ANALYSIS</span>
+  </div>
+  <h1 class="title">总审 AHT 参数化建模</h1>
+  <p class="deck">
+    把"能否达成 1 分钟"这一定性问题,转化为
+    <em>可验算、可调参、可压力测试</em>的工程问题——
+    用混淆矩阵推导分流比例,用工作分解拆 AHT 内部,用敏感性分析识别真正脆弱的依赖。
+  </p>
+  <div class="meta">
+    <span><strong>Baseline</strong>2.00 min</span>
+    <span><strong>Target</strong>1.00 min</span>
+    <span><strong>方案</strong>S1 / S2 / S3 / S4 / S5</span>
+    <span><strong>Status</strong>Model v1</span>
+  </div>
+</header>
+
+<!-- ============ §00 ABSTRACT ============ -->
+<section>
+  <h2 class="section-title"><span class="num">§ 00</span>汇总摘要</h2>
+  <div class="section-sub">用业务语言理解问题,用数学语言计算可达边界,用交互工具压力测试参数,用卡点清单评估落地难度。</div>
+
+  <table class="abstract-table">
+    <tr>
+      <td>叙事主线</td>
+      <td>五方案攻击不同时间块且彼此耦合,在乐观参数下数学上可达 1.0 min;但<span class="mark-strong">真正的不确定性在工程落地——医生信任建立、责任结构调整、合规接受度</span>这三件事的推进速度,决定项目能否如期达成。</td>
+    </tr>
+    <tr>
+      <td>五方案命名</td>
+      <td><strong>S1</strong> AI 初审助手 ｜ <strong>S2</strong> 改判预测模型 ｜ <strong>S3</strong> 初审质量反馈机制 ｜ <strong>S4</strong> 终审分级单审制 ｜ <strong>S5</strong> AI 报告质量优化(路径 B)</td>
+    </tr>
+    <tr>
+      <td>建模核心</td>
+      <td>总审 AHT = α·0 + β·t<span class="sub">B</span> + γ·t<span class="sub">C</span>。α、β、γ 由 S2 混淆矩阵推导,t<span class="sub">C</span>、t<span class="sub">B</span> 由工作分解参数化,六个关键参数共同决定结果。</td>
+    </tr>
+    <tr>
+      <td>三情景结论</td>
+      <td>
+        保守(ρ=0.386):<span class="num-data">1.25 min</span> · 未达 ✗ &nbsp;｜&nbsp;
+        中等(ρ=0.30):<span class="num-success">0.82 min</span> · 达成 ✓ &nbsp;｜&nbsp;
+        乐观(ρ=0.20):<span class="num-success">0.47 min</span> · 充分达成 ✓✓
+      </td>
+    </tr>
+    <tr>
+      <td>最关键参数</td>
+      <td><strong>ρ</strong>(AI 报告改判率,影响幅度最大)——ρ 从 0.386 降到 0.20 时,AHT 从 1.25 降到 0.47,比其他任何参数的影响都更显著。其次是 <strong>r₂</strong>(医生对 S1 的信任度)和 <strong>P</strong>(S2 精确率)。</td>
+    </tr>
+    <tr>
+      <td>文档导览</td>
+      <td><strong>§01</strong> 业务问题分析(融合建模,左右对照)→ <strong>§02</strong> 整体方案流程图 → <strong>§03</strong> 三情景案例分析 → <strong>§04</strong> 交互式敏感性分析 → <strong>§05</strong> 可能的卡点。所有参数名称悬停可见业务意义、推荐值、卡点。</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ============ §01 BUSINESS ANALYSIS + MODELING ============ -->
+<section>
+  <h2 class="section-title"><span class="num">§ 01</span>业务问题分析</h2>
+  <div class="section-sub">左侧用业务语言描述每个判断,右侧给出对应的参数化表达。读完整节,业务上清楚"问题结构是什么、五个方案各自解决哪部分";数学上得到完整的可计算模型。</div>
+
+  <!-- 1.1 -->
+  <div class="bizmodel-section">
+    <div class="bizmodel-title"><span class="num">§ 1.1</span>报告按处理方式分为三类 · 占比记为 α、β、γ</div>
+    <div class="bizmodel-grid">
+      <div class="biz-side">
+        <div class="col-label">业务语言<span class="tag">BUSINESS</span></div>
+        <p>当一份 AI 报告生成后,在总审环节只会出现三种处理方式:</p>
+        <ul class="clean">
+          <li><strong>S2 模型高置信判定为"医生不会改判"</strong>,直接跳过总审,送到终审。这部分报告的总审用时为 <strong>0</strong>。</li>
+          <li><strong>进入总审,医生快速确认通过</strong>(模型判定需审但实际不需改判)。约 0.5–1 分钟。</li>
+          <li><strong>进入总审,医生做改判处理</strong>。当前基线 3.5 分钟。</li>
+        </ul>
+        <p>总审 AHT 是这三类报告耗时的加权平均。<span class="biz-emph">问题转化为:三类各占多少,每类处理多久。</span></p>
+      </div>
+      <div class="model-side">
+        <div class="col-label">建模表示<span class="tag">MODEL</span></div>
+        <p>三类报告的占比记为 α、β、γ:</p>
+        <div class="math">
+          AHT = α·0 + β·t<span class="sub">B</span> + γ·t<span class="sub">C</span><br/>
+          <span class="math-strong">α + β + γ = 1</span>
+        </div>
+        <p>三类各占多少,由 S2 模型的精确率(P)和 AI 报告质量(ρ)共同决定。每类处理多久,由后续模块逐步展开。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.2 -->
+  <div class="bizmodel-section">
+    <div class="bizmodel-title"><span class="num">§ 1.2</span>改判类占比 γ 受 AI 报告质量直接影响 · S2 精确率只影响分流不影响 γ</div>
+    <div class="bizmodel-grid">
+      <div class="biz-side">
+        <div class="col-label">业务语言<span class="tag">BUSINESS</span></div>
+        <p>改判类报告的占比 γ 由一个关键变量决定:<span class="biz-emph">AI 报告中实际需要医生改判的比例(ρ)</span>。当前 ρ = 38.6%,对应首检通过率 61.4%。</p>
+        <p>降低总审 AHT 有两条路径,需要区分清楚:</p>
+        <ul class="clean">
+          <li><strong>路径 A · S2 模型分流</strong> — S2 识别"不需要改判"的报告让它们跳过总审。S2 精度(P)提高会增大 α、减小 β,<strong>但 γ 不变</strong>——S2 做的是预测,不是减少。</li>
+          <li><strong>路径 B · AI 报告质量提升</strong> — 通过提示词优化等工作提升 AI 报告的生成质量,直接降低 ρ(实际需要改判的报告比例)。ρ 从 0.386 降到 0.20(首检通过率提升到 80%)时,<strong>γ 直接减半</strong>。同时 AI 报告质量提升还会降低每份报告的改判操作时间——报告中错误越少,医生需要改的项目越少。</li>
+        </ul>
+        <p>路径 B 的效果非常显著:ρ 从 0.386 降到 0.20 后,即使不做任何工作流优化,t<span class="sub">C</span> 的约束上限就从 2.56 min 放宽到 5.05 min(远超当前基线 3.5 min)——达成 1.0 min 变得从容得多。</p>
+        <p>两条路径可以同时推进,效果叠加。<span class="biz-emph">路径 B 即 S5 · AI 报告质量优化,独立于 S1/S2/S3/S4 工作流改造,需要单独跟踪。</span></p>
+      </div>
+      <div class="model-side">
+        <div class="col-label">建模表示<span class="tag">MODEL</span></div>
+        <p>ρ 不是常数,是 AI 报告质量的函数:</p>
+        <div class="math">
+          γ = ρ × R ≈ ρ × 0.99 ≈ <span class="math-strong">ρ</span>
+        </div>
+        <p>两条路径的参数效应:</p>
+        <div class="math">
+          路径 A: P ↑ → α ↑, β ↓, γ 不变<br/>
+          路径 B: AI 质量 ↑ → ρ ↓ → γ ↓
+        </div>
+        <p>不同 ρ 下的 γ 和 t<span class="sub">C</span> 约束:</p>
+        <table style="margin:8px 0">
+          <thead><tr><th class="num">ρ</th><th class="num">通过率</th><th class="num">γ</th><th class="num">t<span class="sub">C</span> 上限</th><th>宽松度</th></tr></thead>
+          <tbody>
+            <tr class="fail"><td class="num">0.386</td><td class="num">61.4%</td><td class="num">0.386</td><td class="num">2.56</td><td style="color:var(--data)">紧</td></tr>
+            <tr><td class="num">0.30</td><td class="num">70%</td><td class="num">0.300</td><td class="num">3.33</td><td>中等</td></tr>
+            <tr class="success"><td class="num">0.20</td><td class="num">80%</td><td class="num">0.198</td><td class="num">5.05</td><td style="color:var(--success)">宽松</td></tr>
+          </tbody>
+        </table>
+        <div class="modal-trigger" onclick="openModal('confusion-modal')">展开:混淆矩阵到 α/β/γ 的完整推导</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.3 -->
+  <div class="bizmodel-section">
+    <div class="bizmodel-title"><span class="num">§ 1.3</span>改判报告的 3.5 分钟由五项工作构成 · 其中 1.8 分钟不可压缩</div>
+    <div class="bizmodel-grid">
+      <div class="biz-side">
+        <div class="col-label">业务语言<span class="tag">BUSINESS</span></div>
+        <p>一份需要改判的报告,医生实际做了五件事:</p>
+        <ul class="clean">
+          <li><strong>阅读理解报告内容</strong> · 约 0.8 分 · 临床必需,无法省略</li>
+          <li><strong>核对 AI 标注的异常项</strong> · 约 0.7 分 · S1 上线后可部分替代</li>
+          <li><strong>检查分科结论一致性</strong> · 约 0.5 分 · S1 + S3 可替代大部分</li>
+          <li><strong>做临床判断并决定改什么</strong> · 约 1.0 分 · 临床核心,不可压缩</li>
+          <li><strong>执行改判操作(编辑、签字)</strong> · 约 0.5 分 · AI 生成质量提升后改判项数减少,此项耗时随之下降</li>
+        </ul>
+        <p>其中阅读(0.8)和临床判断(1.0)共 <span class="biz-emph">1.8 分钟,是医生必须做的工作</span>。剩下 1.7 分钟分布在异常核对、一致性检查、改判操作上。这三项可以通过 S1 核查前移、终审兜底、AI 生成质量提升来压缩。</p>
+      </div>
+      <div class="model-side">
+        <div class="col-label">建模表示<span class="tag">MODEL</span></div>
+        <p>t<span class="sub">C</span> 拆为四项("阅读理解与临床判读"合并为 w₁,不再单列 w₄):</p>
+        <div class="math">
+          t<span class="sub">C</span> = w<span class="sub">1</span> + r₂·w<span class="sub">2</span> + r₃·w<span class="sub">3</span> + r₄·w<span class="sub">4</span>
+        </div>
+        <p>基线值(对应当前 3.5 min):</p>
+        <div class="math">
+          w<span class="sub">1</span>=1.8 阅读+临床判读 · 不可压<br/>
+          w<span class="sub">2</span>=0.7 异常核对 · 系数 r₂<br/>
+          w<span class="sub">3</span>=0.5 一致性 · 系数 r₃<br/>
+          w<span class="sub">4</span>=0.5 改判操作 · 系数 r₄
+        </div>
+        <p>同理,β 类(快速确认)的 t<span class="sub">B</span>:</p>
+        <div class="math">
+          t<span class="sub">B</span> = w<span class="sub">1</span>' + r₂·w<span class="sub">2</span>' + r₃·w<span class="sub">3</span>'
+        </div>
+        <div class="math">
+          w<span class="sub">1</span>'=0.5 浏览确认(不需要深读)<br/>
+          w<span class="sub">2</span>'=0.3 扫一眼异常项 · 系数 r₂<br/>
+          w<span class="sub">3</span>'=0.2 扫一眼一致性 · 系数 r₃<br/>
+          基线 = 0.5+0.3+0.2 = 1.0 min
+        </div>
+        <p><span class="math-strong">约束:r₂ 与 r₃ 必须联动(同为 0 或同为 1)</span>——要么医生信任 S1 的核查输出、系统隐藏正常条目(r₂=r₃=0),要么不信任、医生仍然要看所有分科结果(r₂=r₃=1)。没有"信任异常核对但不信任一致性"的中间状态。</p>
+        <p>另一个关键约束:<span class="math-strong">异常核对和一致性检查必须在总审或终审中至少被执行一次</span>。如果总审跳过(r₂=r₃=0),终审必须兜底;如果终审不做,总审必须做(r₂=r₃=1)。这保证了临床安全不被牺牲。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.4 -->
+  <div class="bizmodel-section">
+    <div class="bizmodel-title"><span class="num">§ 1.4</span>五个方案分别作用于不同时间段 · 且彼此依赖</div>
+    <div class="bizmodel-grid">
+      <div class="biz-side">
+        <div class="col-label">业务语言<span class="tag">BUSINESS</span></div>
+        <p>五个方案各自解决改判报告 3.5 分钟中不同的部分:</p>
+        <ul class="clean">
+          <li><strong>S1 AI 初审助手</strong> · 让 AI 先完成异常核对和一致性检查,医生不需重复做。降低异常核对(r₂)和一致性检查(r₃)的工作量。</li>
+          <li><strong>S2 改判预测模型</strong> · 识别"医生不会改判"的高置信报告,跳过总审直送终审。决定 α(跳过比例)的大小。</li>
+          <li><strong>S3 初审质量反馈</strong> · 通过数据推动分院初审质量改善,让 S1 的核查输出更可靠,使医生更有理由信任 S1、进一步降低 r₂ 和 r₃。</li>
+          <li><strong>S4 终审分级单审</strong> · 释放终审在低风险报告上的产能,承接 S2 跳过部分和 S1/S3 后置的核查工作。同时通过分级制度为医生提供责任结构支撑。</li>
+          <li><strong>S5 AI 报告质量优化(路径 B)</strong> · 通过提示词优化、AI 模型迭代直接降低 AI 报告的实际改判率 ρ,从源头削减 γ 占比;同时减少改判项数,间接降低 r₄。独立于 S1-S4 工作流改造,但效果可叠加。</li>
+        </ul>
+        <p>S1-S4 之间有明确的依赖关系:S2 跳过的报告需要 S4 终审承接;S1 的可信度需要 S3 的质量兜底;S1 后置核查到终审,需要 S4 释放终审产能;医生信任 S1 跳过核查,需要 S4 的责任结构作为制度基础。S5 是独立的源头优化路径——不依赖工作流改造,但效果与 S1-S4 叠加。<span class="biz-emph">缺少 S1-S4 任何一个,工作流方案效果会显著下降;缺少 S5,只是慢一些到达目标。</span></p>
+      </div>
+      <div class="model-side">
+        <div class="col-label">建模表示<span class="tag">MODEL</span></div>
+        <p>方案到参数的映射:</p>
+        <div class="math">
+          S1 → r<span class="sub">2</span>、r<span class="sub">3</span> 可以降低<br/>
+          S2 → P → α 增大<br/>
+          S3 → r<span class="sub">2</span>、r<span class="sub">3</span> 的可降低下限<br/>
+          S4 → μ、δ<br/>
+          S5 → ρ 降低、r<span class="sub">4</span> 降低(路径 B)
+        </div>
+        <p>依赖关系对应:</p>
+        <div class="math">
+          缺 S4 → S2 跳过的报告终审无法承接<br/>
+          缺 S3 → r<span class="sub">2</span> 无法压到 0.3 以下<br/>
+          缺 S1 → t<span class="sub">C</span> 维持 3.5,γ×t<span class="sub">C</span>=1.35<br/>
+          缺 S4 → 无责任结构,r<span class="sub">2</span> 也压不下来<br/>
+          缺 S5 → ρ 维持 0.386,γ 无法从源头压缩
+        </div>
+        <p>任何一个参数失守,整体 AHT 会回到 1.2+ min。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.5 -->
+  <div class="bizmodel-section">
+    <div class="bizmodel-title"><span class="num">§ 1.5</span>将核查后置到终审兜底 · r₂ 和 r₃ 可压至 0.1 · 达成 1.0 min 的关键前提</div>
+    <div class="bizmodel-grid">
+      <div class="biz-side">
+        <div class="col-label">业务语言<span class="tag">BUSINESS</span></div>
+        <p>从 §1.3 可知,不可压缩的部分(阅读 + 临床判断)对 AHT 的贡献是 1.8 × 0.386 = 0.69 分钟,已经占走了 1 分钟预算的 70%。剩下 0.31 分钟要覆盖异常核对、一致性检查、改判操作三件事。</p>
+        <p>要让这三件事在 0.31 分钟内完成,关键在于:把异常核对和一致性检查的职责从总审转移到终审环节——S1 在初审阶段做一遍前置核查,终审做一遍兜底核查,中间总审不再重复做。这不是省略核查,而是把核查的执行位置重新分配到审核链的两端。</p>
+        <p>按这个工作流,总审医生在异常核对和一致性检查上只需做"扫一眼确认 S1 标注存在"的最低限度动作,r₂ 和 r₃ 可以压到 0.1 左右。</p>
+        <p>改判操作时间(r₄)方面,如果 AI 生成模型同步迭代、高频错误模式被源头消除,每份改判报告的平均改动项数会减少。按 AI 迭代 1-2 轮的中等预期,改判操作保留约 85%,即 r₄ = 0.85。</p>
+        <p>但这条路径成立有两个前提:一是医生确实信任 S1 的核查输出(心理层面),二是制度上允许总审跳过核查(责任结构)。<strong>这两件事的推进难度不低于技术本身,是项目的核心风险所在。</strong></p>
+      </div>
+      <div class="model-side">
+        <div class="col-label">建模表示<span class="tag">MODEL</span></div>
+        <p>代入 r<span class="sub">2</span>=r<span class="sub">3</span>=0.1, r<span class="sub">4</span>=0.85, P=0.80:</p>
+        <div class="math">
+          不可压贡献:<br/>
+          γ × w<span class="sub">1</span> = 0.386 × 1.8 = 0.695<br/><br/>
+          可压缩贡献:<br/>
+          γ × (0.1×0.7 + 0.1×0.5 + 0.85×0.5)<br/>
+          &nbsp;&nbsp;= 0.386 × 0.545 = 0.210<br/><br/>
+          β 贡献:<br/>
+          0.10 × 0.55 ≈ 0.055<br/><br/>
+          <span class="math-strong">总审 AHT ≈ 0.96 min ✓</span>
+        </div>
+        <p>r<span class="sub">4</span>=0.85 的依据:AI 迭代 1-2 轮后,高频改判模式减少,平均改动项数从约 3 项降到 2.5 项,操作时间相应压缩 15%。</p>
+        <p>临界达成,余量极小。r<span class="sub">2</span> 和 r<span class="sub">3</span> 能否真的压到 0.1,取决于 §05 讨论的卡点。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.6 -->
+  <div class="bizmodel-section">
+    <div class="bizmodel-title"><span class="num">§ 1.6</span>终审承接约束 · μ 和 δ 决定终审端是否可行</div>
+    <div class="bizmodel-grid">
+      <div class="biz-side">
+        <div class="col-label">业务语言<span class="tag">BUSINESS</span></div>
+        <p>S2 跳过的报告(α 部分)直送终审,S1/S3 后置的核查工作也由终审兜底。这两件事都会增加终审的单份处理时间。</p>
+        <p>S4 终审分级单审制的作用是释放终审在低风险报告上的产能,用来对冲这部分新增负担。释放的比例记为 <strong>μ</strong>:历史上总审-终审一致率 > 99.5% 的报告类型可以改为总审单审通过,不再经过终审。</p>
+        <p>终审单份处理时间的增量记为 <strong>δ</strong>:取决于后置核查的复杂度和终审工具的效率。</p>
+        <p>硬约束:终审 AHT 增幅不超过 10%。<span class="biz-emph">如果 μ 释放不够或 δ 太大,终审会成为新的瓶颈。</span></p>
+      </div>
+      <div class="model-side">
+        <div class="col-label">建模表示<span class="tag">MODEL</span></div>
+        <p>终审 AHT 约束(级联版 v2,显式传导 R/P):</p>
+        <div class="math">
+          t<span class="sub">终审</span> = 2.0 + [α·δ + FN·κ<span class="sub">FN</span>] × (1 − μ)<br/><br/>
+          δ 是"每份 S1/S2 后置报告"的单份增量<br/>
+          α 同时充当"后置报告占比"的权重<br/><br/>
+          路径 1: R↓ → FN↑ → 终审做漏判改判<br/>
+          路径 2: P↑ → α↑ → 后置报告增多 → α·δ 项 ↑<br/><br/>
+          硬约束: 终审 AHT 增量 ≤ 0.2<br/>
+          即: <span class="math-strong">终审 AHT 增幅 ≤ 10%</span><br/><br/>
+          系数: κ<span class="sub">FN</span>=1.5
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-label">建模完成</div>
+    <p>到这里,六个参数的业务来源、数学定义、方案对应关系、以及彼此之间的依赖结构全部清晰。后续 §02 给出完整流程图,§03 用三组参数代入验证可达边界,§04 提供动态调参工具,§05 列出落地路径上的关键卡点。<strong>业务问题分析完成的同时,参数化建模也完成了。</strong></p>
+  </div>
+</section>
+
+<!-- ============ §02 FLOW DIAGRAM ============ -->
+<section>
+  <h2 class="section-title"><span class="num">§ 02</span>整体方案流程图</h2>
+  <div class="section-sub">从分科医生出结果到签发的完整流程,标注各方案作用点和参数在流程中的位置。</div>
+
+  <figure>
+    <figcaption>五方案级联作用 · 参数定位</figcaption>
+    <svg viewBox="0 0 880 700" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+          <path d="M 0 0 L 8 5 L 0 10 z" fill="#2A2118"/>
+        </marker>
+        <marker id="arr-thin" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+          <path d="M 0 0 L 7 4 L 0 8 z" fill="#8B4513"/>
+        </marker>
+      </defs>
+
+      <!-- Section 1: 分科检查 -->
+      <g transform="translate(40, 30)">
+        <rect width="160" height="46" fill="#2A2118" stroke="#2A2118"/>
+        <text x="80" y="20" font-family="IBM Plex Sans" font-size="11" fill="#F2EBDD" text-anchor="middle" font-weight="500">分科检查</text>
+        <text x="80" y="36" font-family="EB Garamond" font-style="italic" font-size="11" fill="#F2EBDD" text-anchor="middle">分科医生填写</text>
+      </g>
+      <line x1="120" y1="78" x2="120" y2="100" stroke="#2A2118" stroke-width="1.2" marker-end="url(#arr)"/>
+
+      <!-- Section 2: 初审 + S1 -->
+      <g transform="translate(40, 102)">
+        <rect width="160" height="76" fill="#FBF7EF" stroke="#2A2118" stroke-width="1"/>
+        <text x="80" y="20" font-family="IBM Plex Sans" font-size="11" fill="#2A2118" text-anchor="middle" font-weight="500">初审 · 护士</text>
+        <line x1="14" y1="28" x2="146" y2="28" stroke="#C9BBA1" stroke-width="0.6"/>
+        <text x="80" y="44" font-family="IBM Plex Sans" font-size="10" fill="#8B4513" text-anchor="middle" font-weight="500">+ S1 AI 初审助手</text>
+        <text x="80" y="58" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A" text-anchor="middle">一致性核查</text>
+        <text x="80" y="70" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A" text-anchor="middle">漏标核查</text>
+      </g>
+
+      <!-- S3 反馈: 初审·护士 → 分科检查(直线虚线箭头向上) -->
+      <g>
+        <line x1="210" y1="140" x2="210" y2="58" stroke="#8B4513" stroke-width="0.8" stroke-dasharray="4,3" marker-end="url(#arr-thin)"/>
+        <text x="218" y="104" font-family="IBM Plex Mono" font-size="9" fill="#8B4513" letter-spacing="1">S3 反馈</text>
+      </g>
+
+      <line x1="120" y1="180" x2="120" y2="202" stroke="#2A2118" stroke-width="1.2" marker-end="url(#arr)"/>
+
+      <!-- Section 3: AI 报告生成 -->
+      <g transform="translate(40, 204)">
+        <rect width="160" height="46" fill="#2A2118" stroke="#2A2118"/>
+        <text x="80" y="20" font-family="IBM Plex Sans" font-size="11" fill="#F2EBDD" text-anchor="middle" font-weight="500">AI 报告生成</text>
+        <text x="80" y="36" font-family="EB Garamond" font-style="italic" font-size="11" fill="#F2EBDD" text-anchor="middle">月 28,706 份</text>
+      </g>
+      <line x1="120" y1="252" x2="120" y2="274" stroke="#2A2118" stroke-width="1.2" marker-end="url(#arr)"/>
+
+      <!-- Section 4: S2 改判预测模型 -->
+      <g transform="translate(20, 276)">
+        <rect width="200" height="82" fill="#FBF7EF" stroke="#8B4513" stroke-width="1.5"/>
+        <text x="100" y="20" font-family="IBM Plex Mono" font-size="10" fill="#8B4513" text-anchor="middle" font-weight="600" letter-spacing="1">S2 · 改判预测模型</text>
+        <line x1="14" y1="28" x2="186" y2="28" stroke="#C9BBA1" stroke-width="0.6"/>
+        <text x="100" y="44" font-family="EB Garamond" font-style="italic" font-size="11" fill="#2A2118" text-anchor="middle">精确率 = </text>
+        <text x="142" y="44" font-family="IBM Plex Mono" font-size="13" fill="#9B2D1F" font-weight="600">P</text>
+        <text x="100" y="60" font-family="IBM Plex Sans" font-size="10" fill="#5C4A3A" text-anchor="middle">召回率 ≥ 99% 硬约束</text>
+        <text x="100" y="74" font-family="IBM Plex Sans" font-size="9.5" fill="#5C4A3A" text-anchor="middle">关键发现报告白名单豁免</text>
+      </g>
+
+      <!-- 三路分流 -->
+      <g stroke="#2A2118" fill="none">
+        <path d="M 60 358 L 60 392 L 60 412" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M 120 358 L 120 412" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M 180 358 L 180 392 L 180 412" stroke-width="1.2" marker-end="url(#arr)"/>
+      </g>
+
+      <!-- α/β/γ 标签 -->
+      <g font-family="IBM Plex Mono" font-size="11" font-weight="600">
+        <text x="48" y="379" fill="#5A7048">α</text>
+        <text x="108" y="379" fill="#A66D2F">β</text>
+        <text x="170" y="379" fill="#9B2D1F">γ</text>
+      </g>
+
+      <!-- 三个出口 -->
+      <g transform="translate(0, 414)">
+        <!-- α: 跳过总审 -->
+        <g transform="translate(20, 0)">
+          <rect width="80" height="60" fill="#E6EDDD" stroke="#5A7048" stroke-width="1.2"/>
+          <text x="40" y="18" font-family="IBM Plex Sans" font-size="10" fill="#2A2118" text-anchor="middle" font-weight="500">跳过总审</text>
+          <text x="40" y="34" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A" text-anchor="middle">直送终审</text>
+          <line x1="14" y1="40" x2="66" y2="40" stroke="#C9BBA1" stroke-width="0.5"/>
+          <text x="40" y="52" font-family="IBM Plex Mono" font-size="11" fill="#5A7048" text-anchor="middle" font-weight="600">0 min</text>
+        </g>
+
+        <!-- β: 快速确认 -->
+        <g transform="translate(100, 0)">
+          <rect width="80" height="60" fill="#FBF1DC" stroke="#A66D2F" stroke-width="1.2"/>
+          <text x="40" y="18" font-family="IBM Plex Sans" font-size="10" fill="#2A2118" text-anchor="middle" font-weight="500">快速确认</text>
+          <text x="40" y="34" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A" text-anchor="middle">医生通过</text>
+          <line x1="14" y1="40" x2="66" y2="40" stroke="#C9BBA1" stroke-width="0.5"/>
+          <text x="40" y="52" font-family="IBM Plex Mono" font-size="11" fill="#A66D2F" text-anchor="middle" font-weight="600">t<tspan font-size="8" baseline-shift="-2">B</tspan></text>
+        </g>
+
+        <!-- γ: 改判 -->
+        <g transform="translate(180, 0)">
+          <rect width="80" height="60" fill="#F0DCD3" stroke="#9B2D1F" stroke-width="1.2"/>
+          <text x="40" y="18" font-family="IBM Plex Sans" font-size="10" fill="#2A2118" text-anchor="middle" font-weight="500">改判处理</text>
+          <text x="40" y="34" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A" text-anchor="middle">医生修改</text>
+          <line x1="14" y1="40" x2="66" y2="40" stroke="#C9BBA1" stroke-width="0.5"/>
+          <text x="40" y="52" font-family="IBM Plex Mono" font-size="11" fill="#9B2D1F" text-anchor="middle" font-weight="600">t<tspan font-size="8" baseline-shift="-2">C</tspan></text>
+        </g>
+      </g>
+
+      <!-- t_C 工作分解(在右侧展开) — 已删除独立的 w₄ 临床判断(并入 w₁) -->
+      <g transform="translate(310, 140)">
+        <text x="0" y="-8" font-family="IBM Plex Mono" font-size="10" fill="#5C4A3A" letter-spacing="1.5">T_C 工作分解</text>
+        <rect x="0" y="0" width="240" height="140" fill="#FBF7EF" stroke="#C9BBA1" stroke-width="0.8"/>
+
+        <!-- w1 -->
+        <g transform="translate(12, 14)">
+          <rect width="6" height="22" fill="#2A2118"/>
+          <text x="14" y="9" font-family="IBM Plex Mono" font-size="10" fill="#2A2118" font-weight="500">w₁ 阅读+临床判读</text>
+          <text x="14" y="20" font-family="EB Garamond" font-style="italic" font-size="9" fill="#5C4A3A">1.8 · 不可压缩</text>
+          <text x="200" y="15" font-family="IBM Plex Mono" font-size="10" fill="#8A7560" text-anchor="end">—</text>
+        </g>
+
+        <!-- w2 -->
+        <g transform="translate(12, 44)">
+          <rect width="6" height="22" fill="#9B2D1F"/>
+          <text x="14" y="9" font-family="IBM Plex Mono" font-size="10" fill="#9B2D1F" font-weight="500">w₂ 异常核对</text>
+          <text x="14" y="20" font-family="EB Garamond" font-style="italic" font-size="9" fill="#5C4A3A">0.7 · S1 作用</text>
+          <text x="200" y="15" font-family="IBM Plex Mono" font-size="10" fill="#9B2D1F" text-anchor="end" font-weight="600">× r₂</text>
+        </g>
+
+        <!-- w3 -->
+        <g transform="translate(12, 74)">
+          <rect width="6" height="22" fill="#9B2D1F"/>
+          <text x="14" y="9" font-family="IBM Plex Mono" font-size="10" fill="#9B2D1F" font-weight="500">w₃ 一致性</text>
+          <text x="14" y="20" font-family="EB Garamond" font-style="italic" font-size="9" fill="#5C4A3A">0.5 · S1+S2 作用</text>
+          <text x="200" y="15" font-family="IBM Plex Mono" font-size="10" fill="#9B2D1F" text-anchor="end" font-weight="600">× r₃</text>
+        </g>
+
+        <!-- w5 -->
+        <g transform="translate(12, 104)">
+          <rect width="6" height="22" fill="#A0683F"/>
+          <text x="14" y="9" font-family="IBM Plex Mono" font-size="10" fill="#A0683F" font-weight="500">w₄ 改判操作</text>
+          <text x="14" y="20" font-family="EB Garamond" font-style="italic" font-size="9" fill="#5C4A3A">0.5 · S2 间接</text>
+          <text x="200" y="15" font-family="IBM Plex Mono" font-size="10" fill="#A0683F" text-anchor="end" font-weight="600">× r₄</text>
+        </g>
+
+        <!-- separator -->
+        <line x1="12" y1="140" x2="228" y2="140" stroke="#2A2118" stroke-width="0.6"/>
+        <text x="14" y="156" font-family="IBM Plex Mono" font-size="10" fill="#2A2118" font-weight="600">合计 t_C = 3.5 min(基线)</text>
+      </g>
+
+      <!-- 终审环节 -->
+      <line x1="60" y1="474" x2="60" y2="506" stroke="#5A7048" stroke-width="1.2" marker-end="url(#arr)"/>
+      <line x1="140" y1="474" x2="140" y2="506" stroke="#A66D2F" stroke-width="1.2" marker-end="url(#arr)"/>
+      <line x1="220" y1="474" x2="220" y2="506" stroke="#9B2D1F" stroke-width="1.2" marker-end="url(#arr)"/>
+      <line x1="60" y1="506" x2="220" y2="506" stroke="#2A2118" stroke-width="1.2"/>
+      <line x1="140" y1="506" x2="140" y2="520" stroke="#2A2118" stroke-width="1.2" marker-end="url(#arr)"/>
+
+      <!-- S4 终审分级单审 -->
+      <g transform="translate(40, 522)">
+        <rect width="200" height="58" fill="#FBF7EF" stroke="#8B4513" stroke-width="1.5"/>
+        <text x="100" y="18" font-family="IBM Plex Mono" font-size="10" fill="#8B4513" text-anchor="middle" font-weight="600" letter-spacing="1">S4 · 终审分级单审</text>
+        <line x1="14" y1="26" x2="186" y2="26" stroke="#C9BBA1" stroke-width="0.6"/>
+        <text x="80" y="42" font-family="EB Garamond" font-style="italic" font-size="11" fill="#2A2118">释放比例 =</text>
+        <text x="160" y="42" font-family="IBM Plex Mono" font-size="13" fill="#9B2D1F" font-weight="600">μ</text>
+        <text x="100" y="54" font-family="IBM Plex Sans" font-size="9.5" fill="#5C4A3A" text-anchor="middle">低风险报告单审 · 核查兜底</text>
+      </g>
+      <line x1="140" y1="580" x2="140" y2="592" stroke="#2A2118" stroke-width="1.2" marker-end="url(#arr)"/>
+
+      <!-- 终审(医生) -->
+      <g transform="translate(40, 594)">
+        <rect width="200" height="38" fill="#F5EDDD" stroke="#2A2118" stroke-width="1"/>
+        <text x="100" y="16" font-family="IBM Plex Sans" font-size="11" fill="#2A2118" text-anchor="middle" font-weight="500">终审 · 医生审核</text>
+        <text x="100" y="30" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A" text-anchor="middle">核查兜底 + 签字确认</text>
+      </g>
+
+      <!-- 签发 -->
+      <line x1="140" y1="632" x2="140" y2="646" stroke="#2A2118" stroke-width="1.2" marker-end="url(#arr)"/>
+      <g transform="translate(60, 648)">
+        <rect width="160" height="20" fill="#2A2118"/>
+        <text x="80" y="14" font-family="IBM Plex Sans" font-size="10" fill="#F2EBDD" text-anchor="middle" font-weight="500" letter-spacing="0.5">签发给用户</text>
+      </g>
+
+      <!-- 右侧:参数与公式 -->
+      <g transform="translate(580, 100)">
+        <text x="0" y="-8" font-family="IBM Plex Mono" font-size="10" fill="#5C4A3A" letter-spacing="1.5">关键参数表</text>
+        <rect x="0" y="0" width="260" height="438" fill="#FBF7EF" stroke="#2A2118" stroke-width="1"/>
+        
+        <!-- 流程公式 -->
+        <g transform="translate(14, 18)">
+          <text x="0" y="0" font-family="IBM Plex Mono" font-size="10" fill="#8B4513" font-weight="600" letter-spacing="1">FORMULA</text>
+          <line x1="0" y1="6" x2="232" y2="6" stroke="#C9BBA1" stroke-width="0.6"/>
+          <text x="0" y="24" font-family="IBM Plex Mono" font-size="11" fill="#2A2118" font-weight="500">AHT = α·0 + β·t_B + γ·t_C</text>
+          <text x="0" y="42" font-family="EB Garamond" font-style="italic" font-size="11" fill="#5C4A3A">分流加权,α 部分耗时为 0</text>
+        </g>
+
+        <!-- 参数说明 -->
+        <g transform="translate(14, 80)">
+          <text x="0" y="0" font-family="IBM Plex Mono" font-size="10" fill="#8B4513" font-weight="600" letter-spacing="1">PARAMETERS</text>
+          <line x1="0" y1="6" x2="232" y2="6" stroke="#C9BBA1" stroke-width="0.6"/>
+
+          <g transform="translate(0, 22)">
+            <text x="0" y="0" font-family="IBM Plex Mono" font-size="11" fill="#9B2D1F" font-weight="600">P</text>
+            <text x="20" y="0" font-family="IBM Plex Sans" font-size="10.5" fill="#2A2118">S2 模型精确率</text>
+            <text x="0" y="13" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A">决定 α 的大小,γ 不变</text>
+          </g>
+
+          <g transform="translate(0, 56)">
+            <text x="0" y="0" font-family="IBM Plex Mono" font-size="11" fill="#9B2D1F" font-weight="600">r₂</text>
+            <text x="20" y="0" font-family="IBM Plex Sans" font-size="10.5" fill="#2A2118">异常核对保留比例</text>
+            <text x="0" y="13" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A">医生对 S1 信任度,核心变量</text>
+          </g>
+
+          <g transform="translate(0, 90)">
+            <text x="0" y="0" font-family="IBM Plex Mono" font-size="11" fill="#9B2D1F" font-weight="600">r₃</text>
+            <text x="20" y="0" font-family="IBM Plex Sans" font-size="10.5" fill="#2A2118">一致性检查保留比例</text>
+            <text x="0" y="13" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A">S1+S3 双重保障下可压更低</text>
+          </g>
+
+          <g transform="translate(0, 124)">
+            <text x="0" y="0" font-family="IBM Plex Mono" font-size="11" fill="#9B2D1F" font-weight="600">r₄</text>
+            <text x="20" y="0" font-family="IBM Plex Sans" font-size="10.5" fill="#2A2118">改判操作保留比例</text>
+            <text x="0" y="13" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A">AI 生成质量提升后下降</text>
+          </g>
+
+          <g transform="translate(0, 158)">
+            <text x="0" y="0" font-family="IBM Plex Mono" font-size="11" fill="#9B2D1F" font-weight="600">μ</text>
+            <text x="20" y="0" font-family="IBM Plex Sans" font-size="10.5" fill="#2A2118">S4 终审释放比例</text>
+            <text x="0" y="13" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A">影响终审承接,非总审 AHT</text>
+          </g>
+
+          <g transform="translate(0, 192)">
+            <text x="0" y="0" font-family="IBM Plex Mono" font-size="11" fill="#9B2D1F" font-weight="600">δ</text>
+            <text x="20" y="0" font-family="IBM Plex Sans" font-size="10.5" fill="#2A2118">后处理报告单份增量</text>
+            <text x="0" y="13" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A">每份后置报告终审多耗 min</text>
+          </g>
+        </g>
+
+        <!-- 级联关系 -->
+        <g transform="translate(14, 308)">
+          <text x="0" y="0" font-family="IBM Plex Mono" font-size="10" fill="#8B4513" font-weight="600" letter-spacing="1">CASCADE</text>
+          <line x1="0" y1="6" x2="232" y2="6" stroke="#C9BBA1" stroke-width="0.6"/>
+          <text x="0" y="20" font-family="EB Garamond" font-style="italic" font-size="11" fill="#2A2118">S1 是基础设施</text>
+          <text x="0" y="36" font-family="EB Garamond" font-style="italic" font-size="11" fill="#2A2118">S2 是分流引擎</text>
+          <text x="0" y="52" font-family="EB Garamond" font-style="italic" font-size="11" fill="#2A2118">S3 是 S1 的质量保险</text>
+          <text x="0" y="68" font-family="EB Garamond" font-style="italic" font-size="11" fill="#2A2118">S4 是 S2 的必要伴生</text>
+          <text x="0" y="84" font-family="EB Garamond" font-style="italic" font-size="11" fill="#2A2118">S5 是独立的路径 B</text>
+          <text x="0" y="106" font-family="IBM Plex Sans" font-size="10" fill="#5C4A3A">五方案彼此耦合,缺一不可</text>
+        </g>
+      </g>
+    </svg>
+    <div class="note">流程图标注了每个参数在工作流中的精确位置:P 控制 S2 的分流比例,r₂/r₃/r₄ 控制 t_C 内部各段工作的保留比例,μ/δ 控制终审承接负担,ρ 由 S5 从 AI 报告源头削减。五个方案彼此耦合——S1 提供 r₂/r₃ 可下降的前提,S2 决定 α 的大小,S3 强化 r₂/r₃ 的可下降深度,S4 释放 μ 来对冲 δ,S5 独立降低 ρ 进一步压缩 γ。</div>
+  </figure>
+</section>
+
+<!-- ============ §03 SCENARIOS ============ -->
+<section>
+  <h2 class="section-title"><span class="num">§ 03</span>三情景案例分析</h2>
+  <div class="section-sub">保守/中等/乐观三组参数代入,看实际可达边界。</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>参数</th>
+        <th class="num">保守</th>
+        <th class="num">中等</th>
+        <th class="num">乐观</th>
+        <th>三情景取值依据</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <span class="param-cell">
+            <span class="sym">ρ</span> AI 报告改判率
+            <div class="tooltip-box">
+              <strong>ρ · AI 报告实际改判率</strong>
+              AI 生成的报告中,实际需要医生改判的比例。由 AI 报告质量决定(提示词优化、模型迭代等)。<em>ρ 下降直接降低 γ,是效果最显著的路径。</em>
+              <div class="rec">当前 0.386,目标 0.20 · 通过 AI 迭代持续推进</div>
+              <div class="warn">卡点:ρ 下降依赖 AI 模型持续迭代,不是一次性工作</div>
+            </div>
+          </span>
+        </td>
+        <td class="num">0.386</td>
+        <td class="num">0.30</td>
+        <td class="num">0.20</td>
+        <td><strong>保守</strong>:AI 报告质量维持现状,首检通过率 61.4% · <strong>中等</strong>:提示词优化后提升到 70% · <strong>乐观</strong>:持续迭代后达到 80% 目标</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="param-cell">
+            <span class="sym">P</span> S2 精确率
+            <div class="tooltip-box">
+              <strong>P · S2 模型精确率</strong>
+              S2 模型预测"会改判"的报告中,实际真的会被改判的比例。<em>P 越高,FP 越少,可跳过总审的报告越多。</em>
+              <div class="rec">推荐 0.75–0.85 · 影子运行 4–8 周验证</div>
+              <div class="warn">卡点:首版模型可能低于 0.65,需要建模后实测</div>
+            </div>
+          </span>
+        </td>
+        <td class="num">0.65</td>
+        <td class="num">0.75</td>
+        <td class="num">0.85</td>
+        <td><strong>保守</strong>:首版模型典型表现,未做精细特征工程 · <strong>中等</strong>:迭代 1–2 轮,完成主要特征工程 · <strong>乐观</strong>:充分调优 + 持续迭代后的天花板</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="param-cell">
+            <span class="sym">FP</span> 假阳占比(由 P 推导)
+            <div class="tooltip-box">
+              <strong>FP · 假阳占比 = β 快速确认占比</strong>
+              模型预测"会改判"但实际不会改的报告占比。FP 越小,医生"白看"的报告越少。<em>FP = ρ × R × (1 − P) / P,由 P 和 ρ 联合推出。</em>
+              <div class="rec">FP 自动随 P 与 ρ 变化,无需单独调参</div>
+            </div>
+          </span>
+        </td>
+        <td class="num">0.206</td>
+        <td class="num">0.099</td>
+        <td class="num">0.035</td>
+        <td><strong>保守</strong>:P 仅 0.65 时近 21% 报告白看 · <strong>中等</strong>:近 10% · <strong>乐观</strong>:仅 3.5%。P 的提升直接压缩"白看"工作量,与 α 跳过总审形成双重效益</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="param-cell">
+            <span class="sym">r₂</span> 异常核对保留
+            <div class="tooltip-box">
+              <strong>R₂ · 异常项核对保留比例</strong>
+              S1 上线后,医生在异常项核对上仍保留的工作量比例。<em>这是整个系统最脆弱的参数</em>——取决于医生对 S1 的信任度、UI 显性化效果、责任结构调整。
+              <div class="rec">推荐 0.10–0.20 · 需建立 S1 信任 + 责任结构调整</div>
+              <div class="warn">卡点:医生信任建立时间不可控,r₂ > 0.30 系统无法达成</div>
+            </div>
+          </span>
+        </td>
+        <td class="num">0.50</td>
+        <td class="num">0.30</td>
+        <td class="num">0.10</td>
+        <td><strong>保守</strong>:医生仅部分信任 S1,仍习惯性核查一半 · <strong>中等</strong>:UI 显性化 + 影子期建立基础信任 · <strong>乐观</strong>:责任结构调整完成,医生敢跳过核查</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="param-cell">
+            <span class="sym">r₃</span> 一致性保留
+            <div class="tooltip-box">
+              <strong>R₃ · 一致性检查保留比例</strong>
+              S1+S3 双重保障下医生仍做的一致性检查工作量比例。<em>比 r₂ 更容易压低</em>——一致性检查的规则性更强,AI 检测更可靠,且终审会兜底。
+              <div class="rec">推荐 0.10–0.15 · 后置到终审兜底</div>
+              <div class="warn">卡点:跨多分科的一致性问题需要 S1 完整覆盖,有遗漏风险</div>
+            </div>
+          </span>
+        </td>
+        <td class="num">0.50</td>
+        <td class="num">0.30</td>
+        <td class="num">0.10</td>
+        <td><strong>保守</strong>:终审兜底机制未建立,医生不敢跳过 · <strong>中等</strong>:S1+S3 推动下,大部分一致性可信任 · <strong>乐观</strong>:与终审形成闭环兜底</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="param-cell">
+            <span class="sym">r₄</span> 改判操作保留
+            <div class="tooltip-box">
+              <strong>R₅ · 改判操作保留比例</strong>
+              医生改判操作时间的保留比例。<em>S1-S4 未直接攻击此参数</em>——只能依靠 S5(AI 报告质量提升)带来改判项数下降,间接降低。
+              <div class="rec">推荐 0.70–0.85 · 依赖 AI 模型迭代</div>
+              <div class="warn">卡点:r₄ &lt; 0.6 需补 P0-2 工具优化或 P1-2 报告重构</div>
+            </div>
+          </span>
+        </td>
+        <td class="num">1.00</td>
+        <td class="num">0.85</td>
+        <td class="num">0.70</td>
+        <td><strong>保守</strong>:AI 生成质量未提升,改判项数不变 · <strong>中等</strong>:AI 模型迭代,高频错误减少 · <strong>乐观</strong>:AI 生成质量大幅提升,改判项数下降 30%</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="param-cell">
+            <span class="sym">μ</span> S4 释放比例
+            <div class="tooltip-box">
+              <strong>μ · S4 终审释放比例</strong>
+              S4 终审分级单审制下,可豁免终审的低风险报告比例。<em>不直接影响总审 AHT</em>,但决定终审能否承接 S2 跳过部分。
+              <div class="rec">推荐 0.50–0.70 · 取决于历史一致率分布</div>
+              <div class="warn">卡点:合规可能要求保留所有报告的终审,需前置法务沟通</div>
+            </div>
+          </span>
+        </td>
+        <td class="num">0.30</td>
+        <td class="num">0.50</td>
+        <td class="num">0.70</td>
+        <td><strong>保守</strong>:合规审慎,仅释放最简单子集 · <strong>中等</strong>:基于一致率分析,主流报告分级 · <strong>乐观</strong>:合规接受度高,大部分类型分级单审</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="param-cell">
+            <span class="sym">δ</span> 后处理报告单份增量
+            <div class="tooltip-box">
+              <strong>δ · 后处理报告单份增量</strong>
+              每份 <em>S1/S2 后置报告</em>(α 通道——跳过总审直送终审)因承接 S1/S2 后置工作在终审环节额外耗费的 min 数。直接按"终审处理一份未经总审过眼的报告需多花几分钟"来预估。
+              <div class="rec">推荐 0.80–1.50 · 取决于核查复杂度</div>
+              <div class="warn">卡点:硬约束 α·δ·(1−μ) + FN·κ_FN·(1−μ) ≤ 0.20,P 上升让 α 暴增时 δ 必须同步压低</div>
+            </div>
+          </span>
+        </td>
+        <td class="num">2.45</td>
+        <td class="num">1.20</td>
+        <td class="num">0.50</td>
+        <td><strong>保守</strong>:每份后置报告终审多耗 2.5 min(完整手工核查) · <strong>中等</strong>:终审工具部分优化后压到 1.2 min · <strong>乐观</strong>:工作流深度优化后单份增量 0.5 min</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="font-size:12.5px;color:var(--ink-faint);font-style:italic;margin-top:8px">悬停参数名称可查看详细业务意义、推荐设定值、潜在卡点。</p>
+
+  <h3 class="sub-title">计算结果</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>情景</th>
+        <th class="num">α</th>
+        <th class="num">β</th>
+        <th class="num">γ</th>
+        <th class="num">t<span class="sub">B</span></th>
+        <th class="num">t<span class="sub">C</span></th>
+        <th class="num">总审 AHT</th>
+        <th class="num">终审增幅</th>
+        <th class="center">达成</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="fail">
+        <td><strong>保守</strong></td>
+        <td class="num">0.408</td>
+        <td class="num">0.206</td>
+        <td class="num">0.386</td>
+        <td class="num">0.73</td>
+        <td class="num">2.85</td>
+        <td class="num"><span class="num-data">1.25</span></td>
+        <td class="num"><span class="num-data">+35%</span></td>
+        <td class="center" style="color:var(--data);font-weight:500">✗ ✗</td>
+      </tr>
+      <tr class="success">
+        <td><strong>中等</strong></td>
+        <td class="num">0.601</td>
+        <td class="num">0.099</td>
+        <td class="num">0.300</td>
+        <td class="num">0.63</td>
+        <td class="num">2.54</td>
+        <td class="num"><span class="num-success">0.82</span></td>
+        <td class="num"><span class="num-data">+18%</span></td>
+        <td class="center" style="color:var(--success);font-weight:500">✓ 达成</td>
+      </tr>
+      <tr class="success">
+        <td><strong>乐观</strong></td>
+        <td class="num">0.765</td>
+        <td class="num">0.035</td>
+        <td class="num">0.200</td>
+        <td class="num">0.55</td>
+        <td class="num">2.27</td>
+        <td class="num"><span class="num-success">0.47</span></td>
+        <td class="num"><span class="num-success">+6%</span></td>
+        <td class="center" style="color:var(--success);font-weight:500">✓ ✓ 充分</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <div class="callout-label">关键发现</div>
+    <p><strong>引入 ρ 作为可变参数后,结论显著改善。</strong>当 AI 报告质量提升到首检通过率 70-80%(ρ 从 0.386 降到 0.20-0.30),γ 从 0.386 降到 0.20-0.30,整个约束大幅松动:中等情景下 AHT 已降至 0.82 min,不再是临界状态。AI 报告质量提升(路径 B)与 S1/S2/S3/S4(路径 A)的效果叠加,使 1.0 min 目标从"有条件的乐观"变为"中等情景下稳健达成"。</p>
+  </div>
+</section>
+
+<!-- ============ §04 INTERACTIVE SENSITIVITY ============ -->
+<section>
+  <h2 class="section-title"><span class="num">§ 04</span>敏感性分析 · 动态调参</h2>
+  <div class="section-sub">拖动滑块改变参数,实时查看对总审 AHT 的影响。鼠标悬停参数名称可见详细说明。</div>
+
+  <div class="interactive">
+    <div class="interactive-header">
+      <span>Interactive Model · Live Computation</span>
+      <span class="badge">v1</span>
+    </div>
+    <div class="interactive-body">
+
+      <!-- LEFT: PARAMS -->
+      <div class="params-panel">
+        <div class="param-group">
+          <div class="param-label">
+            <span class="param-name">
+              <span class="param-symbol">ρ</span> AI 报告改判率
+              <div class="tooltip">
+                <strong>ρ · AI 报告实际改判率</strong>
+                AI 生成的报告中,实际需要医生改判的比例。<em>由 AI 报告质量决定,通过提示词优化等工作降低。</em>
+                <div class="rec">当前 0.386(通过率 61.4%),目标 0.20(通过率 80%)</div>
+                <div style="margin-top:6px;font-family:var(--mono);font-size:10.5px;color:#E8A878">卡点:ρ 下降依赖 AI 模型持续迭代,不是一次性工作。需要持续跟踪首检通过率趋势。</div>
+              </div>
+            </span>
+            <span class="param-value" id="rho-val">0.30</span>
+          </div>
+          <input type="range" class="param-slider" id="rho-slider" min="0.10" max="0.40" step="0.01" value="0.30">
+          <div class="param-range"><span>0.10</span><span>0.40</span></div>
+        </div>
+
+        <div class="param-group">
+          <div class="param-label">
+            <span class="param-name">
+              <span class="param-symbol">R</span> S2 召回率
+              <div class="tooltip">
+                <strong>R · S2 模型召回率</strong>
+                对"实际会改判"的报告的识别率。<em>R 越高漏判越少;R 越低 AHT 越低但临床风险增加。</em>
+                <div class="rec">目标 ≥ 0.99 · 漏判率 ≤ 1%</div>
+              </div>
+            </span>
+            <span class="param-value" id="R-val">0.99</span>
+          </div>
+          <input type="range" class="param-slider" id="R-slider" min="0.00" max="1.00" step="0.01" value="0.99">
+          <div class="param-range"><span>0.00</span><span>1.00</span></div>
+          <div class="fp-readout">
+            <span class="label">推导 · FN = ρ × (1−R)</span>
+            <span class="value" id="R-fn-readout">0.003</span>
+          </div>
+        </div>
+
+        <div class="param-group">
+          <div class="param-label">
+            <span class="param-name">
+              <span class="param-symbol">P</span> S2 模型精确率
+              <div class="tooltip">
+                <strong>P · S2 模型精确率</strong>
+                S2 模型预测"会改判"的报告中,实际真的会被改判的比例。<em>P 越高,FP 越少,可跳过总审的报告越多。</em>
+                <div class="rec">推荐 0.75 – 0.85 · 影子运行 4–8 周验证</div>
+                <div style="margin-top:6px;font-family:var(--mono);font-size:10.5px;color:#E8A878">卡点:首版模型可能 < 0.65,需预留补救方案。建模后必须实测,不能纸面假设。</div>
+              </div>
+            </span>
+            <span class="param-value" id="P-val">0.75</span>
+          </div>
+          <input type="range" class="param-slider" id="P-slider" min="0.10" max="0.95" step="0.01" value="0.75">
+          <div class="param-range"><span>0.10</span><span>0.95</span></div>
+          <div class="fp-readout">
+            <span class="label">推导 · FP = ρ × R × (1−P) / P</span>
+            <span class="value" id="P-fp-readout">0.099</span>
+          </div>
+        </div>
+
+        <div class="param-group">
+          <div class="param-label">
+            <span class="param-name">
+              <span class="param-symbol">r₂=r₃</span> 核查保留比例(联动)
+              <div class="tooltip">
+                <strong>r₂ · 异常项核对保留比例</strong>
+                S1 上线后,医生在异常项核对上仍保留的工作量比例。<em>整个系统最脆弱的参数</em>——取决于医生对 S1 的信任度、责任结构、UI 显性化的综合效果。
+                <div class="rec">推荐 0.10 – 0.20 · 需建立 S1 信任</div>
+                <div style="margin-top:6px;font-family:var(--mono);font-size:10.5px;color:#E8A878">卡点:医生信任建立时间不可控,职业习惯极难改变。r₂ > 0.30 系统无法达成。最大的工程风险所在。</div>
+              </div>
+            </span>
+            <span class="param-value" id="r2-val">0.30</span>
+          </div>
+          <input type="range" class="param-slider" id="r2-slider" min="0" max="1" step="1" value="0">
+          <div class="param-range"><span>0</span><span>1</span></div>
+        </div>
+
+        <div class="param-group">
+          <div class="param-label">
+            <span class="param-name">
+              <span class="param-symbol">r₃=r₂</span> 一致性保留(跟随 r₂)
+              <div class="tooltip">
+                <strong>r₃ · 一致性检查保留比例</strong>
+                S1 + S3 双重保障下医生仍做的一致性检查工作量比例。<em>相比 r₂ 更容易压低</em>,一致性检查规则性强,且终审会兜底。
+                <div class="rec">推荐 0.10 – 0.15 · 后置到终审兜底</div>
+                <div style="margin-top:6px;font-family:var(--mono);font-size:10.5px;color:#E8A878">卡点:跨多分科的复杂一致性问题需 S1 完整覆盖,有遗漏风险。需在影子期建立 S1 检测覆盖度的实测数据。</div>
+              </div>
+            </span>
+            <span class="param-value" id="r3-val">0.20</span>
+          </div>
+          <input type="range" class="param-slider" id="r3-slider" min="0" max="1" step="1" value="0">
+          <div class="param-range"><span>0.05</span><span>0.70</span></div>
+        </div>
+
+
+
+        <div class="param-group">
+          <div class="param-label">
+            <span class="param-name">
+              <span class="param-symbol">μ</span> S4 终审释放比例
+              <div class="tooltip">
+                <strong>μ · S4 终审释放比例</strong>
+                S4 终审分级单审制下,可豁免终审的低风险报告比例。<em>不直接影响总审 AHT</em>,但决定终审能否承接 S1/S2 后置工作。
+                <div class="rec">推荐 0.50 – 0.70 · 取决于历史一致率</div>
+                <div style="margin-top:6px;font-family:var(--mono);font-size:10.5px;color:#E8A878">卡点:合规可能要求保留所有报告的终审,μ 受限。需前置法务沟通,先以"批量确认"形式过渡。</div>
+              </div>
+            </span>
+            <span class="param-value" id="mu-val">0.50</span>
+          </div>
+          <input type="range" class="param-slider" id="mu-slider" min="0.10" max="0.90" step="0.01" value="0.50">
+          <div class="param-range"><span>0.10</span><span>0.90</span></div>
+        </div>
+
+        <div class="param-group">
+          <div class="param-label">
+            <span class="param-name">
+              <span class="param-symbol">δ</span> 后处理报告单份增量
+              <div class="tooltip">
+                <strong>δ · 后处理报告单份增量</strong>
+                每份 <em>S1/S2 后置报告</em>(即 α 通道——跳过总审、直送终审的报告)在终审环节因为承接 S1/S2 后置工作而额外耗费的 min 数。业务上比"均摊到所有报告"更直观,可直接按"终审处理一份未经总审过眼的报告需多花几分钟"来预估。
+                <div class="rec">推荐 0.80 – 1.50 · 取决于核查复杂度</div>
+                <div style="margin-top:6px;font-family:var(--mono);font-size:10.5px;color:#E8A878">卡点:终审 AHT 增量 = α·δ·(1−μ) + FN·κ_FN·(1−μ) ≤ 0.20。P 上升让 α 暴增时,δ 必须同步压低或 μ 释放更多,否则终审瓶颈反弹。</div>
+              </div>
+            </span>
+            <span class="param-value" id="delta-val">1.20</span>
+          </div>
+          <input type="range" class="param-slider" id="delta-slider" min="0.30" max="3.00" step="0.05" value="1.20">
+          <div class="param-range"><span>0.30</span><span>3.00</span></div>
+          <div class="fp-readout">
+            <span class="label">推导 · 终审 AHT 增量 ≤ 0.20 硬约束</span>
+            <span class="value" id="delta-mu-readout">0.35</span>
+          </div>
+        </div>
+
+        <div class="presets">
+          <button class="preset-btn" onclick="applyPreset('conservative')">保守</button>
+          <button class="preset-btn active" onclick="applyPreset('medium')">中等</button>
+          <button class="preset-btn" onclick="applyPreset('optimistic')">乐观</button>
+          <button class="preset-btn" onclick="applyPreset('reset')">重置</button>
+        </div>
+      
+        <div class="meta-params">
+          <div class="meta-params-header" onclick="document.getElementById('meta-body').classList.toggle('open');this.querySelector('.toggle-icon').textContent=document.getElementById('meta-body').classList.contains('open')?'−':'+'">
+            <span>元参数 · 工作时间基线</span>
+            <span class="toggle-icon">+</span>
+          </div>
+          <div class="meta-params-body" id="meta-body">
+            <div style="font-size:10.5px;color:var(--ink-faint);margin-bottom:8px;font-style:italic">调整各项工作的基线时间(分钟)</div>
+            <div class="meta-param-row"><label><span class="sym">w₁</span>阅读+临床</label><input type="range" class="param-slider" id="mw1-slider" min="1.0" max="2.5" step="0.1" value="1.8"><span class="val" id="mw1-val">1.8</span></div>
+            <div class="meta-param-row"><label><span class="sym">w₂</span>异常核对</label><input type="range" class="param-slider" id="mw2-slider" min="0.3" max="1.2" step="0.1" value="0.7"><span class="val" id="mw2-val">0.7</span></div>
+            <div class="meta-param-row"><label><span class="sym">w₃</span>一致性</label><input type="range" class="param-slider" id="mw3-slider" min="0.2" max="0.8" step="0.1" value="0.5"><span class="val" id="mw3-val">0.5</span></div>
+            <div class="meta-param-row"><label><span class="sym">w₄</span>改判操作</label><input type="range" class="param-slider" id="mw4-slider" min="0.2" max="0.8" step="0.1" value="0.5"><span class="val" id="mw4-val">0.5</span></div>
+            <div style="margin:10px 0 4px;padding-top:8px;border-top:1px solid var(--rule-soft);font-family:var(--mono);font-size:9px;color:var(--ink-faint);letter-spacing:0.1em">T_B 基线</div>
+            <div class="meta-param-row"><label><span class="sym">w₁'</span>浏览确认</label><input type="range" class="param-slider" id="mw1p-slider" min="0.2" max="0.8" step="0.1" value="0.5"><span class="val" id="mw1p-val">0.5</span></div>
+            <div class="meta-param-row"><label><span class="sym">w₂'</span>扫异常</label><input type="range" class="param-slider" id="mw2p-slider" min="0.1" max="0.5" step="0.1" value="0.3"><span class="val" id="mw2p-val">0.3</span></div>
+            <div class="meta-param-row"><label><span class="sym">w₃'</span>扫一致性</label><input type="range" class="param-slider" id="mw3p-slider" min="0.1" max="0.4" step="0.1" value="0.2"><span class="val" id="mw3p-val">0.2</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: RESULTS -->
+      <div class="results-panel">
+        <div class="result-row">
+          <span class="result-key"><span class="sym">α</span>跳过总审</span>
+          <span class="result-val"><span class="result-bar"><span class="fill" id="alpha-bar"></span></span><span id="alpha-val">0.487</span></span>
+        </div>
+        <div class="result-row">
+          <span class="result-key"><span class="sym">β</span>快速确认</span>
+          <span class="result-val"><span class="result-bar"><span class="fill" id="beta-bar"></span></span><span id="beta-val">0.127</span></span>
+        </div>
+        <div class="result-row">
+          <span class="result-key"><span class="sym">γ</span>改判处理</span>
+          <span class="result-val"><span class="result-bar"><span class="fill" id="gamma-bar"></span></span><span id="gamma-val">0.386</span></span>
+        </div>
+        <div class="result-row">
+          <span class="result-key"><span class="sym">t<span class="sub">B</span></span>快速确认 AHT</span>
+          <span class="result-val" id="tB-val">0.63 min</span>
+        </div>
+        <div class="result-row">
+          <span class="result-key"><span class="sym">t<span class="sub">C</span></span>改判 AHT</span>
+          <span class="result-val" id="tC-val">2.54 min</span>
+        </div>
+
+        <div class="result-main">
+          <div class="label">总审 AHT</div>
+          <div class="value"><span id="aht-val" class="aht-clickable" onclick="openModal('calc-modal')" title="点击查看计算过程">1.06</span><span class="unit">min</span></div>
+          <div class="status" id="aht-status">~ 临界未达</div>
+        </div>
+
+        <div class="terminal-check aht-clickable" onclick="openModal('terminal-modal')" title="点击查看终审 AHT 推导分解" style="cursor:pointer">
+          <div class="row">
+            <span class="label">终审 AHT(点击展开级联推导)</span>
+            <span class="val"><span id="term-val">2.35</span> min <span class="status bad" id="term-status">+18%</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub-title">单参数敏感性 · Tornado 图</h3>
+  <p>以中等情景为基准,每个参数从低值变到高值,看 AHT 的变化幅度。条形越长说明该参数越关键。</p>
+
+  <figure>
+    <figcaption>各参数对总审 AHT 的影响幅度</figcaption>
+    <div class="tornado">
+      <div class="tornado-row">
+        <div class="tornado-label"><span class="sym">r₂</span>异常核对保留</div>
+        <div class="tornado-bar-container">
+          <div class="tornado-center"></div>
+          <div class="tornado-bar low" style="left:32.0%;width:18.0%">0.99</div>
+          <div class="tornado-bar high" style="left:50%;width:18.0%">1.17</div>
+        </div>
+      </div>
+      <div class="tornado-row">
+        <div class="tornado-label"><span class="sym">P</span>S2 精确率</div>
+        <div class="tornado-bar-container">
+          <div class="tornado-center"></div>
+          <div class="tornado-bar high" style="left:33.0%;width:17.0%">1.00</div>
+          <div class="tornado-bar low" style="left:50%;width:17.0%">1.17</div>
+        </div>
+      </div>
+      <div class="tornado-row">
+        <div class="tornado-label"><span class="sym">r₄</span>改判操作保留</div>
+        <div class="tornado-bar-container">
+          <div class="tornado-center"></div>
+          <div class="tornado-bar low" style="left:40.0%;width:10.0%">0.99</div>
+          <div class="tornado-bar high" style="left:50%;width:10.0%">1.09</div>
+        </div>
+      </div>
+      <div class="tornado-row">
+        <div class="tornado-label"><span class="sym">r₃</span>一致性保留</div>
+        <div class="tornado-bar-container">
+          <div class="tornado-center"></div>
+          <div class="tornado-bar low" style="left:44.0%;width:6.0%">1.04</div>
+          <div class="tornado-bar high" style="left:50%;width:6.0%">1.10</div>
+        </div>
+      </div>
+      <div class="tornado-axis">
+        <span>0.85</span><span>1.06 基准</span><span>1.27</span>
+      </div>
+    </div>
+    <div class="note">r₂ 的影响幅度最大(±0.18 min),其次是 S2 精确率(±0.17)。两者必须同时优化才能稳定达成 1.0 min。w₁(阅读+临床判读)虽然不可控,但其硬性占比决定了 AHT 的最低边界——γ×w₁ ≈ 0.69 min,已经占走 1 分钟预算的 70%。</div>
+  </figure>
+
+  <h3 class="sub-title">双参数热力图 · P × <span class="lc">ρ</span></h3>
+  <p>关键的一对工程杠杆:P 反映 S2 模型精度(路径 A),<span class="lc">ρ</span> 反映 AI 报告质量(路径 B)。两者共同决定 γ 的占比和分流效率。<strong>固定 r₂=r₃=0</strong>(即医生完全信任 S1、跳过核查),将 AHT 渲染为热力图,绿色格子表示在此组合下 AHT ≤ 1.0 min。每格上方为 AHT,下方括号内为 FP = <span class="lc">ρ</span> × R × (1−P)/P,反映"白看"工作量。</p>
+
+  <figure>
+    <figcaption>不同 P × <span class="lc">ρ</span> 组合下的总审 AHT 与 FP(假设 <span class="lc">r₂</span>=<span class="lc">r₃</span>=0,R=0.99)</figcaption>
+    <div class="heatmap">
+      <table class="heatmap-table" id="heatmap-rho">
+        <!-- Generated by JS -->
+      </table>
+      <div class="heatmap-legend">
+        <span><span class="swatch" style="background:#9FB888"></span>&lt; 0.95</span>
+        <span><span class="swatch" style="background:#C5D6AF"></span>0.95 – 1.00</span>
+        <span><span class="swatch" style="background:#E8D5A8"></span>1.00 – 1.10</span>
+        <span><span class="swatch" style="background:#E0B89C"></span>1.10 – 1.20</span>
+        <span><span class="swatch" style="background:#C68870"></span>&gt; 1.20</span>
+      </div>
+    </div>
+    <div class="note">沿对角线观察:即使 P 较低,只要 <span class="lc">ρ</span> 足够小,仍可落在绿色区——这是路径 B(AI 报告质量提升)的价值所在。当 <span class="lc">ρ</span> ≤ 0.25 时,几乎所有 P 都能达标;当 <span class="lc">ρ</span> ≥ 0.35 时,P 必须 ≥ 0.85 才能勉强达成。FP 同时反映"白看"成本:P 越高 FP 越小,医生白看的报告越少。两条路径互为兜底:模型不行就靠 AI 质量,AI 质量不行就靠模型精度。</div>
+  </figure>
+
+  <h3 class="sub-title">关键阈值</h3>
+  <p>固定其他参数为中等,看每个单一变量需要达到的最低值才能使 AHT ≤ 1.0。</p>
+
+  <table>
+    <thead><tr><th>独立优化此参数(其他不变)</th><th class="num">达成阈值</th><th class="num">对应推导 FP</th><th>可达性评估</th></tr></thead>
+    <tbody>
+      <tr><td><strong>P</strong> 单独优化</td><td class="num">≥ 0.83</td><td class="num">≤ 0.061</td><td>需算法迭代,可达。FP 由 P 推导,P↑ 则 FP↓</td></tr>
+      <tr class="highlight"><td><strong>r₂</strong> 单独优化</td><td class="num">≤ 0.18</td><td class="num">—</td><td>需医生信任 + 责任结构调整;FP 不变(由 P、ρ 决定)</td></tr>
+      <tr><td><strong>r₄</strong> 单独优化</td><td class="num">≤ 0.55</td><td class="num">—</td><td>S1-S4 难以独立达成,需 S5(AI 报告质量)同步推进或补 P0-2</td></tr>
+      <tr><td><strong>r₃</strong> 单独优化</td><td class="num">单独无法达成</td><td class="num">—</td><td>影响幅度太小</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:var(--ink-faint);font-style:italic;margin-top:6px">FP 推导前提:中等情景下 ρ=0.30、R=0.99。FP = ρ × R × (1−P) / P,与 P 单调反相关。</p>
+
+  <div class="callout">
+    <div class="callout-label">敏感性分析的核心结论</div>
+    <p>任何单一参数都无法独立推动达成,必须 P 和 r₂ 同时落在乐观区间。这意味着<strong>项目的真正风险不在算法(P 可控),而在工程落地后的医生行为变化(r₂)</strong>——这是技术-人因混合问题。</p>
+  </div>
+</section>
+
+<!-- ============ §05 BLOCKERS ============ -->
+<section>
+  <h2 class="section-title"><span class="num">§ 05</span>可能的卡点</h2>
+  <div class="section-sub">数学上五方案在乐观参数下可达 1.0 min,但落地路径上有六个关键卡点必须前置处理。按落地难度从高到低排序,每个卡点都附缓解机制。</div>
+
+  <div class="blocker-grid">
+
+    <div class="blocker-card severity-high">
+      <div class="blocker-tag">
+        <span>BLOCKER · 01 · 文化</span>
+        <span class="severity high">HIGH</span>
+      </div>
+      <h4>医生信任建立(r₂ 这一参数)</h4>
+      <p>r₂ 是整个系统最脆弱的参数——医生敢不敢真的跳过对正常条目的核查,取决于他在心理上信任 S1 多深。这件事不能靠说服,只能靠经验性证据。</p>
+      <p><strong>影响</strong>:r₂ > 0.30 时系统数学上无法达到 1.0 min。最大的工程风险所在。</p>
+      <div class="mitigation">
+        <strong>缓解机制</strong>
+        影子运行 4–8 周展示 S1 零误差记录;在审阅 UI 上显性化"S1 已认证 X 项"标记;同步推进责任结构调整作为制度兜底。三件事必须同步,缺一不可。
+      </div>
+    </div>
+
+    <div class="blocker-card severity-high">
+      <div class="blocker-tag">
+        <span>BLOCKER · 02 · 政治</span>
+        <span class="severity high">HIGH</span>
+      </div>
+      <h4>责任结构调整</h4>
+      <p>医生敢跳过核查不只是信任 AI,更需要在制度上明确"出了事不只是我担责"。这需要医务部、合规部、法务部联合出文件,明确"按协议操作 + 系统监控合格"前提下的责任归属。</p>
+      <p><strong>影响</strong>:制度未调整,即使 S1 完美,r₂ 永远压不下去——这是文化卡点的制度基础。</p>
+      <div class="mitigation">
+        <strong>缓解机制</strong>
+        项目立项时同步启动跨部门沟通;以 S2 高置信 + S4 分级 + 关键发现白名单作为完整合规框架;先以"批量确认"形式过渡(医生看列表统一签字),让责任在形式上仍保留。
+      </div>
+    </div>
+
+    <div class="blocker-card severity-medium">
+      <div class="blocker-tag">
+        <span>BLOCKER · 03 · 监管</span>
+        <span class="severity medium">MEDIUM</span>
+      </div>
+      <h4>合规对"模型跳过总审"的接受度</h4>
+      <p>S2 高置信跳过总审在医疗场景的合规可接受性,需要前置论证。即使技术上有 99% 召回率 + 关键发现白名单双重保护,合规部门可能仍要求"每份报告必须经医生眼"。</p>
+      <p><strong>影响</strong>:如不接受,α 无法实现 → 总审 AHT 直接回落到 1.4+ min。</p>
+      <div class="mitigation">
+        <strong>缓解机制</strong>
+        前置法务沟通,准备完整安全数据;以"批量确认"作为过渡形态——医生不逐份审阅,而看 10–20 份的列表统一签字,在法律意义上仍保留"医生过眼"。
+      </div>
+    </div>
+
+    <div class="blocker-card severity-medium">
+      <div class="blocker-tag">
+        <span>BLOCKER · 04 · 技术</span>
+        <span class="severity medium">MEDIUM</span>
+      </div>
+      <h4>S2 模型精确率不及预期</h4>
+      <p>首版 S2 模型实际精确率可能低于建模假设的 0.75。如果只能做到 0.60–0.65,跳过比例 α 从 49% 缩水到 36%,会让加权 AHT 上升 0.10–0.15 min。</p>
+      <p><strong>影响</strong>:模型表现可控但有不确定性,需要预留兜底空间。</p>
+      <div class="mitigation">
+        <strong>缓解机制</strong>
+        影子运行 4–8 周实测精确率,达不到 0.70 时启动算法迭代或补 P0-2 工具优化作为兜底;不能纸面假设 P 值。
+      </div>
+    </div>
+
+    <div class="blocker-card severity-medium">
+      <div class="blocker-tag">
+        <span>BLOCKER · 05 · 流程</span>
+        <span class="severity medium">MEDIUM</span>
+      </div>
+      <h4>终审承接能力不足</h4>
+      <p>S2 跳过 50%+ 报告直送终审 + S1/S3 核查后置到终审,会让终审工作量显著增加。如果 S4 释放比例 μ 不够,违反硬约束 α·δ·(1−μ) + FN·κ_FN·(1−μ) ≤ 0.20,终审会成为新瓶颈。</p>
+      <p><strong>影响</strong>:违反"终审 AHT 增幅 ≤ 10%"的硬约束,瓶颈从总审转移到终审。</p>
+      <div class="mitigation">
+        <strong>缓解机制</strong>
+        S2 和 S4 必须同期上线,不能错峰;基于历史一致率精细化分级单审规则,争取 μ ≥ 0.5;终审工具同步优化,把 δ 控制在 0.7 以下。
+      </div>
+    </div>
+
+    <div class="blocker-card severity-low">
+      <div class="blocker-tag">
+        <span>BLOCKER · 06 · AI 生成</span>
+        <span class="severity low">LOW</span>
+      </div>
+      <h4>r₄ 改判操作无直接攻击</h4>
+      <p>S1/S2/S3/S4 工作流方案未直接攻击改判操作时间。r₄ 只能依靠 S5(AI 生成质量提升)带来的改判项数下降而间接降低。如果 S5 不同步推进,r₄ 维持 1.0。</p>
+      <p><strong>影响</strong>:r₄ 维持 1.0 时,总审 AHT 上升约 0.06 min,临界达成变临界未达。</p>
+      <div class="mitigation">
+        <strong>缓解机制</strong>
+        AI 生成模型纳入持续迭代;如生成质量提升不显著,补 P0-2 工具优化(前端 1 人月)直接攻击 w₄。这是相对低风险的"加 0.10 min 安全边界"动作。
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout">
+    <div class="callout-label">最终判断</div>
+    <p>数学上答案是 <strong>yes</strong>——五方案在乐观参数下(P ≥ 0.80, r₂ ≤ 0.15, ρ ≤ 0.25)可达成 1.0 min 目标,且有 0.05–0.10 min 余量。但<strong>工程上的不确定性主要不在数学,而在文化、政治、监管三件事是否同步推进</strong>。前两个卡点(医生信任、责任结构)的难度,可能比加 P0-2 或 P1-2 更高。如果对落地速度有较强要求,补 P0-2(1 人月成本)给系统加一个 0.10 min 安全边界,把"卡线 0.99"变成"稳健 0.85",仍然是性价比很高的选择。最终判断权在决策者。</p>
+  </div>
+</section>
+
+<!-- COLOPHON -->
+<div class="colophon">
+  <span>AHT Quantitative Model · F-05</span>
+  <span>Interactive v1</span>
+</div>
+
+</div>
+
+<script>
+// === CORE COMPUTATION ===
+const TARGET = 1.0;
+const T_TERMINAL_BASE = 2.0;
+// 级联模型常数(R/P → FN/α → 终审 AHT 的传导系数)
+const KAPPA_FN = 1.5;        // 漏判改判单份成本 — 终审兜底要做整套改判,额外 ≈1.5 min
+const TERM_CONSTRAINT = 0.20; // 硬约束:终审 AHT 增量 ≤ 0.20 min(≈ +10%)
+// δ 现重新定义为"每份 S1/S2 后置报告(α 通道)的额外耗时";
+// δ 对终审 AHT 的贡献 = α · δ · (1−μ),自然吸收了原 α 增量项,无需 α_ref/κ_α。
+
+const PRESETS = {
+  conservative: { rho:0.386, R:0.99, P:0.65, r2:1.00, r3:1.00, r5:1.00, mu:0.30, delta:2.45 },
+  medium:       { rho:0.30,  R:0.99, P:0.75, r2:0.00, r3:0.00, r5:0.85, mu:0.50, delta:1.20 },
+  optimistic:   { rho:0.20,  R:0.97, P:0.85, r2:0.00, r3:0.00, r5:0.70, mu:0.70, delta:0.50 },
+  reset:        { rho:0.30,  R:0.99, P:0.75, r2:0.00, r3:0.00, r5:0.85, mu:0.50, delta:1.20 }
+};
+
+function compute(rho, R, P, r2, r3) {
+  const TP = rho * R;
+  const FN = rho * (1 - R);
+  const FP = TP * (1 - P) / P;
+  const TN = Math.max(0, (1 - rho) - FP);
+  
+  const alpha = TN;
+  const beta = Math.max(0, FP);
+  const gamma = TP + FN;
+  
+  // w₁=1.8(阅读+临床判读, 不可压, 此处拆为 1.3+1.0 历史保留), w₂=0.7×r₂(异常核对), w₃=0.5×r₃(一致性), w₄=0.5(改判操作, 此版本内嵌为固定项)
+  const tC = 1.3 + 0.7 * r2 + 0.5 * r3 + 1.0;
+  // W1'=0.5(浏览+签字), W2'=0.3(扫异常项), W3'=0.2(扫一致性)
+  const tB = 0.5 + 0.3 * r2 + 0.2 * r3;
+  
+  const aht = alpha * 0 + beta * tB + gamma * tC;
+  
+  return { alpha, beta, gamma, tC, tB, aht };
+}
+
+function computeTerminal(mu, delta, FN, alpha) {
+  // 级联版(v2):δ 定义为"每份 S1/S2 后置报告(α 通道)的额外耗时"
+  //   δ 对终审 AHT 的贡献 = α · δ · (1−μ),α 自然吸收了原"α 增量"项
+  //   FN 漏判改判 = FN · κ_FN · (1−μ),独立路径
+  FN = FN == null ? 0 : FN;
+  alpha = alpha == null ? 0 : alpha;
+  const releaseFactor = 1 - mu;
+  const delta_contrib = alpha * delta * releaseFactor;
+  const fn_contrib = FN * KAPPA_FN * releaseFactor;
+  const extra = delta_contrib + fn_contrib;
+  const tFinal = T_TERMINAL_BASE + extra;
+  const increase = extra / T_TERMINAL_BASE;
+  return { tFinal, increase, extra, delta_contrib, fn_contrib };
+}
+
+// === UI UPDATE ===
+function getParam(id) {
+  return parseFloat(document.getElementById(id + '-slider').value);
+}
+
+function setParam(id, val) {
+  document.getElementById(id + '-slider').value = val;
+  document.getElementById(id + '-val').textContent = val.toFixed(2);
+  // Sync r2/r3 when either is set
+  if (id === 'r2') { document.getElementById('r3-slider').value = val; document.getElementById('r3-val').textContent = val.toFixed(2); }
+  if (id === 'r3') { document.getElementById('r2-slider').value = val; document.getElementById('r2-val').textContent = val.toFixed(2); }
+}
+
+function updateDisplay() {
+  const rho = getParam('rho');
+  const R = getParam('R');
+  const P = getParam('P');
+  const r2 = getParam('r2');
+  const r3 = getParam('r3');
+  const mu = getParam('mu');
+  const delta = getParam('delta');
+
+  document.getElementById('rho-val').textContent = rho.toFixed(2);
+  document.getElementById('R-val').textContent = R.toFixed(2);
+  document.getElementById('P-val').textContent = P.toFixed(2);
+  document.getElementById('r2-val').textContent = r2.toFixed(2);
+  document.getElementById('r3-val').textContent = r3.toFixed(2);
+  document.getElementById('mu-val').textContent = mu.toFixed(2);
+  document.getElementById('delta-val').textContent = delta.toFixed(2);
+
+  const r = compute(rho, R, P, r2, r3);
+  const FN = rho * (1 - R);
+  const t = computeTerminal(mu, delta, FN, r.alpha);
+
+  document.getElementById('alpha-val').textContent = r.alpha.toFixed(3);
+  document.getElementById('beta-val').textContent = r.beta.toFixed(3);
+  document.getElementById('gamma-val').textContent = r.gamma.toFixed(3);
+  document.getElementById('tC-val').textContent = r.tC.toFixed(2) + ' min';
+  document.getElementById('tB-val').textContent = r.tB.toFixed(2) + ' min';
+
+  // FP readout under P slider (FP = β = ρ × R × (1−P)/P)
+  const fpEl = document.getElementById('P-fp-readout');
+  if (fpEl) fpEl.textContent = r.beta.toFixed(3) + '  (' + (r.beta*100).toFixed(1) + '%)';
+
+  // FN readout under R slider (FN = ρ × (1−R))
+  const fnEl = document.getElementById('R-fn-readout');
+  if (fnEl) fnEl.textContent = FN.toFixed(3) + '  (' + (FN*100).toFixed(1) + '%)';
+
+  // 终审 AHT 增量 readout under δ slider(硬约束 ≤ 0.20)
+  const dmEl = document.getElementById('delta-mu-readout');
+  if (dmEl) {
+    const ok = t.extra <= TERM_CONSTRAINT;
+    dmEl.textContent = t.extra.toFixed(2) + ' min  ' + (ok ? '✓ 满足' : '✗ 违反');
+    dmEl.style.color = ok ? 'var(--success)' : 'var(--data)';
+  }
+
+  // Bars
+  document.getElementById('alpha-bar').style.width = (r.alpha * 100) + '%';
+  document.getElementById('beta-bar').style.width = (r.beta * 100) + '%';
+  document.getElementById('gamma-bar').style.width = (r.gamma * 100) + '%';
+
+  // AHT main
+  document.getElementById('aht-val').textContent = r.aht.toFixed(2);
+  updateSidebar(r);
+  const ahtStatus = document.getElementById('aht-status');
+  if (r.aht <= 0.95) {
+    ahtStatus.textContent = '✓ 稳健达成';
+    ahtStatus.className = 'status success';
+  } else if (r.aht <= 1.00) {
+    ahtStatus.textContent = '✓ 临界达成';
+    ahtStatus.className = 'status warn';
+  } else if (r.aht <= 1.10) {
+    ahtStatus.textContent = '~ 临界未达';
+    ahtStatus.className = 'status warn';
+  } else {
+    ahtStatus.textContent = '✗ 未达';
+    ahtStatus.className = 'status fail';
+  }
+
+  // Terminal check
+  document.getElementById('term-val').textContent = t.tFinal.toFixed(2);
+  const termStatus = document.getElementById('term-status');
+  const incPct = (t.increase * 100).toFixed(0);
+  if (t.increase <= 0.10) {
+    termStatus.textContent = '+' + incPct + '% ✓';
+    termStatus.className = 'status ok';
+  } else {
+    termStatus.textContent = '+' + incPct + '% ✗';
+    termStatus.className = 'status bad';
+  }
+}
+
+function applyPreset(name) {
+  const p = PRESETS[name];
+  setParam('rho', p.rho);
+  setParam('R', p.R);
+  setParam('P', p.P);
+  setParam('r2', p.r2);
+  setParam('r3', p.r3);
+  setParam('mu', p.mu);
+  setParam('delta', p.delta);
+  
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  if (name !== 'reset') {
+    event.target.classList.add('active');
+  }
+  
+  updateDisplay();
+}
+
+// === HEATMAP · P × ρ (含 FP 子值) ===
+function buildHeatmapRho() {
+  const table = document.getElementById('heatmap-rho');
+  if (!table) return;
+  const Pvalues = [0.65, 0.70, 0.75, 0.80, 0.85, 0.90];
+  const rhoValues = [0.15, 0.20, 0.25, 0.30, 0.35, 0.40];
+  const R = 0.99;
+
+  let html = '<tr><td class="row-header"></td>';
+  rhoValues.forEach(rho => {
+    html += `<td class="header">ρ=${rho.toFixed(2)}</td>`;
+  });
+  html += '</tr>';
+
+  Pvalues.forEach(P => {
+    html += `<tr><td class="row-header">P=${P.toFixed(2)}</td>`;
+    rhoValues.forEach(rho => {
+      // 固定 r₂=r₃=0(信任 S1),R=0.99
+      const result = compute(rho, R, P, 0, 0);
+      const aht = result.aht;
+      const FP = result.beta; // β = FP
+      let cls;
+      if (aht < 0.95) cls = 'cell-success';
+      else if (aht < 1.00) cls = 'cell-good';
+      else if (aht < 1.10) cls = 'cell-warn';
+      else if (aht < 1.20) cls = 'cell-bad';
+      else cls = 'cell-fail';
+      const tip = `P=${P.toFixed(2)}, ρ=${rho.toFixed(2)} → AHT ${aht.toFixed(2)} min, FP ${FP.toFixed(3)}(白看比例 ${(FP*100).toFixed(1)}%)`;
+      html += `<td class="${cls}" title="${tip}"><span class="aht">${aht.toFixed(2)}</span><span class="fp">FP ${FP.toFixed(3)}</span></td>`;
+    });
+    html += '</tr>';
+  });
+
+  table.innerHTML = html;
+}
+
+// === INIT ===
+
+// Sidebar toggle
+function toggleSidebar(side) {
+  const el = document.getElementById('sidebar-' + side);
+  el.classList.toggle('collapsed');
+  const btn = el.querySelector('.sidebar-toggle');
+  if (side === 'left') btn.textContent = el.classList.contains('collapsed') ? '▶' : '◀';
+  else btn.textContent = el.classList.contains('collapsed') ? '◀' : '▶';
+}
+
+// Meta param handlers
+['mw1','mw2','mw3','mw4','mw1p','mw2p','mw3p'].forEach(id => {
+  const el = document.getElementById(id + '-slider');
+  if (el) {
+    el.addEventListener('input', function() {
+      document.getElementById(id + '-val').textContent = parseFloat(this.value).toFixed(1);
+      updateDisplay();
+    });
+  }
+});
+
+// Update sidebar live values
+function updateSidebar(r) {
+  const ids = {
+    'sb-tc': r.tC.toFixed(2), 'sb-tb': r.tB.toFixed(2),
+    'sb-aht': r.aht.toFixed(2)
+  };
+  for (const [id, val] of Object.entries(ids)) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+  // Update w values display
+  const gm = id => { const el = document.getElementById(id); return el ? parseFloat(el.value) : null; };
+  const setV = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  setV('sb-w1', (gm('mw1-slider')||1.8).toFixed(2));
+  setV('sb-w2', (gm('mw2-slider')||0.7).toFixed(2));
+  setV('sb-w3', (gm('mw3-slider')||0.5).toFixed(2));
+  setV('sb-w4', (gm('mw4-slider')||0.5).toFixed(2));
+  setV('sb-w1p', (gm('mw1p-slider')||0.5).toFixed(2));
+  setV('sb-w2p', (gm('mw2p-slider')||0.3).toFixed(2));
+  setV('sb-w3p', (gm('mw3p-slider')||0.2).toFixed(2));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  ['rho', 'R', 'P', 'r2', 'r3', 'mu', 'delta'].forEach(id => {
+    const el = document.getElementById(id + '-slider');
+    if (el) el.addEventListener('input', updateDisplay);
+  });
+  // Sync r2/r3
+  document.getElementById('r2-slider').addEventListener('input',function(){
+    document.getElementById('r3-slider').value=this.value;
+    document.getElementById('r3-val').textContent=parseFloat(this.value).toFixed(2);
+  });
+  document.getElementById('r3-slider').addEventListener('input',function(){
+    document.getElementById('r2-slider').value=this.value;
+    document.getElementById('r2-val').textContent=parseFloat(this.value).toFixed(2);
+  });
+  buildHeatmapRho();
+  updateDisplay();
+
+// Link r2 and r3 sliders
+document.getElementById('r2-slider').addEventListener('input', function() {
+  document.getElementById('r3-slider').value = this.value;
+  document.getElementById('r3-val').textContent = parseFloat(this.value).toFixed(2);
+  updateDisplay();
+});
+document.getElementById('r3-slider').addEventListener('input', function() {
+  document.getElementById('r2-slider').value = this.value;
+  document.getElementById('r2-val').textContent = parseFloat(this.value).toFixed(2);
+  updateDisplay();
+});
+
+});
+</script>
+
+
+
+<!-- LEFT SIDEBAR: Flow Summary -->
+<div class="sidebar left" id="sidebar-left">
+  <button class="sidebar-toggle" onclick="toggleSidebar('left')" title="收起/展开">◀</button>
+  <div class="sidebar-header">流程概览</div>
+  <div class="sidebar-body">
+    <div class="mini-section">
+      <div class="mini-title">审核流程</div>
+      <svg viewBox="0 0 250 700" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+        <defs><marker id="sa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L7 4L0 8z" fill="#2A2118"/></marker><marker id="sa2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L5 3L0 6z" fill="#8B4513"/></marker></defs>
+        <g transform="translate(25,8)">
+          <!-- 分科检查 -->
+          <rect x="0" y="0" width="200" height="36" fill="#2A2118" rx="0"/>
+          <text x="100" y="16" font-family="sans-serif" font-size="10" fill="#F2EBDD" text-anchor="middle" font-weight="500">分科检查</text>
+          <text x="100" y="30" font-family="serif" font-size="9" fill="#F2EBDD" text-anchor="middle" font-style="italic">分科医生填写</text>
+          <line x1="100" y1="36" x2="100" y2="50" stroke="#2A2118" stroke-width="1" marker-end="url(#sa)"/>
+
+          <!-- 初审+S1 -->
+          <rect x="0" y="52" width="200" height="60" fill="#FBF7EF" stroke="#2A2118" stroke-width="0.8"/>
+          <text x="100" y="68" font-family="sans-serif" font-size="10" fill="#2A2118" text-anchor="middle" font-weight="600">初审 · 护士</text>
+          <line x1="14" y1="74" x2="186" y2="74" stroke="#C9BBA1" stroke-width="0.5"/>
+          <text x="100" y="88" font-family="sans-serif" font-size="9" fill="#8B4513" text-anchor="middle" font-weight="500">+ S1 AI 初审助手</text>
+          <text x="100" y="100" font-family="serif" font-size="8.5" fill="#5C4A3A" text-anchor="middle" font-style="italic">一致性核查 · 漏标核查</text>
+
+          <!-- S3反馈箭头(直线虚线,初审·护士 → 分科检查 向上) -->
+          <line x1="210" y1="82" x2="210" y2="22" stroke="#8B4513" stroke-width="0.8" stroke-dasharray="3,2" marker-end="url(#sa2)"/>
+          <text x="214" y="56" font-family="monospace" font-size="7.5" fill="#8B4513">S3 反馈</text>
+
+          <line x1="100" y1="112" x2="100" y2="126" stroke="#2A2118" stroke-width="1" marker-end="url(#sa)"/>
+
+          <!-- AI 报告生成 -->
+          <rect x="0" y="128" width="200" height="36" fill="#2A2118" rx="0"/>
+          <text x="100" y="144" font-family="sans-serif" font-size="10" fill="#F2EBDD" text-anchor="middle" font-weight="500">AI 报告生成</text>
+          <text x="100" y="158" font-family="serif" font-size="9" fill="#F2EBDD" text-anchor="middle" font-style="italic">月 28,706 份</text>
+          <line x1="100" y1="164" x2="100" y2="178" stroke="#2A2118" stroke-width="1" marker-end="url(#sa)"/>
+
+          <!-- S2改判预测模型 -->
+          <rect x="0" y="180" width="200" height="60" fill="#FBF7EF" stroke="#8B4513" stroke-width="1.2"/>
+          <text x="100" y="196" font-family="monospace" font-size="9" fill="#8B4513" text-anchor="middle" font-weight="600" letter-spacing="0.5">S2 · 改判预测模型</text>
+          <line x1="14" y1="202" x2="186" y2="202" stroke="#C9BBA1" stroke-width="0.5"/>
+          <text x="75" y="218" font-family="serif" font-size="10" fill="#2A2118" font-style="italic">精确率 =</text>
+          <text x="138" y="218" font-family="monospace" font-size="13" fill="#9B2D1F" font-weight="700">P</text>
+          <text x="100" y="232" font-family="sans-serif" font-size="8" fill="#5C4A3A" text-anchor="middle">召回率 ≥ 99% · 关键发现白名单</text>
+
+          <!-- α/β/γ -->
+          <line x1="40" y1="240" x2="40" y2="262" stroke="#5A7048" stroke-width="0.8" marker-end="url(#sa)"/>
+          <line x1="100" y1="240" x2="100" y2="262" stroke="#A66D2F" stroke-width="0.8" marker-end="url(#sa)"/>
+          <line x1="160" y1="240" x2="160" y2="262" stroke="#9B2D1F" stroke-width="0.8" marker-end="url(#sa)"/>
+          <text x="32" y="256" font-family="monospace" font-size="10" fill="#5A7048" font-weight="600">α</text>
+          <text x="92" y="256" font-family="monospace" font-size="10" fill="#A66D2F" font-weight="600">β</text>
+          <text x="152" y="256" font-family="monospace" font-size="10" fill="#9B2D1F" font-weight="600">γ</text>
+
+          <!-- 三路 -->
+          <rect x="0" y="264" width="60" height="42" fill="#E6EDDD" stroke="#5A7048" stroke-width="0.8"/>
+          <text x="30" y="278" font-family="sans-serif" font-size="8.5" fill="#2A2118" text-anchor="middle" font-weight="500">跳过总审</text>
+          <text x="30" y="290" font-family="serif" font-size="8" fill="#5C4A3A" text-anchor="middle" font-style="italic">直送终审</text>
+          <text x="30" y="302" font-family="monospace" font-size="9" fill="#5A7048" text-anchor="middle" font-weight="600">0 min</text>
+          <rect x="68" y="264" width="64" height="42" fill="#FBF1DC" stroke="#A66D2F" stroke-width="0.8"/>
+          <text x="100" y="278" font-family="sans-serif" font-size="8.5" fill="#2A2118" text-anchor="middle" font-weight="500">快速确认</text>
+          <text x="100" y="290" font-family="serif" font-size="8" fill="#5C4A3A" text-anchor="middle" font-style="italic">医生通过</text>
+          <text x="100" y="302" font-family="monospace" font-size="9" fill="#A66D2F" text-anchor="middle" font-weight="600">t_B</text>
+          <rect x="140" y="264" width="60" height="42" fill="#F0DCD3" stroke="#9B2D1F" stroke-width="0.8"/>
+          <text x="170" y="278" font-family="sans-serif" font-size="8.5" fill="#2A2118" text-anchor="middle" font-weight="500">改判处理</text>
+          <text x="170" y="290" font-family="serif" font-size="8" fill="#5C4A3A" text-anchor="middle" font-style="italic">医生修改</text>
+          <text x="170" y="302" font-family="monospace" font-size="9" fill="#9B2D1F" text-anchor="middle" font-weight="600">t_C</text>
+
+          <!-- 汇聚 -->
+          <line x1="30" y1="306" x2="30" y2="326" stroke="#2A2118" stroke-width="0.6"/>
+          <line x1="100" y1="306" x2="100" y2="326" stroke="#2A2118" stroke-width="0.6"/>
+          <line x1="170" y1="306" x2="170" y2="326" stroke="#2A2118" stroke-width="0.6"/>
+          <line x1="30" y1="326" x2="170" y2="326" stroke="#2A2118" stroke-width="0.8"/>
+          <line x1="100" y1="326" x2="100" y2="342" stroke="#2A2118" stroke-width="1" marker-end="url(#sa)"/>
+
+          <!-- S4 终审分级单审 -->
+          <rect x="0" y="344" width="200" height="52" fill="#FBF7EF" stroke="#8B4513" stroke-width="1.2"/>
+          <text x="100" y="360" font-family="monospace" font-size="9" fill="#8B4513" text-anchor="middle" font-weight="600" letter-spacing="0.5">S4 · 终审分级单审</text>
+          <line x1="14" y1="366" x2="186" y2="366" stroke="#C9BBA1" stroke-width="0.5"/>
+          <text x="70" y="382" font-family="serif" font-size="10" fill="#2A2118" font-style="italic">释放比例 =</text>
+          <text x="150" y="382" font-family="monospace" font-size="13" fill="#9B2D1F" font-weight="700">μ</text>
+          <text x="100" y="394" font-family="sans-serif" font-size="8" fill="#5C4A3A" text-anchor="middle">低风险报告单审 · 核查兜底</text>
+
+          <line x1="100" y1="396" x2="100" y2="412" stroke="#2A2118" stroke-width="1" marker-end="url(#sa)"/>
+
+          <!-- 终审·医生审核 -->
+          <rect x="0" y="414" width="200" height="34" fill="#F5EDDD" stroke="#2A2118" stroke-width="0.8"/>
+          <text x="100" y="428" font-family="sans-serif" font-size="10" fill="#2A2118" text-anchor="middle" font-weight="500">终审 · 医生审核</text>
+          <text x="100" y="442" font-family="serif" font-size="8.5" fill="#5C4A3A" text-anchor="middle" font-style="italic">核查兜底 + 签字确认</text>
+
+          <line x1="100" y1="448" x2="100" y2="462" stroke="#2A2118" stroke-width="1" marker-end="url(#sa)"/>
+
+          <!-- 签发 -->
+          <rect x="0" y="464" width="200" height="24" fill="#2A2118"/>
+          <text x="100" y="480" font-family="sans-serif" font-size="10" fill="#F2EBDD" text-anchor="middle">签发给用户</text>
+        </g>
+      </svg>
+    </div>
+    <div class="mini-section">
+      <div class="mini-title">五方案</div>
+      <div class="mini-row"><span class="sym">S1</span><span>AI 初审助手 → r₂, r₃</span></div>
+      <div class="mini-row"><span class="sym">S2</span><span>改判预测模型 → P → α</span></div>
+      <div class="mini-row"><span class="sym">S3</span><span>初审质量反馈 → r₂, r₃ 下限</span></div>
+      <div class="mini-row"><span class="sym">S4</span><span>终审分级单审 → μ, δ</span></div>
+      <div class="mini-row"><span class="sym">S5</span><span>AI 报告质量优化 → ρ, r₄</span></div>
+    </div>
+    <div class="mini-section">
+      <div class="mini-title">两条路径</div>
+      <div class="mini-row"><span>A</span><span>S1/S2/S3/S4 · 降 t_C 与分流</span></div>
+      <div class="mini-row"><span>B</span><span>S5 · 降 ρ 和 r₄</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT SIDEBAR: t_C / t_B breakdown + live values -->
+<div class="sidebar right" id="sidebar-right">
+  <button class="sidebar-toggle" onclick="toggleSidebar('right')" title="收起/展开">▶</button>
+  <div class="sidebar-header">参数实时值</div>
+  <div class="sidebar-body">
+    <div class="mini-section">
+      <div class="mini-title">t_C 工作分解(改判)</div>
+      <div class="mini-row"><span class="sym">w₁</span><span>阅读+临床</span><span class="val" id="sb-w1">1.80</span></div>
+      <div class="mini-row"><span class="sym">w₂</span><span>异常核对 ×r₂</span><span class="val" id="sb-w2">0.70</span></div>
+      <div class="mini-row"><span class="sym">w₃</span><span>一致性 ×r₃</span><span class="val" id="sb-w3">0.50</span></div>
+      <div class="mini-row"><span class="sym">w₄</span><span>改判操作 ×r₄</span><span class="val" id="sb-w4">0.50</span></div>
+      <div class="mini-formula">t_C = w₁ + r₂·w₂ + r₃·w₃ + r₄·w₄<br/>= <span id="sb-tc">3.50</span> min</div>
+    </div>
+    <div class="mini-section">
+      <div class="mini-title">t_B 工作分解(快速确认)</div>
+      <div class="mini-row"><span class="sym">w₁'</span><span>浏览确认</span><span class="val" id="sb-w1p">0.50</span></div>
+      <div class="mini-row"><span class="sym">w₂'</span><span>扫异常 ×r₂</span><span class="val" id="sb-w2p">0.30</span></div>
+      <div class="mini-row"><span class="sym">w₃'</span><span>扫一致性 ×r₃</span><span class="val" id="sb-w3p">0.20</span></div>
+      <div class="mini-formula">t_B = w₁' + r₂·w₂' + r₃·w₃'<br/>= <span id="sb-tb">1.00</span> min</div>
+    </div>
+    <div class="mini-section">
+      <div class="mini-title">核心公式</div>
+      <div class="mini-formula">AHT = α·0 + β·t_B + γ·t_C<br/>= <span id="sb-aht" style="color:var(--data);font-weight:600">—</span> min</div>
+    </div>
+    <div class="mini-section">
+      <div class="mini-title">关键约束</div>
+      <div class="mini-row"><span>r₂=r₃</span><span>联动,0或1</span></div>
+      <div class="mini-row"><span>核查</span><span>总审/终审至少一次</span></div>
+      <div class="mini-row"><span>终审</span><span>δ(1−μ) ≤ 0.2</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="confusion-modal" onclick="if(event.target===this)closeModal(this.id)">
+  <div class="modal-box">
+    <div class="modal-header"><span>混淆矩阵到 α/β/γ 的推导</span><button class="modal-close" onclick="closeModal('confusion-modal')">×</button></div>
+    <div class="modal-body">
+      <h5>问题背景</h5>
+      <p>S2 改判预测模型对每份 AI 报告做一次二分类预测:这份报告医生<strong>会改判</strong> vs <strong>不会改判</strong>。预测结果决定:报告是否要进入总审环节、医生在总审里的工作量预期、是否能直送终审。</p>
+      <p>所有 28,706 份报告按"医生实际是否会改判"和"模型是否预测会改判"两个维度,可分为 2×2 = 4 类——这就是机器学习中的<strong>混淆矩阵</strong>(Confusion Matrix)。理解这四类的分布,是理解 α/β/γ 三种处理方式占比的关键。</p>
+
+      <h5>2×2 混淆矩阵 · 直观对照</h5>
+      <p>把所有报告按"实际 × 预测"的真值四象限填入下表:</p>
+      <table style="margin:10px 0">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="center">预测:会改判</th>
+            <th class="center">预测:不会改判</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label"><strong>实际:会改判</strong></td>
+            <td class="center"><strong style="color:var(--success)">TP</strong> 真阳<br/><span style="font-size:11.5px;color:var(--ink-soft);font-style:italic">模型猜中了</span></td>
+            <td class="center"><strong style="color:var(--data)">FN</strong> 假阴<br/><span style="font-size:11.5px;color:var(--data);font-style:italic">漏判(临床风险)</span></td>
+          </tr>
+          <tr>
+            <td class="label"><strong>实际:不会改判</strong></td>
+            <td class="center"><strong style="color:var(--warn)">FP</strong> 假阳<br/><span style="font-size:11.5px;color:var(--ink-soft);font-style:italic">误报(增加审核量)</span></td>
+            <td class="center"><strong style="color:var(--success)">TN</strong> 真阴<br/><span style="font-size:11.5px;color:var(--ink-soft);font-style:italic">正确放行</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h5>四个量的计算</h5>
+      <p>用三个参数 ρ(实际改判率)、R(召回率)、P(精确率)可完整推出四个量:</p>
+      <div class="math">TP = ρ × R<br/>FN = ρ × (1 − R)<br/>FP = TP × (1 − P) / P<br/>TN = (1 − ρ) − FP</div>
+      <p style="font-size:12.5px;color:var(--ink-soft)">直观理解:实际改判的报告占比为 ρ,其中 R 比例被模型识别(TP),剩下 (1−R) 漏掉(FN)。模型的精确率 P 定义为"预测会改判中真的会改判的比例",反推出 FP = TP×(1−P)/P。最后剩余的就是 TN。</p>
+
+      <h5>三类报告的业务归宿</h5>
+      <p><strong style="color:var(--success)">TN(真阴)→ α 跳过总审 · 0 min</strong></p>
+      <p>模型高置信判定"不会改判"且实际也不会改的报告,直送终审。<em>这是 S2 模型创造价值的核心</em>——把"显然不会改"的报告从总审挪走,把医生时间释放给真正需要审的报告。这部分总审耗时为 0。</p>
+
+      <p><strong style="color:var(--warn)">FP(假阳)→ β 快速确认 · t_B</strong></p>
+      <p>模型预测"会改判"但实际不会改。医生进入总审,扫一眼后快速通过。这是模型精度不够带来的"白看"工作,耗时 t_B ≈ 0.5–1.0 min。<em>P 越高,FP 越小,白看越少。</em></p>
+
+      <p><strong style="color:var(--data)">TP + FN(≈ ρ)→ γ 改判处理 · t_C</strong></p>
+      <p>所有实际需要改判的报告——无论模型是否预测对,都必须进入医生改判流程。这部分耗时 t_C ≈ 2.5–3.5 min。<em>γ 的总额由 AI 报告质量(ρ)决定,模型再准也改不了 γ。</em></p>
+
+      <h5>汇总公式</h5>
+      <div class="math">α = TN → 跳过总审<br/>β = FP → 快速确认<br/>γ = TP + FN ≈ ρ → 改判处理<br/><br/>α + β + γ = 1</div>
+
+      <h5>三个非直觉的关键洞察</h5>
+      <p><strong>① γ ≈ ρ,与 P 无关。</strong>这是建模中最反直觉的结论。S2 模型本身减少不了改判量,只决定改判量的处理方式(精准识别 vs 误报)。要降低 γ,必须从源头——AI 报告质量(S3,降低 ρ)着手,而不是优化 S2。</p>
+      <p><strong>② P 只决定 α 和 β 的分配。</strong>P 升高意味着 FP 缩小,β 收缩,把原本"白看"的报告挪到 α(跳过总审)。但 (α + β) 之和(即"实际不会改的报告"总占比 = 1 − ρ)是固定的。</p>
+      <p><strong>③ R 是临床安全底线,不可低。</strong>FN 是漏判——模型放过了实际会改的报告,直送终审,终审若也漏掉就是事故。R ≥ 99% 即漏判率 ≤ 1%。R 一旦低于 0.95,5% 的真改判被漏掉,临床上完全不可接受。这就是为什么把 R 设为<strong>硬约束</strong>而不是可调参数。</p>
+
+      <h5>一个数值示例</h5>
+      <p>取 ρ=0.30, R=0.99, P=0.75:</p>
+      <div class="math">TP = 0.30 × 0.99 = 0.297<br/>FN = 0.30 × 0.01 = 0.003<br/>FP = 0.297 × 0.25 / 0.75 = 0.099<br/>TN = (1 − 0.30) − 0.099 = 0.601<br/><br/>α = 0.601(60.1% 跳过总审)<br/>β = 0.099(9.9% 快速确认)<br/>γ = 0.300(30.0% 改判处理)</div>
+      <p>含义:每 100 份报告,60 份不用医生看,10 份扫一眼通过,30 份真改判。总审 AHT = 0×0 + 0.099×t_B + 0.30×t_C。</p>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="calc-modal" onclick="if(event.target===this)closeModal(this.id)">
+  <div class="modal-box">
+    <div class="modal-header"><span>AHT 计算过程</span><button class="modal-close" onclick="closeModal('calc-modal')">×</button></div>
+    <div class="modal-body" id="calc-modal-body"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="terminal-modal" onclick="if(event.target===this)closeModal(this.id)">
+  <div class="modal-box">
+    <div class="modal-header"><span>终审 AHT · 级联推导分解</span><button class="modal-close" onclick="closeModal('terminal-modal')">×</button></div>
+    <div class="modal-body" id="terminal-modal-body"></div>
+  </div>
+</div>
+
+<script>
+function openModal(id){
+  document.getElementById(id).classList.add('active');
+  document.body.style.overflow='hidden';
+  if(id==='calc-modal') fillCalcModal();
+  if(id==='terminal-modal') fillTerminalModal();
+}
+function closeModal(id){document.getElementById(id).classList.remove('active');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.active').forEach(m=>{m.classList.remove('active');document.body.style.overflow='';});});
+
+function fillCalcModal(){
+  const rho=getParam('rho'),R=getParam('R'),P=getParam('P'),r2=getParam('r2'),r3=getParam('r3');
+  const mu=getParam('mu'),delta=getParam('delta');
+  const r=compute(rho,R,P,r2,r3);
+  const FN=rho*(1-R);
+  const t=computeTerminal(mu,delta,FN,r.alpha);
+  const status=r.aht<=0.95?'稳健达成':r.aht<=1.0?'临界达成':r.aht<=1.10?'临界未达':'未达';
+  document.getElementById('calc-modal-body').innerHTML=`
+    <h5>当前参数</h5>
+    <div class="math">ρ=${rho.toFixed(2)}, R=${R.toFixed(2)}, P=${P.toFixed(2)}, r₂=${r2}, r₃=${r3}, μ=${mu.toFixed(2)}, δ=${delta.toFixed(2)}</div>
+    <h5>分流计算</h5>
+    <div class="math">TP=ρ×R=${(rho*R).toFixed(3)}, FN=ρ×(1−R)=${FN.toFixed(4)}<br/>FP=TP×(1−P)/P=${r.beta.toFixed(3)}, TN=(1−ρ)−FP=${r.alpha.toFixed(3)}<br/><br/><strong>α=${r.alpha.toFixed(3)}(${(r.alpha*100).toFixed(1)}%), β=${r.beta.toFixed(3)}(${(r.beta*100).toFixed(1)}%), γ=${r.gamma.toFixed(3)}(${(r.gamma*100).toFixed(1)}%)</strong></div>
+    <h5>通道内处理时间</h5>
+    <div class="math">t_C=1.3+${r2}×0.7+${r3}×0.5+1.0=<strong>${r.tC.toFixed(2)} min</strong><br/>t_B=0.5+${r2}×0.3+${r3}×0.2=<strong>${r.tB.toFixed(2)} min</strong></div>
+    <h5>加权计算</h5>
+    <div class="math">AHT=α×0+β×t_B+γ×t_C<br/>=${r.alpha.toFixed(3)}×0+${r.beta.toFixed(3)}×${r.tB.toFixed(2)}+${r.gamma.toFixed(3)}×${r.tC.toFixed(2)}<br/>=0+${(r.beta*r.tB).toFixed(3)}+${(r.gamma*r.tC).toFixed(3)}<br/>=<strong style="color:${r.aht<=1.0?'var(--success)':'var(--data)'}">${r.aht.toFixed(2)} min · ${status}</strong></div>
+    <h5>终审 AHT(级联版,详见"终审 AHT"点击)</h5>
+    <div class="math">终审 AHT = 2.0 + α × δ × (1−μ) + FN × κ_FN × (1−μ)<br/>= 2.0 + ${r.alpha.toFixed(3)} × ${delta.toFixed(2)} × ${(1-mu).toFixed(2)} + ${FN.toFixed(4)} × ${KAPPA_FN} × ${(1-mu).toFixed(2)}<br/>= 2.0 + ${t.delta_contrib.toFixed(3)} + ${t.fn_contrib.toFixed(3)}<br/>= <strong>${t.tFinal.toFixed(2)} min</strong> · 增量 ${t.extra.toFixed(2)} min(+${(t.increase*100).toFixed(0)}%) · ${t.extra<=TERM_CONSTRAINT?'<span style="color:var(--success)">✓ 满足</span>':'<span style="color:var(--data)">✗ 违反</span>'}硬约束</div>`;
+}
+
+function fillTerminalModal(){
+  const rho=getParam('rho'),R=getParam('R'),P=getParam('P');
+  const mu=getParam('mu'),delta=getParam('delta');
+  const r=compute(rho,R,P,getParam('r2'),getParam('r3'));
+  const FN=rho*(1-R);
+  const t=computeTerminal(mu,delta,FN,r.alpha);
+  const ok = t.extra<=TERM_CONSTRAINT;
+  const statusHTML = ok
+    ? '<span style="color:var(--success);font-weight:600">✓ 满足硬约束(≤ 0.20 min,+10%)</span>'
+    : '<span style="color:var(--data);font-weight:600">✗ 违反硬约束(增量 > 0.20 min)</span>';
+  document.getElementById('terminal-modal-body').innerHTML=`
+    <h5>模型升级 · 级联版(v2)</h5>
+    <p>终审 AHT 不再只依赖 δ 和 μ。R 与 P 通过 FN(漏判)和 α(跳过总审,即 S1/S2 后置报告)两条路径,显式地传导到终审环节。拖动 R/P 时,终审 AHT 会同步变化。</p>
+    <p>δ 已重新定义为"<strong>每份 S1/S2 后置报告</strong>的额外耗时",而不是"均摊到全部报告的单份增量"。这样业务上更直观——可以直接按"终审处理一份未经总审过眼的报告需多花几分钟"来预估。</p>
+
+    <h5>推导式</h5>
+    <div class="math">终审 AHT = 2.0(基线) + α × δ × (1−μ) + FN × κ_FN × (1−μ)</div>
+
+    <h5>当前参数代入</h5>
+    <div class="math">ρ=${rho.toFixed(2)}, R=${R.toFixed(2)}, P=${P.toFixed(2)}, μ=${mu.toFixed(2)}, δ=${delta.toFixed(2)}<br/>α = TN = ${r.alpha.toFixed(3)}(S1/S2 后置报告占全部报告的比例)<br/>FN = ρ × (1−R) = ${FN.toFixed(4)}(漏判占全部报告的比例)</div>
+
+    <h5>分项计算</h5>
+    <div class="math">
+    ① 基线 = <strong>2.0 min</strong>(每份过终审报告的审阅 + 签字)<br/><br/>
+    ② 后处理负担 = α × δ × (1−μ) = ${r.alpha.toFixed(3)} × ${delta.toFixed(2)} × ${(1-mu).toFixed(2)} = <strong>${t.delta_contrib.toFixed(3)} min</strong><br/>
+    &nbsp;&nbsp;(α 份后置报告 × δ min/份,再按 (1−μ) 释放比例折算到终审 AHT)<br/><br/>
+    ③ FN 漏判负担 = FN × κ_FN × (1−μ) = ${FN.toFixed(4)} × ${KAPPA_FN} × ${(1-mu).toFixed(2)} = <strong>${t.fn_contrib.toFixed(3)} min</strong><br/>
+    &nbsp;&nbsp;(每份漏判额外做整套改判,κ_FN ≈ t_C − 2.0 ≈ 1.5 min)<br/><br/>
+    <strong>终审 AHT = 2.0 + ${t.delta_contrib.toFixed(3)} + ${t.fn_contrib.toFixed(3)} = ${t.tFinal.toFixed(2)} min</strong><br/>
+    <strong>终审 AHT 增量 = ${t.extra.toFixed(2)} min(+${(t.increase*100).toFixed(0)}%)</strong><br/>
+    ${statusHTML}
+    </div>
+
+    <h5>各参数的意义</h5>
+    <p><strong>δ · 后处理报告单份增量</strong>(min/份):<em>每份 S1/S2 后置报告</em>(α 通道,跳过总审直送终审)因承接 S1/S2 后置工作而额外耗费的 min 数。这是面向"具体一份后置报告"的单份耗时,业务上可直接按"终审处理一份未经总审过眼的报告需多花几分钟"来评估。与 P/R 无关,由 S1 设计和终审工具效率决定。</p>
+    <p><strong>μ · 终审释放比例</strong>(0–1):低风险报告由总审单审通过、不进终审的比例。(1−μ) 决定上述所有负担实际有多少落到终审。μ 越大,终审压力越小。</p>
+    <p><strong>α · 跳过总审比例</strong> = TN:S2 高置信"不会改判"的报告占全部报告的比例,也是 S1/S2 后置报告占全部报告的比例。α 在公式里同时充当"后置报告的份数权重"。P↑ → α↑ → 后置报告增多 → 终审负担↑。</p>
+    <p><strong>FN · 漏判率</strong> = ρ × (1−R):S2 应识别为"会改判"却漏掉的报告占比。这些报告也走 α 通道直送终审,终审必须发现并完成整套改判。R↓ → FN↑ → 终审负担↑。</p>
+    <p><strong>κ_FN = ${KAPPA_FN}</strong>:每份漏判的额外改判成本(min)。终审发现漏判后要做完整的临床判断 + 改判操作,约等于 t_C 减去基础审阅时间。</p>
+
+    <h5>两条级联路径回顾</h5>
+    <p><strong>路径 1 · R → FN → 终审</strong>:R 降低 → 漏判增加 → 终审做改判 → FN 项 +</p>
+    <p><strong>路径 2 · P → α → 终审</strong>:P 提高 → α 增加 → 后置报告增多 → α·δ 项 +(注意:P 提升对总审有利,但对终审是新增负担,需 S4 释放 μ 来对冲。这条路径自然包含了"α 暴增"的影响,无需独立 α 增量项)</p>
+
+    <p style="font-size:12px;color:var(--ink-faint);font-style:italic;margin-top:14px">注:δ、κ_FN 的取值是基于业务直觉的工程近似,实际部署前应通过影子运行回测校准。原模型中的 α_excess/κ_α 已被"α·δ"自然吸收,无需独立参数。</p>`;
+}
+</script>
+
+</body>
+</html>
