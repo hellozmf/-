@@ -576,6 +576,18 @@ ul.clean li::before{
 /* preserve lowercase for parameter names against text-transform:uppercase parents */
 .lc{text-transform:none !important}
 
+/* "?" helper icon next to 混淆矩阵 mentions */
+.cm-helper{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:15px;height:15px;margin-left:4px;
+  border:1px solid var(--accent);border-radius:50%;
+  font-family:var(--mono);font-size:9.5px;font-weight:600;font-style:normal;
+  color:var(--accent);background:var(--paper);
+  cursor:pointer;vertical-align:middle;text-transform:none;letter-spacing:0;
+  line-height:1;transition:all 0.15s;
+}
+.cm-helper:hover{background:var(--accent);color:var(--paper)}
+
 /* heatmap cell two-line layout */
 .heatmap-table td .aht{display:block;font-size:11.5px;font-weight:500;line-height:1.1}
 .heatmap-table td .fp{display:block;font-size:9px;font-weight:400;opacity:0.7;line-height:1.1;margin-top:2px;letter-spacing:0}
@@ -690,288 +702,97 @@ ul.clean li::before{
 <header class="masthead">
   <div class="eyebrow">
     <span>F-05</span><span class="dot"></span>
-    <span>QUANTITATIVE MODEL</span><span class="dot"></span>
-    <span>INTERACTIVE ANALYSIS</span>
+    <span>SOLUTION ANALYSIS</span><span class="dot"></span>
+    <span>CROSS-TEAM ALIGNMENT</span>
   </div>
-  <h1 class="title">总审 AHT 参数化建模</h1>
+  <h1 class="title">总审 + 终审 AHT · 解法分析与策略建议</h1>
   <p class="deck">
-    把"能否达成 1 分钟"这一定性问题,转化为
-    <em>可验算、可调参、可压力测试</em>的工程问题——
-    用混淆矩阵推导分流比例,用工作分解拆 AHT 内部,用敏感性分析识别真正脆弱的依赖。
+    把"<em>总审 + 终审都做到 1 分钟</em>"从研究模型转化为<em>可推动的工程任务清单</em>——
+    回答三件事:差距在哪里、哪些杠杆能动、谁负责什么。
   </p>
   <div class="meta">
-    <span><strong>Baseline</strong>2.00 min</span>
-    <span><strong>Target</strong>1.00 min</span>
-    <span><strong>方案</strong>S1 / S2 / S3 / S4 / S5</span>
-    <span><strong>Status</strong>Model v1</span>
+    <span><strong>总审 Target</strong>≤ 1.00 min(近期)</span>
+    <span><strong>终审 Target</strong>≤ 1.00 min(长期)</span>
+    <span><strong>临床硬约束</strong>R ≥ 0.99 / R' ≥ 0.995</span>
+    <span><strong>跨部门 owner</strong>5</span>
+    <span><strong>Status</strong>Strategy v1</span>
   </div>
 </header>
 
-<!-- ============ §00 ABSTRACT ============ -->
+<!-- ============ §00 摘要 · SOLUTION OVERVIEW ============ -->
 <section>
-  <h2 class="section-title"><span class="num">§ 00</span>汇总摘要</h2>
-  <div class="section-sub">用业务语言理解问题,用数学语言计算可达边界,用交互工具压力测试参数,用卡点清单评估落地难度。</div>
+  <h2 class="section-title"><span class="num">§ 00</span>摘要 · 一句话结论</h2>
+  <div class="section-sub">一页可读完的解法总览。完整流程图见下方,详细验算与交互工具见附录 A–B。</div>
 
   <table class="abstract-table">
     <tr>
-      <td>叙事主线</td>
-      <td>五方案攻击不同时间块且彼此耦合,在乐观参数下数学上可达 1.0 min;但<span class="mark-strong">真正的不确定性在工程落地——医生信任建立、责任结构调整、合规接受度</span>这三件事的推进速度,决定项目能否如期达成。</td>
-    </tr>
-    <tr>
-      <td>五方案命名</td>
-      <td><strong>S1</strong> AI 初审助手 ｜ <strong>S2</strong> 改判预测模型 ｜ <strong>S3</strong> 初审质量反馈机制 ｜ <strong>S4</strong> 终审分级单审制 ｜ <strong>S5</strong> AI 报告质量优化(路径 B)</td>
-    </tr>
-    <tr>
-      <td>建模核心</td>
-      <td>总审 AHT = α·0 + β·t<span class="sub">B</span> + γ·t<span class="sub">C</span>。α、β、γ 由 S2 混淆矩阵推导,t<span class="sub">C</span>、t<span class="sub">B</span> 由工作分解参数化,六个关键参数共同决定结果。</td>
-    </tr>
-    <tr>
-      <td>三情景结论</td>
+      <td>目标</td>
       <td>
-        保守(ρ=0.386):<span class="num-data">1.25 min</span> · 未达 ✗ &nbsp;｜&nbsp;
-        中等(ρ=0.30):<span class="num-success">0.82 min</span> · 达成 ✓ &nbsp;｜&nbsp;
-        乐观(ρ=0.20):<span class="num-success">0.47 min</span> · 充分达成 ✓✓
+        <strong>近期</strong>:总审 AHT 从 BI 实测 2.0 min → ≤ 1.0 min<br/>
+        <strong>长期</strong>:终审 AHT 从 BI 实测 2.1 min → ≤ 1.0 min(双 1 min)<br/>
+        <strong>全流程 AHT</strong>(总审 + 终审,同口径分母)≤ 2.0 min
       </td>
     </tr>
     <tr>
-      <td>最关键参数</td>
-      <td><strong>ρ</strong>(AI 报告改判率,影响幅度最大)——ρ 从 0.386 降到 0.20 时,AHT 从 1.25 降到 0.47,比其他任何参数的影响都更显著。其次是 <strong>r₂</strong>(医生对 S1 的信任度)和 <strong>P</strong>(S2 精确率)。</td>
+      <td>约束</td>
+      <td><strong>临床安全硬约束</strong>:总审召回率 R ≥ 0.99(漏判率 ≤ 1%),终审召回率 R' ≥ 0.995(漏判率 ≤ 0.5%,纯质控,无下游兜底)。两者均不可妥协。</td>
     </tr>
     <tr>
-      <td>文档导览</td>
-      <td><strong>§01</strong> 业务问题分析(融合建模,左右对照)→ <strong>§02</strong> 整体方案流程图 → <strong>§03</strong> 三情景案例分析 → <strong>§04</strong> 交互式敏感性分析 → <strong>§05</strong> 可能的卡点。所有参数名称悬停可见业务意义、推荐值、卡点。</td>
+      <td>核心论断</td>
+      <td>
+        <strong>"再加几个工作流方案"不能达成双 1 min</strong>。原因:r₂/r₃ 在互补保护下让"核查工作总量守恒",只是位置转移,不是消除(详见 §01 守恒律证据)。<br/>
+        要真正下降全流程 AHT,必须 <strong>三类杠杆同时推</strong>——见 §02。
+      </td>
+    </tr>
+    <tr>
+      <td>三类杠杆</td>
+      <td>
+        ① <strong>位置杠杆</strong> r₂/r₃:核查在总审还是终审做(总量守恒)<br/>
+        ② <strong>总量杠杆</strong> ρ / ρ':从源头/终审 AI 减少需要改判的报告总数<br/>
+        ③ <strong>双审消除杠杆</strong> P / P':模型精度,消除模型误差导致的无谓双审
+      </td>
+    </tr>
+    <tr>
+      <td>三阶段路线</td>
+      <td>
+        <strong>阶段 1</strong>:推 P/P' 到 0.85+ + r₂/r₃ 互补落地 → 总审 1 min 临界达成<br/>
+        <strong>阶段 2</strong>:S5 降 ρ 到 0.25 以下 + S4 终审改判预测模型上线 → 总审稳健达成<br/>
+        <strong>阶段 3</strong>:终审 AI 辅助降 ρ' + 责任结构调整 → 双 1 min 长期可达
+      </td>
+    </tr>
+    <tr>
+      <td>跨部门 Owner</td>
+      <td>
+        <strong>5 个团队缺一不可</strong>:算法 / AI 报告产品 / 终审产品 / 合规法务 / 临床培训。详细 ask + KPI 见 §04。
+      </td>
+    </tr>
+    <tr>
+      <td>主要风险</td>
+      <td>
+        <strong>HIGH</strong>:医生信任建立(文化)+ 责任结构调整(政治)— 不是技术问题,推进难度最高<br/>
+        <strong>MEDIUM</strong>:合规接受度 + S2/S4' 模型精度兑现 + 终审承接能力<br/>
+        <strong>LOW</strong>:AI 报告质量自然迭代(r₄ 间接下降)<br/>
+        详见 §05,每个风险关联具体 owner。
+      </td>
+    </tr>
+    <tr>
+      <td>文档结构</td>
+      <td>
+        §01 当前差距 vs 目标 → §02 三类杠杆 · 本质区别 → §03 三阶段路线图 → §04 跨部门协作矩阵 → §05 风险与卡点。
+        附录 A 详细建模(混淆矩阵<span class="cm-helper" onclick="openConfusionModal('total')" title="点击查看双 tab 详解">?</span> + r₂/r₃ 互补保护 + 终审镜像)/ B 流程图 / C 三情景验算 / D 交互工具。
+      </td>
     </tr>
   </table>
 </section>
 
-<!-- ============ §01 BUSINESS ANALYSIS + MODELING ============ -->
+<!-- ============ 整体方案流程图 · 解法总览 ============ -->
 <section>
-  <h2 class="section-title"><span class="num">§ 01</span>业务问题分析</h2>
-  <div class="section-sub">左侧用业务语言描述每个判断,右侧给出对应的参数化表达。读完整节,业务上清楚"问题结构是什么、五个方案各自解决哪部分";数学上得到完整的可计算模型。</div>
-
-  <!-- 1.1 -->
-  <div class="bizmodel-section">
-    <div class="bizmodel-title"><span class="num">§ 1.1</span>报告按处理方式分为三类 · 占比记为 α、β、γ</div>
-    <div class="bizmodel-grid">
-      <div class="biz-side">
-        <div class="col-label">业务语言<span class="tag">BUSINESS</span></div>
-        <p>当一份 AI 报告生成后,在总审环节只会出现三种处理方式:</p>
-        <ul class="clean">
-          <li><strong>S2 模型高置信判定为"医生不会改判"</strong>,直接跳过总审,送到终审。这部分报告的总审用时为 <strong>0</strong>。</li>
-          <li><strong>进入总审,医生快速确认通过</strong>(模型判定需审但实际不需改判)。约 0.5–1 分钟。</li>
-          <li><strong>进入总审,医生做改判处理</strong>。当前基线 3.5 分钟。</li>
-        </ul>
-        <p>总审 AHT 是这三类报告耗时的加权平均。<span class="biz-emph">问题转化为:三类各占多少,每类处理多久。</span></p>
-      </div>
-      <div class="model-side">
-        <div class="col-label">建模表示<span class="tag">MODEL</span></div>
-        <p>三类报告的占比记为 α、β、γ:</p>
-        <div class="math">
-          AHT = α·0 + β·t<span class="sub">B</span> + γ·t<span class="sub">C</span><br/>
-          <span class="math-strong">α + β + γ = 1</span>
-        </div>
-        <p>三类各占多少,由 S2 模型的精确率(P)和 AI 报告质量(ρ)共同决定。每类处理多久,由后续模块逐步展开。</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 1.2 -->
-  <div class="bizmodel-section">
-    <div class="bizmodel-title"><span class="num">§ 1.2</span>改判类占比 γ 受 AI 报告质量直接影响 · S2 精确率只影响分流不影响 γ</div>
-    <div class="bizmodel-grid">
-      <div class="biz-side">
-        <div class="col-label">业务语言<span class="tag">BUSINESS</span></div>
-        <p>改判类报告的占比 γ 由一个关键变量决定:<span class="biz-emph">AI 报告中实际需要医生改判的比例(ρ)</span>。当前 ρ = 38.6%,对应首检通过率 61.4%。</p>
-        <p>降低总审 AHT 有两条路径,需要区分清楚:</p>
-        <ul class="clean">
-          <li><strong>路径 A · S2 模型分流</strong> — S2 识别"不需要改判"的报告让它们跳过总审。S2 精度(P)提高会增大 α、减小 β,<strong>但 γ 不变</strong>——S2 做的是预测,不是减少。</li>
-          <li><strong>路径 B · AI 报告质量提升</strong> — 通过提示词优化等工作提升 AI 报告的生成质量,直接降低 ρ(实际需要改判的报告比例)。ρ 从 0.386 降到 0.20(首检通过率提升到 80%)时,<strong>γ 直接减半</strong>。同时 AI 报告质量提升还会降低每份报告的改判操作时间——报告中错误越少,医生需要改的项目越少。</li>
-        </ul>
-        <p>路径 B 的效果非常显著:ρ 从 0.386 降到 0.20 后,即使不做任何工作流优化,t<span class="sub">C</span> 的约束上限就从 2.56 min 放宽到 5.05 min(远超当前基线 3.5 min)——达成 1.0 min 变得从容得多。</p>
-        <p>两条路径可以同时推进,效果叠加。<span class="biz-emph">路径 B 即 S5 · AI 报告质量优化,独立于 S1/S2/S3/S4 工作流改造,需要单独跟踪。</span></p>
-      </div>
-      <div class="model-side">
-        <div class="col-label">建模表示<span class="tag">MODEL</span></div>
-        <p>ρ 不是常数,是 AI 报告质量的函数:</p>
-        <div class="math">
-          γ = ρ × R ≈ ρ × 0.99 ≈ <span class="math-strong">ρ</span>
-        </div>
-        <p>两条路径的参数效应:</p>
-        <div class="math">
-          路径 A: P ↑ → α ↑, β ↓, γ 不变<br/>
-          路径 B: AI 质量 ↑ → ρ ↓ → γ ↓
-        </div>
-        <p>不同 ρ 下的 γ 和 t<span class="sub">C</span> 约束:</p>
-        <table style="margin:8px 0">
-          <thead><tr><th class="num">ρ</th><th class="num">通过率</th><th class="num">γ</th><th class="num">t<span class="sub">C</span> 上限</th><th>宽松度</th></tr></thead>
-          <tbody>
-            <tr class="fail"><td class="num">0.386</td><td class="num">61.4%</td><td class="num">0.386</td><td class="num">2.56</td><td style="color:var(--data)">紧</td></tr>
-            <tr><td class="num">0.30</td><td class="num">70%</td><td class="num">0.300</td><td class="num">3.33</td><td>中等</td></tr>
-            <tr class="success"><td class="num">0.20</td><td class="num">80%</td><td class="num">0.198</td><td class="num">5.05</td><td style="color:var(--success)">宽松</td></tr>
-          </tbody>
-        </table>
-        <div class="modal-trigger" onclick="openModal('confusion-modal')">展开:混淆矩阵到 α/β/γ 的完整推导</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 1.3 -->
-  <div class="bizmodel-section">
-    <div class="bizmodel-title"><span class="num">§ 1.3</span>改判报告的 3.5 分钟由五项工作构成 · 其中 1.8 分钟不可压缩</div>
-    <div class="bizmodel-grid">
-      <div class="biz-side">
-        <div class="col-label">业务语言<span class="tag">BUSINESS</span></div>
-        <p>一份需要改判的报告,医生实际做了五件事:</p>
-        <ul class="clean">
-          <li><strong>阅读理解报告内容</strong> · 约 0.8 分 · 临床必需,无法省略</li>
-          <li><strong>核对 AI 标注的异常项</strong> · 约 0.7 分 · S1 上线后可部分替代</li>
-          <li><strong>检查分科结论一致性</strong> · 约 0.5 分 · S1 + S3 可替代大部分</li>
-          <li><strong>做临床判断并决定改什么</strong> · 约 1.0 分 · 临床核心,不可压缩</li>
-          <li><strong>执行改判操作(编辑、签字)</strong> · 约 0.5 分 · AI 生成质量提升后改判项数减少,此项耗时随之下降</li>
-        </ul>
-        <p>其中阅读(0.8)和临床判断(1.0)共 <span class="biz-emph">1.8 分钟,是医生必须做的工作</span>。剩下 1.7 分钟分布在异常核对、一致性检查、改判操作上。这三项可以通过 S1 核查前移、终审兜底、AI 生成质量提升来压缩。</p>
-      </div>
-      <div class="model-side">
-        <div class="col-label">建模表示<span class="tag">MODEL</span></div>
-        <p>t<span class="sub">C</span> 拆为四项("阅读理解与临床判读"合并为 w₁,不再单列 w₄):</p>
-        <div class="math">
-          t<span class="sub">C</span> = w<span class="sub">1</span> + r₂·w<span class="sub">2</span> + r₃·w<span class="sub">3</span> + r₄·w<span class="sub">4</span>
-        </div>
-        <p>基线值(对应当前 3.5 min):</p>
-        <div class="math">
-          w<span class="sub">1</span>=1.8 阅读+临床判读 · 不可压<br/>
-          w<span class="sub">2</span>=0.7 异常核对 · 系数 r₂<br/>
-          w<span class="sub">3</span>=0.5 一致性 · 系数 r₃<br/>
-          w<span class="sub">4</span>=0.5 改判操作 · 系数 r₄
-        </div>
-        <p>同理,β 类(快速确认)的 t<span class="sub">B</span>:</p>
-        <div class="math">
-          t<span class="sub">B</span> = w<span class="sub">1</span>' + r₂·w<span class="sub">2</span>' + r₃·w<span class="sub">3</span>'
-        </div>
-        <div class="math">
-          w<span class="sub">1</span>'=0.5 浏览确认(不需要深读)<br/>
-          w<span class="sub">2</span>'=0.3 扫一眼异常项 · 系数 r₂<br/>
-          w<span class="sub">3</span>'=0.2 扫一眼一致性 · 系数 r₃<br/>
-          基线 = 0.5+0.3+0.2 = 1.0 min
-        </div>
-        <p><span class="math-strong">约束:r₂ 与 r₃ 必须联动(同为 0 或同为 1)</span>——要么医生信任 S1 的核查输出、系统隐藏正常条目(r₂=r₃=0),要么不信任、医生仍然要看所有分科结果(r₂=r₃=1)。没有"信任异常核对但不信任一致性"的中间状态。</p>
-        <p>另一个关键约束:<span class="math-strong">异常核对和一致性检查必须在总审或终审中至少被执行一次</span>。如果总审跳过(r₂=r₃=0),终审必须兜底;如果终审不做,总审必须做(r₂=r₃=1)。这保证了临床安全不被牺牲。</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 1.4 -->
-  <div class="bizmodel-section">
-    <div class="bizmodel-title"><span class="num">§ 1.4</span>五个方案分别作用于不同时间段 · 且彼此依赖</div>
-    <div class="bizmodel-grid">
-      <div class="biz-side">
-        <div class="col-label">业务语言<span class="tag">BUSINESS</span></div>
-        <p>五个方案各自解决改判报告 3.5 分钟中不同的部分:</p>
-        <ul class="clean">
-          <li><strong>S1 AI 初审助手</strong> · 让 AI 先完成异常核对和一致性检查,医生不需重复做。降低异常核对(r₂)和一致性检查(r₃)的工作量。</li>
-          <li><strong>S2 改判预测模型</strong> · 识别"医生不会改判"的高置信报告,跳过总审直送终审。决定 α(跳过比例)的大小。</li>
-          <li><strong>S3 初审质量反馈</strong> · 通过数据推动分院初审质量改善,让 S1 的核查输出更可靠,使医生更有理由信任 S1、进一步降低 r₂ 和 r₃。</li>
-          <li><strong>S4 终审分级单审</strong> · 释放终审在低风险报告上的产能,承接 S2 跳过部分和 S1/S3 后置的核查工作。同时通过分级制度为医生提供责任结构支撑。</li>
-          <li><strong>S5 AI 报告质量优化(路径 B)</strong> · 通过提示词优化、AI 模型迭代直接降低 AI 报告的实际改判率 ρ,从源头削减 γ 占比;同时减少改判项数,间接降低 r₄。独立于 S1-S4 工作流改造,但效果可叠加。</li>
-        </ul>
-        <p>S1-S4 之间有明确的依赖关系:S2 跳过的报告需要 S4 终审承接;S1 的可信度需要 S3 的质量兜底;S1 后置核查到终审,需要 S4 释放终审产能;医生信任 S1 跳过核查,需要 S4 的责任结构作为制度基础。S5 是独立的源头优化路径——不依赖工作流改造,但效果与 S1-S4 叠加。<span class="biz-emph">缺少 S1-S4 任何一个,工作流方案效果会显著下降;缺少 S5,只是慢一些到达目标。</span></p>
-      </div>
-      <div class="model-side">
-        <div class="col-label">建模表示<span class="tag">MODEL</span></div>
-        <p>方案到参数的映射:</p>
-        <div class="math">
-          S1 → r<span class="sub">2</span>、r<span class="sub">3</span> 可以降低<br/>
-          S2 → P → α 增大<br/>
-          S3 → r<span class="sub">2</span>、r<span class="sub">3</span> 的可降低下限<br/>
-          S4 → μ、δ<br/>
-          S5 → ρ 降低、r<span class="sub">4</span> 降低(路径 B)
-        </div>
-        <p>依赖关系对应:</p>
-        <div class="math">
-          缺 S4 → S2 跳过的报告终审无法承接<br/>
-          缺 S3 → r<span class="sub">2</span> 无法压到 0.3 以下<br/>
-          缺 S1 → t<span class="sub">C</span> 维持 3.5,γ×t<span class="sub">C</span>=1.35<br/>
-          缺 S4 → 无责任结构,r<span class="sub">2</span> 也压不下来<br/>
-          缺 S5 → ρ 维持 0.386,γ 无法从源头压缩
-        </div>
-        <p>任何一个参数失守,整体 AHT 会回到 1.2+ min。</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 1.5 -->
-  <div class="bizmodel-section">
-    <div class="bizmodel-title"><span class="num">§ 1.5</span>将核查后置到终审兜底 · r₂ 和 r₃ 可压至 0.1 · 达成 1.0 min 的关键前提</div>
-    <div class="bizmodel-grid">
-      <div class="biz-side">
-        <div class="col-label">业务语言<span class="tag">BUSINESS</span></div>
-        <p>从 §1.3 可知,不可压缩的部分(阅读 + 临床判断)对 AHT 的贡献是 1.8 × 0.386 = 0.69 分钟,已经占走了 1 分钟预算的 70%。剩下 0.31 分钟要覆盖异常核对、一致性检查、改判操作三件事。</p>
-        <p>要让这三件事在 0.31 分钟内完成,关键在于:把异常核对和一致性检查的职责从总审转移到终审环节——S1 在初审阶段做一遍前置核查,终审做一遍兜底核查,中间总审不再重复做。这不是省略核查,而是把核查的执行位置重新分配到审核链的两端。</p>
-        <p>按这个工作流,总审医生在异常核对和一致性检查上只需做"扫一眼确认 S1 标注存在"的最低限度动作,r₂ 和 r₃ 可以压到 0.1 左右。</p>
-        <p>改判操作时间(r₄)方面,如果 AI 生成模型同步迭代、高频错误模式被源头消除,每份改判报告的平均改动项数会减少。按 AI 迭代 1-2 轮的中等预期,改判操作保留约 85%,即 r₄ = 0.85。</p>
-        <p>但这条路径成立有两个前提:一是医生确实信任 S1 的核查输出(心理层面),二是制度上允许总审跳过核查(责任结构)。<strong>这两件事的推进难度不低于技术本身,是项目的核心风险所在。</strong></p>
-      </div>
-      <div class="model-side">
-        <div class="col-label">建模表示<span class="tag">MODEL</span></div>
-        <p>代入 r<span class="sub">2</span>=r<span class="sub">3</span>=0.1, r<span class="sub">4</span>=0.85, P=0.80:</p>
-        <div class="math">
-          不可压贡献:<br/>
-          γ × w<span class="sub">1</span> = 0.386 × 1.8 = 0.695<br/><br/>
-          可压缩贡献:<br/>
-          γ × (0.1×0.7 + 0.1×0.5 + 0.85×0.5)<br/>
-          &nbsp;&nbsp;= 0.386 × 0.545 = 0.210<br/><br/>
-          β 贡献:<br/>
-          0.10 × 0.55 ≈ 0.055<br/><br/>
-          <span class="math-strong">总审 AHT ≈ 0.96 min ✓</span>
-        </div>
-        <p>r<span class="sub">4</span>=0.85 的依据:AI 迭代 1-2 轮后,高频改判模式减少,平均改动项数从约 3 项降到 2.5 项,操作时间相应压缩 15%。</p>
-        <p>临界达成,余量极小。r<span class="sub">2</span> 和 r<span class="sub">3</span> 能否真的压到 0.1,取决于 §05 讨论的卡点。</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 1.6 -->
-  <div class="bizmodel-section">
-    <div class="bizmodel-title"><span class="num">§ 1.6</span>终审承接约束 · μ 和 δ 决定终审端是否可行</div>
-    <div class="bizmodel-grid">
-      <div class="biz-side">
-        <div class="col-label">业务语言<span class="tag">BUSINESS</span></div>
-        <p>S2 跳过的报告(α 部分)直送终审,S1/S3 后置的核查工作也由终审兜底。这两件事都会增加终审的单份处理时间。</p>
-        <p>S4 终审分级单审制的作用是释放终审在低风险报告上的产能,用来对冲这部分新增负担。释放的比例记为 <strong>μ</strong>:历史上总审-终审一致率 > 99.5% 的报告类型可以改为总审单审通过,不再经过终审。</p>
-        <p>终审单份处理时间的增量记为 <strong>δ</strong>:取决于后置核查的复杂度和终审工具的效率。</p>
-        <p>硬约束:终审 AHT 增幅不超过 10%。<span class="biz-emph">如果 μ 释放不够或 δ 太大,终审会成为新的瓶颈。</span></p>
-      </div>
-      <div class="model-side">
-        <div class="col-label">建模表示<span class="tag">MODEL</span></div>
-        <p>终审 AHT 约束(级联版 v2,显式传导 R/P):</p>
-        <div class="math">
-          t<span class="sub">终审</span> = 2.0 + [α·δ + FN·κ<span class="sub">FN</span>] × (1 − μ)<br/><br/>
-          δ 是"每份 S1/S2 后置报告"的单份增量<br/>
-          α 同时充当"后置报告占比"的权重<br/><br/>
-          路径 1: R↓ → FN↑ → 终审做漏判改判<br/>
-          路径 2: P↑ → α↑ → 后置报告增多 → α·δ 项 ↑<br/><br/>
-          硬约束: 终审 AHT 增量 ≤ 0.2<br/>
-          即: <span class="math-strong">终审 AHT 增幅 ≤ 10%</span><br/><br/>
-          系数: κ<span class="sub">FN</span>=1.5
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="callout">
-    <div class="callout-label">建模完成</div>
-    <p>到这里,六个参数的业务来源、数学定义、方案对应关系、以及彼此之间的依赖结构全部清晰。后续 §02 给出完整流程图,§03 用三组参数代入验证可达边界,§04 提供动态调参工具,§05 列出落地路径上的关键卡点。<strong>业务问题分析完成的同时,参数化建模也完成了。</strong></p>
-  </div>
-</section>
-
-<!-- ============ §02 FLOW DIAGRAM ============ -->
-<section>
-  <h2 class="section-title"><span class="num">§ 02</span>整体方案流程图</h2>
-  <div class="section-sub">从分科医生出结果到签发的完整流程,标注各方案作用点和参数在流程中的位置。</div>
+  <h2 class="section-title"><span class="num" style="font-size:11px;letter-spacing:0.1em">OVERVIEW</span>整体方案流程图 · 解法总览</h2>
+  <div class="section-sub">从分科医生出结果到最终签发的完整流程,标注 5 方案作用点和参数在流程中的精确位置。建议先建立整体架构感,再阅读 §01–§05 的解法分析。</div>
 
   <figure>
     <figcaption>五方案级联作用 · 参数定位</figcaption>
-    <svg viewBox="0 0 880 700" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 880 800" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
           <path d="M 0 0 L 8 5 L 0 10 z" fill="#2A2118"/>
@@ -1015,10 +836,10 @@ ul.clean li::before{
       </g>
       <line x1="120" y1="252" x2="120" y2="274" stroke="#2A2118" stroke-width="1.2" marker-end="url(#arr)"/>
 
-      <!-- Section 4: S2 改判预测模型 -->
+      <!-- Section 4: S2 总审改判预测模型 -->
       <g transform="translate(20, 276)">
         <rect width="200" height="82" fill="#FBF7EF" stroke="#8B4513" stroke-width="1.5"/>
-        <text x="100" y="20" font-family="IBM Plex Mono" font-size="10" fill="#8B4513" text-anchor="middle" font-weight="600" letter-spacing="1">S2 · 改判预测模型</text>
+        <text x="100" y="20" font-family="IBM Plex Mono" font-size="10" fill="#8B4513" text-anchor="middle" font-weight="600" letter-spacing="1">S2 · 总审改判预测模型</text>
         <line x1="14" y1="28" x2="186" y2="28" stroke="#C9BBA1" stroke-width="0.6"/>
         <text x="100" y="44" font-family="EB Garamond" font-style="italic" font-size="11" fill="#2A2118" text-anchor="middle">精确率 = </text>
         <text x="142" y="44" font-family="IBM Plex Mono" font-size="13" fill="#9B2D1F" font-weight="600">P</text>
@@ -1112,34 +933,102 @@ ul.clean li::before{
         <text x="14" y="156" font-family="IBM Plex Mono" font-size="10" fill="#2A2118" font-weight="600">合计 t_C = 3.5 min(基线)</text>
       </g>
 
-      <!-- 终审环节 -->
-      <line x1="60" y1="474" x2="60" y2="506" stroke="#5A7048" stroke-width="1.2" marker-end="url(#arr)"/>
-      <line x1="140" y1="474" x2="140" y2="506" stroke="#A66D2F" stroke-width="1.2" marker-end="url(#arr)"/>
-      <line x1="220" y1="474" x2="220" y2="506" stroke="#9B2D1F" stroke-width="1.2" marker-end="url(#arr)"/>
-      <line x1="60" y1="506" x2="220" y2="506" stroke="#2A2118" stroke-width="1.2"/>
-      <line x1="140" y1="506" x2="140" y2="520" stroke="#2A2118" stroke-width="1.2" marker-end="url(#arr)"/>
+      <!-- α 通道:绕过 S4,直接到终审 · 医生审核(左侧侧线) -->
+      <path d="M 60 474 L 60 488 L 14 488 L 14 741 L 40 741" stroke="#5A7048" stroke-width="1.2" fill="none" marker-end="url(#arr)"/>
+      <text x="20" y="600" font-family="IBM Plex Mono" font-size="8.5" fill="#5A7048" font-weight="600" letter-spacing="1">α</text>
+      <text x="18" y="613" font-family="EB Garamond" font-style="italic" font-size="9" fill="#5A7048">直送</text>
+      <text x="18" y="624" font-family="EB Garamond" font-style="italic" font-size="9" fill="#5A7048">终审</text>
+      <text x="18" y="635" font-family="EB Garamond" font-style="italic" font-size="9" fill="#5A7048">医生</text>
 
-      <!-- S4 终审分级单审 -->
-      <g transform="translate(40, 522)">
+      <!-- β、γ 通道:汇合 → 进 S4 -->
+      <line x1="140" y1="474" x2="140" y2="506" stroke="#A66D2F" stroke-width="1.2"/>
+      <line x1="220" y1="474" x2="220" y2="506" stroke="#9B2D1F" stroke-width="1.2"/>
+      <line x1="140" y1="506" x2="220" y2="506" stroke="#2A2118" stroke-width="1.2"/>
+      <line x1="180" y1="506" x2="180" y2="520" stroke="#2A2118" stroke-width="1.2" marker-end="url(#arr)"/>
+
+      <!-- S4 终审改判预测模型 -->
+      <g transform="translate(80, 522)">
         <rect width="200" height="58" fill="#FBF7EF" stroke="#8B4513" stroke-width="1.5"/>
-        <text x="100" y="18" font-family="IBM Plex Mono" font-size="10" fill="#8B4513" text-anchor="middle" font-weight="600" letter-spacing="1">S4 · 终审分级单审</text>
+        <text x="100" y="18" font-family="IBM Plex Mono" font-size="10" fill="#8B4513" text-anchor="middle" font-weight="600" letter-spacing="1">S4 · 终审改判预测模型</text>
         <line x1="14" y1="26" x2="186" y2="26" stroke="#C9BBA1" stroke-width="0.6"/>
-        <text x="80" y="42" font-family="EB Garamond" font-style="italic" font-size="11" fill="#2A2118">释放比例 =</text>
-        <text x="160" y="42" font-family="IBM Plex Mono" font-size="13" fill="#9B2D1F" font-weight="600">μ</text>
-        <text x="100" y="54" font-family="IBM Plex Sans" font-size="9.5" fill="#5C4A3A" text-anchor="middle">低风险报告单审 · 核查兜底</text>
+        <text x="60" y="42" font-family="EB Garamond" font-style="italic" font-size="11" fill="#2A2118">精确率 =</text>
+        <text x="118" y="42" font-family="IBM Plex Mono" font-size="13" fill="#9B2D1F" font-weight="600">P'</text>
+        <text x="135" y="42" font-family="EB Garamond" font-style="italic" font-size="11" fill="#2A2118">,&nbsp;召回率 =</text>
+        <text x="208" y="42" font-family="IBM Plex Mono" font-size="13" fill="#9B2D1F" font-weight="600">R'</text>
+        <text x="100" y="55" font-family="IBM Plex Sans" font-size="9" fill="#5C4A3A" text-anchor="middle">基于 (β+γ) 的混淆矩阵推出 μ = TN'</text>
       </g>
-      <line x1="140" y1="580" x2="140" y2="592" stroke="#2A2118" stroke-width="1.2" marker-end="url(#arr)"/>
 
-      <!-- 终审(医生) -->
-      <g transform="translate(40, 594)">
-        <rect width="200" height="38" fill="#F5EDDD" stroke="#2A2118" stroke-width="1"/>
-        <text x="100" y="16" font-family="IBM Plex Sans" font-size="11" fill="#2A2118" text-anchor="middle" font-weight="500">终审 · 医生审核</text>
-        <text x="100" y="30" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A" text-anchor="middle">核查兜底 + 签字确认</text>
+      <!-- S4 → 终审三通道分流箭头 -->
+      <line x1="180" y1="580" x2="180" y2="594" stroke="#2A2118" stroke-width="1.2"/>
+
+      <!-- 终审三路分流(α'/β'/γ') -->
+      <g stroke="#2A2118" fill="none">
+        <line x1="80" y1="594" x2="280" y2="594" stroke-width="1.2"/>
+        <line x1="80" y1="594" x2="80" y2="612" stroke-width="1.2" marker-end="url(#arr)"/>
+        <line x1="180" y1="594" x2="180" y2="612" stroke-width="1.2" marker-end="url(#arr)"/>
+        <line x1="280" y1="594" x2="280" y2="612" stroke-width="1.2" marker-end="url(#arr)"/>
       </g>
+
+      <!-- α'/β'/γ' 标签 -->
+      <g font-family="IBM Plex Mono" font-size="11" font-weight="600">
+        <text x="65" y="608" fill="#5A7048">α'</text>
+        <text x="165" y="608" fill="#A66D2F">β'</text>
+        <text x="265" y="608" fill="#9B2D1F">γ'</text>
+      </g>
+
+      <!-- 终审三通道出口框 (α' / β' / γ') · 来自总审 (β+γ) → S4 分流 -->
+      <g transform="translate(0, 614)">
+        <!-- α': 跳过终审 → 直送签发 -->
+        <g transform="translate(40, 0)">
+          <rect width="80" height="60" fill="#E6EDDD" stroke="#5A7048" stroke-width="1.2"/>
+          <text x="40" y="18" font-family="IBM Plex Sans" font-size="10" fill="#2A2118" text-anchor="middle" font-weight="500">跳过终审</text>
+          <text x="40" y="34" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A" text-anchor="middle">直送签发</text>
+          <line x1="14" y1="40" x2="66" y2="40" stroke="#C9BBA1" stroke-width="0.5"/>
+          <text x="40" y="52" font-family="IBM Plex Mono" font-size="11" fill="#5A7048" text-anchor="middle" font-weight="600">0 min</text>
+        </g>
+        <!-- β': 终审一次过 -->
+        <g transform="translate(140, 0)">
+          <rect width="80" height="60" fill="#FBF1DC" stroke="#A66D2F" stroke-width="1.2"/>
+          <text x="40" y="18" font-family="IBM Plex Sans" font-size="10" fill="#2A2118" text-anchor="middle" font-weight="500">终审一次过</text>
+          <text x="40" y="34" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A" text-anchor="middle">医生快速通过</text>
+          <line x1="14" y1="40" x2="66" y2="40" stroke="#C9BBA1" stroke-width="0.5"/>
+          <text x="40" y="52" font-family="IBM Plex Mono" font-size="11" fill="#A66D2F" text-anchor="middle" font-weight="600">t<tspan font-size="8" baseline-shift="-2">B</tspan>'</text>
+        </g>
+        <!-- γ': 终审改判 -->
+        <g transform="translate(240, 0)">
+          <rect width="80" height="60" fill="#F0DCD3" stroke="#9B2D1F" stroke-width="1.2"/>
+          <text x="40" y="18" font-family="IBM Plex Sans" font-size="10" fill="#2A2118" text-anchor="middle" font-weight="500">终审改判</text>
+          <text x="40" y="34" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A" text-anchor="middle">医生修改</text>
+          <line x1="14" y1="40" x2="66" y2="40" stroke="#C9BBA1" stroke-width="0.5"/>
+          <text x="40" y="52" font-family="IBM Plex Mono" font-size="11" fill="#9B2D1F" text-anchor="middle" font-weight="600">t<tspan font-size="8" baseline-shift="-2">C</tspan>'</text>
+        </g>
+      </g>
+
+      <!-- α' 通道:绕过终审医生,直接到签发(右侧侧线) -->
+      <path d="M 80 674 L 80 688 L 450 688 L 450 784 L 310 784" stroke="#5A7048" stroke-width="1.2" fill="none" marker-end="url(#arr)"/>
+      <text x="456" y="720" font-family="IBM Plex Mono" font-size="8.5" fill="#5A7048" font-weight="600" letter-spacing="1">α'</text>
+      <text x="456" y="733" font-family="EB Garamond" font-style="italic" font-size="9" fill="#5A7048">μ 释放</text>
+      <text x="456" y="744" font-family="EB Garamond" font-style="italic" font-size="9" fill="#5A7048">直送</text>
+      <text x="456" y="755" font-family="EB Garamond" font-style="italic" font-size="9" fill="#5A7048">签发</text>
+
+      <!-- β'、γ' 通道:汇合 → 进终审医生 -->
+      <line x1="180" y1="674" x2="180" y2="706" stroke="#A66D2F" stroke-width="1.2"/>
+      <line x1="280" y1="674" x2="280" y2="706" stroke="#9B2D1F" stroke-width="1.2"/>
+      <line x1="180" y1="706" x2="280" y2="706" stroke="#2A2118" stroke-width="1.2"/>
+      <line x1="230" y1="706" x2="230" y2="720" stroke="#2A2118" stroke-width="1.2" marker-end="url(#arr)"/>
+
+      <!-- 终审(医生)— 接收 α 通道(全核查) + β'/γ' 通道(按预测处理) -->
+      <g transform="translate(40, 722)">
+        <rect width="380" height="38" fill="#F5EDDD" stroke="#2A2118" stroke-width="1"/>
+        <text x="190" y="16" font-family="IBM Plex Sans" font-size="11" fill="#2A2118" text-anchor="middle" font-weight="500">终审 · 医生审核</text>
+        <text x="190" y="30" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A" text-anchor="middle">α 通道全核查(r₂'=r₃'=1) + β'/γ' 通道按预测处理</text>
+      </g>
+
+      <!-- 终审医生 → 签发 -->
+      <line x1="230" y1="760" x2="230" y2="772" stroke="#2A2118" stroke-width="1.2" marker-end="url(#arr)"/>
 
       <!-- 签发 -->
-      <line x1="140" y1="632" x2="140" y2="646" stroke="#2A2118" stroke-width="1.2" marker-end="url(#arr)"/>
-      <g transform="translate(60, 648)">
+      <g transform="translate(150, 774)">
         <rect width="160" height="20" fill="#2A2118"/>
         <text x="80" y="14" font-family="IBM Plex Sans" font-size="10" fill="#F2EBDD" text-anchor="middle" font-weight="500" letter-spacing="0.5">签发给用户</text>
       </g>
@@ -1193,9 +1082,9 @@ ul.clean li::before{
           </g>
 
           <g transform="translate(0, 192)">
-            <text x="0" y="0" font-family="IBM Plex Mono" font-size="11" fill="#9B2D1F" font-weight="600">δ</text>
-            <text x="20" y="0" font-family="IBM Plex Sans" font-size="10.5" fill="#2A2118">后处理报告单份增量</text>
-            <text x="0" y="13" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A">每份后置报告终审多耗 min</text>
+            <text x="0" y="0" font-family="IBM Plex Mono" font-size="11" fill="#9B2D1F" font-weight="600">ρ'/R'/P'</text>
+            <text x="44" y="0" font-family="IBM Plex Sans" font-size="10.5" fill="#2A2118">终审混淆矩阵</text>
+            <text x="0" y="13" font-family="EB Garamond" font-style="italic" font-size="10" fill="#5C4A3A">推出 μ、α'/β'/γ',决定终审 AHT</text>
           </g>
         </g>
 
@@ -1212,14 +1101,475 @@ ul.clean li::before{
         </g>
       </g>
     </svg>
-    <div class="note">流程图标注了每个参数在工作流中的精确位置:P 控制 S2 的分流比例,r₂/r₃/r₄ 控制 t_C 内部各段工作的保留比例,μ/δ 控制终审承接负担,ρ 由 S5 从 AI 报告源头削减。五个方案彼此耦合——S1 提供 r₂/r₃ 可下降的前提,S2 决定 α 的大小,S3 强化 r₂/r₃ 的可下降深度,S4 释放 μ 来对冲 δ,S5 独立降低 ρ 进一步压缩 γ。</div>
+    <div class="note"><strong>双环节流程图说明</strong>:总审 S2 把报告分为 α/β/γ 三通道——<strong>α(跳过总审)绕过 S4 直送终审医生</strong>(强制 r₂'=r₃'=1 完整核查);β、γ 经过总审后进入 <strong>S4 终审改判预测模型</strong>,由终审混淆矩阵再分为 α'/β'/γ' 三通道——<strong>α'(跳过终审,μ 释放)绕过终审医生直送签发</strong>,β'/γ' 进入终审医生。五个方案彼此耦合:S1 提供 r₂/r₃ 可下降前提,S2 决定 α 大小,S3 强化 r₂/r₃ 下降深度,S4 通过 P' 增大 μ 释放,S5 独立降低 ρ 进一步压缩 γ。两环节经 <strong>r₂/r₃ 互补保护</strong>耦合(详见 §02),核查工作总量守恒。</div>
   </figure>
 </section>
 
+<!-- ============ §01 BUSINESS ANALYSIS + MODELING ============ -->
+<section>
+  <h2 class="section-title"><span class="num">§ 01</span>当前差距 vs 目标</h2>
+  <div class="section-sub">起点、终点、和守恒律——以及为什么仅靠工作流方案不够。详细建模见附录 A。</div>
+
+  <h3 class="sub-title">起点 · BI 实测基线</h3>
+  <table>
+    <thead>
+      <tr><th>指标</th><th class="num">当前实测</th><th class="num">目标</th><th class="num">差距</th><th>数据来源</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>总审 AHT(对全部报告)</td>
+        <td class="num"><span class="num-data">2.00</span> min</td>
+        <td class="num">≤ 1.00 min</td>
+        <td class="num"><span class="num-data">−50%</span></td>
+        <td>建模基线</td>
+      </tr>
+      <tr>
+        <td>终审 AHT(对全部报告)</td>
+        <td class="num"><span class="num-data">2.09</span> min</td>
+        <td class="num">≤ 1.00 min</td>
+        <td class="num"><span class="num-data">−52%</span></td>
+        <td>BI 2026-04~05:终审总耗时 39,630 / 终审报告数 18,972</td>
+      </tr>
+      <tr>
+        <td>终审报告改判率 ρ'</td>
+        <td class="num"><span class="num-data">27.6%</span></td>
+        <td class="num">≤ 15%(理想)</td>
+        <td class="num">需 ρ↓ 联动 + 终审 AI</td>
+        <td>BI:修改报告 8,182 / 出具报告 29,657</td>
+      </tr>
+      <tr>
+        <td>AI 报告改判率 ρ</td>
+        <td class="num"><span class="num-data">38.6%</span></td>
+        <td class="num">≤ 25%(中期)</td>
+        <td class="num">需 S5 持续迭代</td>
+        <td>首检通过率反推(61.4%)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub-title">终点 · 双 1 min 目标</h3>
+  <p>把目标从单环节扩展为双环节,并使用<strong>统一口径</strong>(分母 = 全部报告)以便加法对齐:</p>
+  <div class="math math-display">
+    总审 AHT ≤ 1.0 min&nbsp;&nbsp;<span style="font-style:italic;color:var(--ink-soft)">(近期)</span><br/>
+    终审 AHT ≤ 1.0 min&nbsp;&nbsp;<span style="font-style:italic;color:var(--ink-soft)">(长期)</span><br/>
+    <strong>全流程 AHT(总审 + 终审)≤ 2.0 min</strong>
+  </div>
+  <p style="font-size:12.5px;color:var(--ink-soft);font-style:italic">注:终审 AHT 主口径为"对全部报告平均",与总审同分母,可直接相加得"全流程 AHT"。BI 报表的"对进终审报告平均"口径(2.09 min)作为对照展示,不作目标判定。详见附录 A。</p>
+
+  <h3 class="sub-title">为什么"再加几个工作流方案"不够 · 守恒律</h3>
+  <p>系统中 S1-S5 五个方案里,<strong>S1/S2/S3/S4 是工作流优化</strong>——改变核查工作的执行位置,但不改变工作总量。具体来说:</p>
+  <ul class="clean">
+    <li><strong>r₂/r₃ 互补保护</strong>:总审跳过核查(r=0)→ 终审必须做(r'=1);总审做核查(r=1)→ 终审省事(r'=0)。核查工作总量守恒,只是从一个环节转到另一个。</li>
+    <li><strong>α 通道(跳过总审)直送终审</strong>:这部分报告必须由终审医生完整核查(r₂'=r₃'=1),无法被 μ 释放。</li>
+    <li><strong>双审报告</strong>(两个环节都过眼)= (1−α)·(1−μ),里面有不可消除的 ρ·ρ' 底盘。仅靠 r₂/r₃ 不能消除任何一项双审。</li>
+  </ul>
+
+  <h3 class="sub-title">守恒律证据 · 三情景验算</h3>
+  <p>用保守/中等/乐观三组参数代入双环节模型(完整公式见附录 A,完整数据见附录 C):</p>
+  <table>
+    <thead>
+      <tr><th>情景</th><th class="num">总审 AHT</th><th class="num">终审 AHT</th><th class="center">双 1 min</th><th>本质</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>保守</strong>(r=1, P=0.65, ρ=0.386)</td>
+        <td class="num"><span class="num-data">1.54</span></td>
+        <td class="num"><span class="num-success">0.84</span></td>
+        <td class="center" style="color:var(--warn);font-weight:500">~ 总审失败</td>
+        <td>总审做核查,终审省事</td>
+      </tr>
+      <tr>
+        <td><strong>中等</strong>(r=0, P=0.75, ρ=0.30)</td>
+        <td class="num"><span class="num-success">0.71</span></td>
+        <td class="num"><span class="num-data">1.02</span></td>
+        <td class="center" style="color:var(--warn);font-weight:500">~ 终审失败</td>
+        <td>总审跳过,终审兜底重</td>
+      </tr>
+      <tr>
+        <td><strong>乐观</strong>(r=0, P=0.85, ρ=0.20)</td>
+        <td class="num"><span class="num-success">0.43</span></td>
+        <td class="num"><span class="num-data">1.01</span></td>
+        <td class="center" style="color:var(--warn);font-weight:500">~ 终审失败</td>
+        <td>同上,工作量转移规律不变</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <div class="callout-label">§01 关键结论</div>
+    <p><strong>差距明确</strong>:总审 −50%,终审 −52%。<strong>守恒律确立</strong>:仅靠 r₂/r₃ 的位置切换,任何情景下总审与终审都不能同时 ≤ 1 min——这就是守恒律的直接证据。<strong>需要新杠杆</strong>:除了位置切换,还需要 ρ/ρ' 总量削减 + P/P' 双审消除。三类杠杆同时推动才有解 → §02。</p>
+  </div>
+</section>
+
+<!-- ============ §02 三类杠杆 · 本质区别 ============ -->
+<section>
+  <h2 class="section-title"><span class="num">§ 02</span>三类杠杆 · 本质区别</h2>
+  <div class="section-sub">从"再加几个方案"思路升级为"三类杠杆同时推",每类对应的工程行动完全不同。</div>
+
+  <h3 class="sub-title">对照表 · 三类杠杆</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:14%">类别</th>
+        <th class="num">参数</th>
+        <th>业务杠杆</th>
+        <th>作用机制</th>
+        <th class="center">对总工作量</th>
+        <th>典型 ROI</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>位置 杠杆</strong></td>
+        <td class="num">r₂ / r₃</td>
+        <td>核查工作放总审 vs 终审</td>
+        <td>0/1 二值开关,互补保护</td>
+        <td class="center">守恒不变</td>
+        <td>局部提效 / 体感优化</td>
+      </tr>
+      <tr style="background:rgba(155,45,31,0.05)">
+        <td><strong>总量 杠杆</strong></td>
+        <td class="num">ρ / ρ'</td>
+        <td>AI 报告 / 终审实际改判率</td>
+        <td>减少需要改判的报告总数</td>
+        <td class="center" style="color:var(--success);font-weight:600">总量下降</td>
+        <td>ρ 0.30→0.20 节省 0.22 min</td>
+      </tr>
+      <tr style="background:rgba(155,45,31,0.05)">
+        <td><strong>双审消除 杠杆</strong></td>
+        <td class="num">P / P'</td>
+        <td>S2/S4' 模型精度</td>
+        <td>消除模型误差导致的无谓双审</td>
+        <td class="center" style="color:var(--success);font-weight:600">双审下降</td>
+        <td>P/P' 0.75→0.95 节省 0.06 min</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub-title">位置杠杆 · r₂/r₃ 互补保护(必要不充分)</h3>
+  <p>r₂/r₃ 只有 0 / 1 两个值,决定核查在哪个环节做:</p>
+  <ul class="clean">
+    <li><strong>α 通道</strong>(总审跳过):终审强制 r₂'=r₃'=1 做完整核查</li>
+    <li><strong>(β+γ) 通道</strong>(总审审过):终审 r₂'=1−r₂, r₃'=1−r₃ 取反,核查只由一方做</li>
+  </ul>
+  <p><strong>核查工作量恒等式</strong>:r₂ + r₂' = 1,r₃ + r₃' = 1。无论 r 值怎么变,总核查工作量恒定——这就是为什么单纯调 r 不能让总审/终审同时降下来。<em>但 r₂/r₃ 仍然有价值</em>——它把工作分配到"医生体感最不疲劳"的位置(终审做专一核查,总审跑流水线)。</p>
+
+  <h3 class="sub-title">总量杠杆 · ρ / ρ' 减少改判量(高 ROI)</h3>
+  <p>γ = ρ·R(总审改判),γ' ≈ ρ'(终审改判)。降 ρ 和 ρ' 直接减少需要改判的报告总数——这是<strong>消除工作量</strong>,不是搬移。</p>
+  <ul class="clean">
+    <li><strong>降 ρ 的杠杆</strong>:S5 · AI 报告质量优化(提示词迭代 + 模型升级 + 大量 case 训练)</li>
+    <li><strong>降 ρ' 的杠杆</strong>:① 自然受 ρ↓ 影响(理论链路);② 终审 AI 辅助(类比 S1 但作用于终审环节)</li>
+  </ul>
+  <div class="math">
+    数值示例(默认 r=0):<br/>
+    &nbsp;&nbsp;ρ = 0.30 → γ·t_C = 0.30 × 2.23 = 0.67 min(总审 AHT 主要部分)<br/>
+    &nbsp;&nbsp;ρ = 0.20 → γ·t_C = 0.20 × 2.15 = 0.43 min<br/>
+    &nbsp;&nbsp;节省 0.24 min · 杠杆系数极高
+  </div>
+
+  <h3 class="sub-title">双审消除杠杆 · P / P' 消除模型误差(中 ROI)</h3>
+  <p>双审报告 = (1−α)·(1−μ),展开为 <strong>4 项之和</strong>:</p>
+  <div class="math math-display">
+    双审 = <span style="color:var(--data);font-weight:600">ρ·ρ'</span> + ρ·FP' + FP·ρ' + FP·FP'
+  </div>
+  <p>只有 <strong>ρ·ρ' 是"理论必然双审"</strong>(两个环节都确认要改的真改判,合理双审);其余三项都是模型误差导致的无谓双审,推 P 和 P' 接近 1 即可消除。</p>
+
+  <h3 class="sub-title">数值证据 · 四类组合下的全流程 AHT</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>配置(r=0、其他默认)</th>
+        <th class="num">总审 AHT</th>
+        <th class="num">终审 AHT</th>
+        <th class="num">全流程</th>
+        <th class="center">达成?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>① 默认(P=P'=0.75, ρ=0.30, ρ'=0.276)</td>
+        <td class="num">0.71</td>
+        <td class="num">1.02</td>
+        <td class="num">1.73</td>
+        <td class="center" style="color:var(--warn)">~ 终审失败</td>
+      </tr>
+      <tr>
+        <td>② 推 P/P' → 0.95(双审消除)</td>
+        <td class="num">0.67</td>
+        <td class="num">0.99 ✓</td>
+        <td class="num">1.66</td>
+        <td class="center" style="color:var(--success)">✓ 临界达成</td>
+      </tr>
+      <tr>
+        <td>③ ② + ρ' → 0.10(终审 AI 辅助)</td>
+        <td class="num">0.67</td>
+        <td class="num">0.80</td>
+        <td class="num">1.47</td>
+        <td class="center" style="color:var(--success)">✓ 稳健</td>
+      </tr>
+      <tr>
+        <td>④ ③ + ρ → 0.20(S5 推进)</td>
+        <td class="num">0.45</td>
+        <td class="num">0.87</td>
+        <td class="num">1.32</td>
+        <td class="center" style="color:var(--success)">✓✓ 充分</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--ink-soft);font-style:italic">交互式调参工具见附录 D。</p>
+
+  <div class="callout">
+    <div class="callout-label">§02 关键结论</div>
+    <p>r₂/r₃ 是位置工具(必要不充分),ρ/ρ' 是总量工具(消除工作),P/P' 是双审消除工具(消除模型误差)。<strong>三类杠杆映射到不同团队的不同 ask</strong>——配置 ② 靠算法迭代,配置 ③ 靠终审产品创新,配置 ④ 靠 AI 报告团队持续。这就是 §04 跨部门协作矩阵的基础。</p>
+  </div>
+</section>
+
+<!-- ============ §03 三阶段路线图 ============ -->
+<section>
+  <h2 class="section-title"><span class="num">§ 03</span>三阶段路线图</h2>
+  <div class="section-sub">把"双 1 min"分解为 3 个可达的阶段目标,每个阶段对应一组具体的工程动作和预期产出。</div>
+
+  <h3 class="sub-title">阶段 1 · 总审 1 min 临界达成(近期)</h3>
+  <table>
+    <thead><tr><th style="width:22%">行动</th><th>具体内容</th><th style="width:20%">主 owner</th></tr></thead>
+    <tbody>
+      <tr><td><strong>① S2 模型精度</strong></td><td>S2 总审改判预测模型影子运行 4-8 周,推 P 到 0.85+(P@R≥0.99 约束下)</td><td>算法团队</td></tr>
+      <tr><td><strong>② r₂/r₃ 互补落地</strong></td><td>S1 信任建立 + 责任结构调整启动,允许总审跳过核查、终审兜底</td><td>临床培训 + 合规法务</td></tr>
+      <tr><td><strong>③ S5 初步迭代</strong></td><td>AI 报告质量提示词优化 + 模型升级第一轮,ρ 从 0.386 → 0.30</td><td>AI 报告产品</td></tr>
+    </tbody>
+  </table>
+  <p><strong>预期产出</strong>:总审 AHT 从 2.0 → 1.0 临界达成(中等情景);终审 AHT 从 2.1 → 1.5(部分改善)。</p>
+
+  <h3 class="sub-title">阶段 2 · 总审稳健 + 终审改善(中期)</h3>
+  <table>
+    <thead><tr><th style="width:22%">行动</th><th>具体内容</th><th style="width:20%">主 owner</th></tr></thead>
+    <tbody>
+      <tr><td><strong>① S5 持续迭代</strong></td><td>AI 报告质量持续优化,ρ 推到 0.25 以下</td><td>AI 报告产品</td></tr>
+      <tr><td><strong>② S4 终审改判预测模型上线</strong></td><td>终审 S4 终审改判预测模型 + 分级单审制度落地,P' 推到 0.85+</td><td>终审产品 + 算法团队</td></tr>
+      <tr><td><strong>③ 合规框架成熟</strong></td><td>"批量确认"形式的过渡阶段完成,合规框架定型</td><td>合规法务</td></tr>
+    </tbody>
+  </table>
+  <p><strong>预期产出</strong>:总审 AHT 0.7–0.8(稳健达成);终审 AHT 1.0–1.2(接近临界);全流程 1.7–2.0 min。</p>
+
+  <h3 class="sub-title">阶段 3 · 双 1 min 长期可达(长期)</h3>
+  <table>
+    <thead><tr><th style="width:22%">行动</th><th>具体内容</th><th style="width:20%">主 owner</th></tr></thead>
+    <tbody>
+      <tr><td><strong>① 终审 AI 辅助</strong></td><td>类比 S1 移植到终审环节,直接降 ρ'(从 0.276 → 0.15–0.10)</td><td>终审产品</td></tr>
+      <tr><td><strong>② 责任结构完全调整</strong></td><td>合规接受度成熟,μ 接近 1−ρ' 上界</td><td>合规法务</td></tr>
+      <tr><td><strong>③ 医生行为完全改变</strong></td><td>r₂/r₃ 可在两端灵活配置,无心理负担</td><td>临床培训</td></tr>
+    </tbody>
+  </table>
+  <p><strong>预期产出</strong>:总审 AHT 0.45,终审 AHT 0.85–0.95;全流程 AHT 1.3–1.4 min(典型乐观情景配置 ④)。</p>
+
+  <h3 class="sub-title">关键里程碑 · Timeline</h3>
+  <table>
+    <thead>
+      <tr><th class="num" style="width:8%">M</th><th style="width:12%">阶段</th><th>里程碑</th><th>验证标准</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="num"><strong>M1</strong></td><td>启动期</td><td>S2 影子运行启动</td><td>P 实测 ≥ 0.70</td></tr>
+      <tr><td class="num"><strong>M2</strong></td><td>近期</td><td>r₂/r₃ 政策落地试点</td><td>20% 报告医生敢配 r=0</td></tr>
+      <tr><td class="num"><strong>M3</strong></td><td>中期</td><td>S5 第一个 ρ 拐点</td><td>ρ ≤ 0.25</td></tr>
+      <tr><td class="num"><strong>M4</strong></td><td>中后期</td><td>终审 S4' 上线</td><td>μ 实测 ≥ 0.50</td></tr>
+      <tr><td class="num"><strong>M5</strong></td><td>评估期</td><td>双 1 min 评估</td><td>终审 AHT(对全部)≤ 1.0</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <div class="callout-label">§03 关键结论</div>
+    <p><strong>三阶段非线性叠加</strong>:阶段 1 只解决总审,阶段 2/3 才动终审;不能跳级。每个阶段的 owner 完全不同(算法 → AI 报告 → 终审产品 → 合规 → 临床),所以<strong>跨部门协作必须前置设计</strong> → §04。</p>
+  </div>
+</section>
+
+<!-- ============ §04 跨部门协作矩阵 ============ -->
+<section>
+  <h2 class="section-title"><span class="num">§ 04</span>跨部门协作矩阵</h2>
+  <div class="section-sub">5 个团队的具体 ask + KPI + 时间窗口 + 依赖关系。所有团队都是 critical path,缺一不可。</div>
+
+  <h3 class="sub-title">责任矩阵(RACI 简化版)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:13%">团队</th>
+        <th>核心 ask</th>
+        <th style="width:15%">主 KPI</th>
+        <th style="width:11%">时间窗口</th>
+        <th style="width:12%">下游影响</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>算法团队</strong></td>
+        <td>S2 总审改判预测模型推到 P ≥ 0.85(P@R=0.99 约束下);S4 终审改判预测模型同步开发,P' ≥ 0.85</td>
+        <td>P / P' 影子运行 4–8 周后达成</td>
+        <td>近期–中期</td>
+        <td>α / μ ↑,推动总审 + 终审 AHT 下降</td>
+      </tr>
+      <tr>
+        <td><strong>AI 报告产品</strong></td>
+        <td>S5 持续迭代,提示词优化 + 模型升级 + case 训练循环;长期目标 ρ ≤ 0.20</td>
+        <td>首检通过率(= 1−ρ)</td>
+        <td>持续</td>
+        <td>γ ↓ 直接降总审 AHT;ρ' ↓ 间接降终审 AHT</td>
+      </tr>
+      <tr>
+        <td><strong>终审产品</strong></td>
+        <td>S4 终审改判预测模型 + 分级单审制度 + 终审工作流重构;长期开展终审环节本身的 AI 辅助探索</td>
+        <td>μ 实际达成值 / ρ' 下降幅度</td>
+        <td>中期–长期</td>
+        <td>解锁终审 1 min,核心 bottleneck</td>
+      </tr>
+      <tr>
+        <td><strong>合规法务</strong></td>
+        <td>责任结构调整框架 + 分级单审法律可接受度;过渡期"批量确认"形式</td>
+        <td>法律框架文件确认</td>
+        <td>近期–中期</td>
+        <td>解锁 μ 上限 + 解锁 r₂/r₃ → 0</td>
+      </tr>
+      <tr>
+        <td><strong>临床培训</strong></td>
+        <td>推动医生信任 S1 的核查输出,允许 r₂/r₃ → 0;影子运行结果的内部沟通</td>
+        <td>r₂/r₃ 实际配置达成值</td>
+        <td>中期</td>
+        <td>解锁 r₂/r₃ 互补保护机制的真实落地</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub-title">关键依赖关系</h3>
+  <ul class="clean">
+    <li><strong>算法 → 终审产品</strong>:S4 终审改判预测模型由算法开发,终审产品消费;阶段 2 关键依赖</li>
+    <li><strong>AI 报告 → 算法</strong>:AI 报告质量越高,S2/S4' 训练数据质量越好;持续依赖</li>
+    <li><strong>合规 → 终审产品 + 临床培训</strong>:合规接受度决定 μ 和 r₂/r₃ 的天花板</li>
+    <li><strong>临床培训 ↔ 算法</strong>:医生信任 S1 需要算法提供影子运行的"零误差证据"</li>
+    <li><strong>全部 → AI 报告</strong>:全流程 AHT 改善都依赖 ρ 持续下降</li>
+  </ul>
+
+  <h3 class="sub-title">协作机制建议</h3>
+  <ul class="clean">
+    <li><strong>月度跨部门 review</strong>:5 个 owner 联合参与,对照里程碑进度</li>
+    <li><strong>影子运行联合评估</strong>:S2 / S4' / S5 任何模型上线前,算法 + 临床 + 合规联合签字</li>
+    <li><strong>r₂/r₃ 落地试点</strong>:先选 1–2 个分院试 r=0(总审跳),收集医生反馈 + 终审兜底数据后再推广</li>
+    <li><strong>临床事故应急通道</strong>:R/R' 漏判导致的事故(虽极小)需有快速复盘 + 模型回滚机制</li>
+  </ul>
+
+  <div class="callout">
+    <div class="callout-label">§04 关键结论</div>
+    <p>"双 1 min"是 <strong>5 个团队的 critical path 项目</strong>,任何一个团队不到位都会拖累整体。建议<strong>跨部门联合推进</strong>(而不是某个部门主导)。每个阶段的 KPI 已与团队绑定,可作为季度 OKR 输入。详细风险与卡点见 §05。</p>
+  </div>
+</section>
+
+<!-- ============ §05 风险与卡点 ============ -->
+<section>
+  <h2 class="section-title"><span class="num">§ 05</span>风险与卡点</h2>
+  <div class="section-sub">6 个关键卡点 · 按风险等级排序 · 每个关联具体 owner 团队和缓解机制。</div>
+
+  <div class="blocker-grid">
+
+    <div class="blocker-card severity-high">
+      <div class="blocker-tag">
+        <span>BLOCKER · 01 · 文化</span>
+        <span class="severity high">HIGH</span>
+      </div>
+      <h4>医生信任建立(r₂ 这一参数)</h4>
+      <p>r₂ 是整个系统最脆弱的参数——医生敢不敢真的跳过对正常条目的核查,取决于他在心理上信任 S1 多深。这件事不能靠说服,只能靠经验性证据。</p>
+      <p><strong>Owner</strong>:临床培训 + 算法团队(提供影子运行证据)</p>
+      <p><strong>影响</strong>:r₂ > 0.30 时系统无法稳健达到 1.0 min。最大的工程风险所在。</p>
+      <div class="mitigation">
+        <strong>缓解机制</strong>
+        影子运行 4–8 周展示 S1 零误差记录;在审阅 UI 上显性化"S1 已认证 X 项"标记;同步推进责任结构调整作为制度兜底。三件事必须同步,缺一不可。
+      </div>
+    </div>
+
+    <div class="blocker-card severity-high">
+      <div class="blocker-tag">
+        <span>BLOCKER · 02 · 政治</span>
+        <span class="severity high">HIGH</span>
+      </div>
+      <h4>责任结构调整</h4>
+      <p>医生敢跳过核查不只是信任 AI,更需要在制度上明确"出了事不只是我担责"。这需要医务部、合规部、法务部联合出文件,明确"按协议操作 + 系统监控合格"前提下的责任归属。</p>
+      <p><strong>Owner</strong>:合规法务(主) + 跨部门协调(联席)</p>
+      <p><strong>影响</strong>:制度未调整,即使 S1 完美,r₂ 永远压不下去——这是文化卡点的制度基础。</p>
+      <div class="mitigation">
+        <strong>缓解机制</strong>
+        项目启动时同步推进跨部门沟通;以 S2 高置信 + S4 分级 + 关键发现白名单作为完整合规框架;先以"批量确认"形式过渡(医生看列表统一签字),让责任在形式上仍保留。
+      </div>
+    </div>
+
+    <div class="blocker-card severity-medium">
+      <div class="blocker-tag">
+        <span>BLOCKER · 03 · 监管</span>
+        <span class="severity medium">MEDIUM</span>
+      </div>
+      <h4>合规对"模型跳过总审"的接受度</h4>
+      <p>S2 高置信跳过总审在医疗场景的合规可接受性,需要前置论证。即使技术上有 99% 召回率 + 关键发现白名单双重保护,合规部门可能仍要求"每份报告必须经医生眼"。</p>
+      <p><strong>Owner</strong>:合规法务</p>
+      <p><strong>影响</strong>:如不接受,α 无法实现 → 总审 AHT 直接回落到 1.4+ min。</p>
+      <div class="mitigation">
+        <strong>缓解机制</strong>
+        前置法务沟通,准备完整安全数据;以"批量确认"作为过渡形态——医生不逐份审阅,而看 10–20 份的列表统一签字,在法律意义上仍保留"医生过眼"。
+      </div>
+    </div>
+
+    <div class="blocker-card severity-medium">
+      <div class="blocker-tag">
+        <span>BLOCKER · 04 · 技术</span>
+        <span class="severity medium">MEDIUM</span>
+      </div>
+      <h4>S2 / S4' 模型精度不及预期</h4>
+      <p>首版 S2 模型实际精确率可能低于建模假设的 0.75。S4 终审改判预测模型首版同样可能 P' &lt; 0.75。如果模型达不到预期,α/μ 不能推到目标值,工程上的"双 1 min"路径阻塞。</p>
+      <p><strong>Owner</strong>:算法团队</p>
+      <p><strong>影响</strong>:模型表现可控但有不确定性,需要预留兜底空间。</p>
+      <div class="mitigation">
+        <strong>缓解机制</strong>
+        影子运行 4–8 周实测精确率,达不到 0.70 时启动算法迭代;不能纸面假设 P 值;持续标注高质量训练数据。
+      </div>
+    </div>
+
+    <div class="blocker-card severity-medium">
+      <div class="blocker-tag">
+        <span>BLOCKER · 05 · 流程</span>
+        <span class="severity medium">MEDIUM</span>
+      </div>
+      <h4>终审 1 min 是结构性瓶颈</h4>
+      <p>S2 跳过 50%+ 报告直送终审 + S1/S3 核查后置到终审,会让终审工作量显著增加。即便 S4 终审改判预测模型 P' 优化到 0.85,μ 释放也只能达到 1−ρ' = 0.72 上限(ρ'=0.276),终审 AHT 仍难压到 ≤ 1 min。</p>
+      <p><strong>Owner</strong>:终审产品(主) + AI 报告产品(降 ρ' 联动)</p>
+      <p><strong>影响</strong>:终审环节是 critical bottleneck;双 1 min 没有"近期可达"方案,只能长期推进。</p>
+      <div class="mitigation">
+        <strong>缓解机制</strong>
+        ① 把 ρ' 从 0.276 显著降低(依赖 ρ↓ 联动 + 终审环节本身的 AI 辅助);② S4' 的 P' 推到 0.85+ 让 μ 接近其理论上界 1−ρ';③ 终审工作流深度重构(分级单审 + 工具优化);④ 接受"双 1 min"是长期目标。
+      </div>
+    </div>
+
+    <div class="blocker-card severity-low">
+      <div class="blocker-tag">
+        <span>BLOCKER · 06 · AI 生成</span>
+        <span class="severity low">LOW</span>
+      </div>
+      <h4>r₄ / AI 生成质量自然迭代</h4>
+      <p>S1-S4 工作流方案未直接攻击改判操作时间(r₄)。r₄ 只能依靠 S5(AI 生成质量提升)带来的改判项数下降而间接降低。如果 S5 不同步推进,r₄ 维持 1.0,影响有限。</p>
+      <p><strong>Owner</strong>:AI 报告产品(S5)</p>
+      <p><strong>影响</strong>:r₄ 维持 1.0 时,总审 AHT 上升约 0.06 min,接近无影响。</p>
+      <div class="mitigation">
+        <strong>缓解机制</strong>
+        AI 生成模型纳入持续迭代;如生成质量提升不显著,补 P0-2 工具优化(前端 1 人月)直接攻击 w₄。这是相对低风险的"加 0.10 min 安全边界"动作。
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout">
+    <div class="callout-label">§05 关键结论</div>
+    <p>数学上五方案在乐观参数下(P ≥ 0.80, r₂ ≤ 0.15, P/P' 至 0.95)可达成总审 1 min;终审 1 min 在 ρ' ≤ 0.15 + 责任结构调整完成的前提下可达。<strong>工程上的不确定性主要不在数学,而在文化、政治、监管三件事是否同步推进</strong>——HIGH 风险卡点(医生信任 + 责任结构)的难度,可能比加 P0-2 或 P1-2 更高。<strong>建议</strong>:① 算法 + 临床 + 合规联合启动;② 文化卡点不靠"说服"而靠"影子运行数据";③ 接受"双 1 min"是长期项目,不是季度任务。</p>
+  </div>
+</section>
+
+
 <!-- ============ §03 SCENARIOS ============ -->
 <section>
-  <h2 class="section-title"><span class="num">§ 03</span>三情景案例分析</h2>
-  <div class="section-sub">保守/中等/乐观三组参数代入,看实际可达边界。</div>
+  <h2 class="section-title"><span class="num">附录 A</span>三情景验算(参考)</h2>
+  <div class="section-sub">保守/中等/乐观三组参数代入,看实际可达边界。结论已在 §01 给出,这里提供完整计算 + 双 AHT 对照表。</div>
 
   <table>
     <thead>
@@ -1336,104 +1686,132 @@ ul.clean li::before{
       <tr>
         <td>
           <span class="param-cell">
-            <span class="sym">μ</span> S4 释放比例
+            <span class="sym">ρ'</span> 终审实际改判率
             <div class="tooltip-box">
-              <strong>μ · S4 终审释放比例</strong>
-              S4 终审分级单审制下,可豁免终审的低风险报告比例。<em>不直接影响总审 AHT</em>,但决定终审能否承接 S2 跳过部分。
-              <div class="rec">推荐 0.50–0.70 · 取决于历史一致率分布</div>
-              <div class="warn">卡点:合规可能要求保留所有报告的终审,需前置法务沟通</div>
+              <strong>ρ' · 终审环节实际改判率</strong>
+              进终审报告中实际被终审医生改判的比例,基于"(β+γ) 通道"统计。<em>当前 BI 实测 0.276</em>(2026-04~05)。
+              <div class="rec">默认 0.276 (BI 实测,假设不变) · 长期靠 ρ↓ 联动改善</div>
+              <div class="warn">链路:ρ↓ → ρ'↓(理论存在,但模型未自动联动)</div>
             </div>
           </span>
         </td>
-        <td class="num">0.30</td>
-        <td class="num">0.50</td>
-        <td class="num">0.70</td>
-        <td><strong>保守</strong>:合规审慎,仅释放最简单子集 · <strong>中等</strong>:基于一致率分析,主流报告分级 · <strong>乐观</strong>:合规接受度高,大部分类型分级单审</td>
+        <td class="num">0.276</td>
+        <td class="num">0.276</td>
+        <td class="num">0.276</td>
+        <td><strong>三情景均按 BI 实测固定 0.276</strong>。实际上,如果 ρ↓ 能传导至 ρ',乐观情景应该有显著下降空间(模型未自动建模)</td>
       </tr>
       <tr>
         <td>
           <span class="param-cell">
-            <span class="sym">δ</span> 后处理报告单份增量
+            <span class="sym">R'</span> 终审 S4' 召回率
             <div class="tooltip-box">
-              <strong>δ · 后处理报告单份增量</strong>
-              每份 <em>S1/S2 后置报告</em>(α 通道——跳过总审直送终审)因承接 S1/S2 后置工作在终审环节额外耗费的 min 数。直接按"终审处理一份未经总审过眼的报告需多花几分钟"来预估。
-              <div class="rec">推荐 0.80–1.50 · 取决于核查复杂度</div>
-              <div class="warn">卡点:硬约束 α·δ·(1−μ) + FN·κ_FN·(1−μ) ≤ 0.20,P 上升让 α 暴增时 δ 必须同步压低</div>
+              <strong>R' · 终审 S4' 模型召回率(纯质控)</strong>
+              终审是最后一环,无下游兜底——R' 漏判直接签发给用户。应该比 S2 的 R 更严格。
+              <div class="rec">推荐 ≥ 0.995 · 漏判率 ≤ 0.5%</div>
+              <div class="warn">卡点:与总审 R 不同,终审 R' 失误就是临床事故</div>
             </div>
           </span>
         </td>
-        <td class="num">2.45</td>
-        <td class="num">1.20</td>
-        <td class="num">0.50</td>
-        <td><strong>保守</strong>:每份后置报告终审多耗 2.5 min(完整手工核查) · <strong>中等</strong>:终审工具部分优化后压到 1.2 min · <strong>乐观</strong>:工作流深度优化后单份增量 0.5 min</td>
+        <td class="num">0.995</td>
+        <td class="num">0.995</td>
+        <td class="num">0.995</td>
+        <td><strong>三情景均按硬约束 ≥ 0.995 固定</strong>,作为临床安全底线</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="param-cell">
+            <span class="sym">P'</span> 终审 S4' 精确率
+            <div class="tooltip-box">
+              <strong>P' · 终审 S4' 模型精确率</strong>
+              终审 S4' 预测"会改判"的报告中,实际真的会被改判的比例。<em>直接决定 μ = TN' 的释放比例</em>——P' 越高,可释放给单审通道的报告越多,终审 AHT 越低。
+              <div class="rec">推荐 0.70–0.85 · 影子运行验证</div>
+              <div class="warn">μ 由 ρ'/R'/P' 推出,不再独立输入</div>
+            </div>
+          </span>
+        </td>
+        <td class="num">0.65</td>
+        <td class="num">0.75</td>
+        <td class="num">0.85</td>
+        <td><strong>保守</strong>:终审 S4' 首版,μ≈0.58 · <strong>中等</strong>:迭代 1-2 轮,μ≈0.63 · <strong>乐观</strong>:充分调优,μ≈0.68</td>
       </tr>
     </tbody>
   </table>
 
   <p style="font-size:12.5px;color:var(--ink-faint);font-style:italic;margin-top:8px">悬停参数名称可查看详细业务意义、推荐设定值、潜在卡点。</p>
 
-  <h3 class="sub-title">计算结果</h3>
+  <h3 class="sub-title">计算结果 · 总审 / 终审双 AHT(统一口径:对全部报告平均)</h3>
   <table>
     <thead>
       <tr>
         <th>情景</th>
-        <th class="num">α</th>
-        <th class="num">β</th>
-        <th class="num">γ</th>
+        <th class="num">α (TN+FN)</th>
+        <th class="num">β (FP)</th>
+        <th class="num">γ (TP)</th>
         <th class="num">t<span class="sub">B</span></th>
         <th class="num">t<span class="sub">C</span></th>
         <th class="num">总审 AHT</th>
-        <th class="num">终审增幅</th>
-        <th class="center">达成</th>
+        <th class="num">μ</th>
+        <th class="num">终审 AHT<br/><span style="font-weight:400;font-size:10px;color:var(--ink-faint)">对全部报告</span></th>
+        <th class="num">终审 AHT<br/><span style="font-weight:400;font-size:10px;color:var(--ink-faint)">BI 口径(对照)</span></th>
+        <th class="center">双 1 min 达成</th>
       </tr>
     </thead>
     <tbody>
-      <tr class="fail">
+      <tr>
         <td><strong>保守</strong></td>
-        <td class="num">0.408</td>
+        <td class="num">0.412</td>
         <td class="num">0.206</td>
-        <td class="num">0.386</td>
-        <td class="num">0.73</td>
-        <td class="num">2.85</td>
-        <td class="num"><span class="num-data">1.25</span></td>
-        <td class="num"><span class="num-data">+35%</span></td>
-        <td class="center" style="color:var(--data);font-weight:500">✗ ✗</td>
+        <td class="num">0.382</td>
+        <td class="num">1.00</td>
+        <td class="num">3.50</td>
+        <td class="num"><span class="num-data">1.54</span></td>
+        <td class="num">0.576</td>
+        <td class="num"><span class="num-success">0.84</span></td>
+        <td class="num" style="color:var(--ink-faint)">1.27</td>
+        <td class="center" style="color:var(--warn);font-weight:500">~ 总审未达 / 终审达成</td>
       </tr>
-      <tr class="success">
+      <tr>
         <td><strong>中等</strong></td>
-        <td class="num">0.601</td>
+        <td class="num">0.604</td>
         <td class="num">0.099</td>
-        <td class="num">0.300</td>
-        <td class="num">0.63</td>
-        <td class="num">2.54</td>
-        <td class="num"><span class="num-success">0.82</span></td>
-        <td class="num"><span class="num-data">+18%</span></td>
-        <td class="center" style="color:var(--success);font-weight:500">✓ 达成</td>
+        <td class="num">0.297</td>
+        <td class="num">0.50</td>
+        <td class="num">2.23</td>
+        <td class="num"><span class="num-success">0.71</span></td>
+        <td class="num">0.632</td>
+        <td class="num"><span class="num-data">1.02</span></td>
+        <td class="num" style="color:var(--ink-faint)">1.36</td>
+        <td class="center" style="color:var(--warn);font-weight:500">~ 总审达成 / 终审临界未达</td>
       </tr>
-      <tr class="success">
+      <tr>
         <td><strong>乐观</strong></td>
-        <td class="num">0.765</td>
-        <td class="num">0.035</td>
-        <td class="num">0.200</td>
-        <td class="num">0.55</td>
-        <td class="num">2.27</td>
-        <td class="num"><span class="num-success">0.47</span></td>
-        <td class="num"><span class="num-success">+6%</span></td>
-        <td class="center" style="color:var(--success);font-weight:500">✓ ✓ 充分</td>
+        <td class="num">0.772</td>
+        <td class="num">0.034</td>
+        <td class="num">0.194</td>
+        <td class="num">0.50</td>
+        <td class="num">2.15</td>
+        <td class="num"><span class="num-success">0.43</span></td>
+        <td class="num">0.676</td>
+        <td class="num"><span class="num-data">1.01</span></td>
+        <td class="num" style="color:var(--ink-faint)">1.19</td>
+        <td class="center" style="color:var(--warn);font-weight:500">~ 总审充分 / 终审临界未达</td>
       </tr>
     </tbody>
   </table>
+  <p style="font-size:12px;color:var(--ink-faint);font-style:italic;margin-top:6px">口径说明:<strong>总审 AHT</strong> 与 <strong>终审 AHT(对全部报告)</strong>共享分母 = 全部报告数,可直接相加得"全流程 AHT" = α·0 + β·t_B + γ·t_C + [α·终审α耗时 + (1−α)·(FP'·t_B'_βγ + ρ'·t_C'_βγ)]。BI 口径(对进终审报告平均)= 终审 AHT / 进终审占比,反映医生体感"每份终审报告平均花多久",仅供对照,不作达成判定。</p>
 
   <div class="callout">
-    <div class="callout-label">关键发现</div>
-    <p><strong>引入 ρ 作为可变参数后,结论显著改善。</strong>当 AI 报告质量提升到首检通过率 70-80%(ρ 从 0.386 降到 0.20-0.30),γ 从 0.386 降到 0.20-0.30,整个约束大幅松动:中等情景下 AHT 已降至 0.82 min,不再是临界状态。AI 报告质量提升(路径 B)与 S1/S2/S3/S4(路径 A)的效果叠加,使 1.0 min 目标从"有条件的乐观"变为"中等情景下稳健达成"。</p>
+    <div class="callout-label">关键发现 · 统一口径后的真实图景</div>
+    <p><strong>统一口径后,三情景下"终审 AHT 对全部报告"均贴近 1 min:保守 0.84(达成)、中等 1.02、乐观 1.01(临界)。</strong>但与"总审 AHT"形成 <strong>cross-trade-off</strong>:保守情景总审失败但终审达成,中等/乐观情景总审达成但终审临界。这是 <strong>r₂/r₃ 互补保护下"核查工作总量守恒"的直接体现</strong>——总量不变,只是位置转移。</p>
+    <p><strong>真正的结构性约束</strong>:终审 AHT(对全部)的下界 ≈ α·t_B'_α + 其它较小项 ≈ 0.6×1.0 = 0.6 min(当 r=0 时 α 通道完整核查的必然成本)。要把这个值再压下来,必须让 α 通道每份耗时下降——但 r₂'=r₃'=1 由临床安全强制,t_B'_α 是工作分解硬下界。</p>
+    <p><strong>突破路径(再次确认)</strong>:① 降 ρ'(从 0.276 下探)→ 减少 γ' 重时间权重;② 提 P' → 让 μ 接近上界;③ 推 ρ↓(S5,AI 报告质量)→ 同时降低总改判量与 ρ'。<strong>仅调 P/μ 等参数不能突破结构上界,必须从源头 ρ/ρ' 下手。</strong></p>
   </div>
 </section>
 
 <!-- ============ §04 INTERACTIVE SENSITIVITY ============ -->
 <section>
-  <h2 class="section-title"><span class="num">§ 04</span>敏感性分析 · 动态调参</h2>
-  <div class="section-sub">拖动滑块改变参数,实时查看对总审 AHT 的影响。鼠标悬停参数名称可见详细说明。</div>
+  <h2 class="section-title"><span class="num">附录 B</span>交互工具 · 动态调参(参考)</h2>
+  <div class="section-sub">敏感性分析 + 双 AHT 实时计算工具。拖动滑块改变参数,实时查看对总审 / 终审 AHT 的影响——决策证据的可视化探索接口。</div>
 
   <div class="interactive">
     <div class="interactive-header">
@@ -1464,41 +1842,25 @@ ul.clean li::before{
         <div class="param-group">
           <div class="param-label">
             <span class="param-name">
-              <span class="param-symbol">R</span> S2 召回率
+              <span class="param-symbol">α</span> 总审跳过比例(业务主杠杆)
               <div class="tooltip">
-                <strong>R · S2 模型召回率</strong>
-                对"实际会改判"的报告的识别率。<em>R 越高漏判越少;R 越低 AHT 越低但临床风险增加。</em>
-                <div class="rec">目标 ≥ 0.99 · 漏判率 ≤ 1%</div>
+                <strong>α · 跳过总审的报告占比 = TN + FN</strong>
+                S2 预测"不改"直送终审的报告比例(含 TN 正确预测 + FN 漏判)。<em>这是 S2 创造效率的主要业务指标。</em>
+                <div class="rec">推荐 0.55 – 0.75 · 取决于 S2 模型成熟度</div>
+                <div style="margin-top:6px;font-family:var(--mono);font-size:10.5px;color:#E8A878">关系:α = 1 − ρR/P。固定 R = 0.99(临床安全)时,α↑ ⇔ P↑。α 上限 = 1−ρR ≈ 0.70(当前 ρ),要再高需先降 ρ。</div>
               </div>
             </span>
-            <span class="param-value" id="R-val">0.99</span>
+            <span class="param-value" id="alpha-slider-val">0.60</span>
           </div>
-          <input type="range" class="param-slider" id="R-slider" min="0.00" max="1.00" step="0.01" value="0.99">
-          <div class="param-range"><span>0.00</span><span>1.00</span></div>
+          <input type="range" class="param-slider" id="alpha-slider" min="0.30" max="0.78" step="0.01" value="0.604">
+          <div class="param-range"><span>0.30</span><span>0.78</span></div>
           <div class="fp-readout">
-            <span class="label">推导 · FN = ρ × (1−R)</span>
-            <span class="value" id="R-fn-readout">0.003</span>
+            <span class="label">推导 · P = ρR/(1−α) · S2 精确率</span>
+            <span class="value" id="alpha-P-readout">P = 0.75</span>
           </div>
-        </div>
-
-        <div class="param-group">
-          <div class="param-label">
-            <span class="param-name">
-              <span class="param-symbol">P</span> S2 模型精确率
-              <div class="tooltip">
-                <strong>P · S2 模型精确率</strong>
-                S2 模型预测"会改判"的报告中,实际真的会被改判的比例。<em>P 越高,FP 越少,可跳过总审的报告越多。</em>
-                <div class="rec">推荐 0.75 – 0.85 · 影子运行 4–8 周验证</div>
-                <div style="margin-top:6px;font-family:var(--mono);font-size:10.5px;color:#E8A878">卡点:首版模型可能 < 0.65,需预留补救方案。建模后必须实测,不能纸面假设。</div>
-              </div>
-            </span>
-            <span class="param-value" id="P-val">0.75</span>
-          </div>
-          <input type="range" class="param-slider" id="P-slider" min="0.10" max="0.95" step="0.01" value="0.75">
-          <div class="param-range"><span>0.10</span><span>0.95</span></div>
           <div class="fp-readout">
-            <span class="label">推导 · FP = ρ × R × (1−P) / P</span>
-            <span class="value" id="P-fp-readout">0.099</span>
+            <span class="label">推导 · FN = ρ(1−R) · 总审漏判</span>
+            <span class="value" id="R-fn-readout">FN = 0.003</span>
           </div>
         </div>
 
@@ -1538,41 +1900,49 @@ ul.clean li::before{
 
 
 
-        <div class="param-group">
-          <div class="param-label">
-            <span class="param-name">
-              <span class="param-symbol">μ</span> S4 终审释放比例
-              <div class="tooltip">
-                <strong>μ · S4 终审释放比例</strong>
-                S4 终审分级单审制下,可豁免终审的低风险报告比例。<em>不直接影响总审 AHT</em>,但决定终审能否承接 S1/S2 后置工作。
-                <div class="rec">推荐 0.50 – 0.70 · 取决于历史一致率</div>
-                <div style="margin-top:6px;font-family:var(--mono);font-size:10.5px;color:#E8A878">卡点:合规可能要求保留所有报告的终审,μ 受限。需前置法务沟通,先以"批量确认"形式过渡。</div>
-              </div>
-            </span>
-            <span class="param-value" id="mu-val">0.50</span>
-          </div>
-          <input type="range" class="param-slider" id="mu-slider" min="0.10" max="0.90" step="0.01" value="0.50">
-          <div class="param-range"><span>0.10</span><span>0.90</span></div>
+        <div style="margin:14px 0 8px;padding:8px 10px;background:rgba(139,69,19,0.08);border-left:3px solid var(--accent);font-family:var(--mono);font-size:11px;letter-spacing:0.08em;color:var(--ink)">
+          ── 终审环节参数(S4'·镜像 S2 结构) ──
         </div>
 
         <div class="param-group">
           <div class="param-label">
             <span class="param-name">
-              <span class="param-symbol">δ</span> 后处理报告单份增量
+              <span class="param-symbol">ρ'</span> 终审实际改判率
               <div class="tooltip">
-                <strong>δ · 后处理报告单份增量</strong>
-                每份 <em>S1/S2 后置报告</em>(即 α 通道——跳过总审、直送终审的报告)在终审环节因为承接 S1/S2 后置工作而额外耗费的 min 数。业务上比"均摊到所有报告"更直观,可直接按"终审处理一份未经总审过眼的报告需多花几分钟"来预估。
-                <div class="rec">推荐 0.80 – 1.50 · 取决于核查复杂度</div>
-                <div style="margin-top:6px;font-family:var(--mono);font-size:10.5px;color:#E8A878">卡点:终审 AHT 增量 = α·δ·(1−μ) + FN·κ_FN·(1−μ) ≤ 0.20。P 上升让 α 暴增时,δ 必须同步压低或 μ 释放更多,否则终审瓶颈反弹。</div>
+                <strong>ρ' · 终审环节实际改判率</strong>
+                进入终审的所有报告(α 通道 + (β+γ) 通道 (1−μ) 部分)中,实际被终审医生改判的占比。<em>当前 BI 实测值 27.6%</em>(2026-04 ~ 2026-05 数据)。
+                <div class="rec">默认 0.276 (BI 实测) · 校准建议:影子运行 ≥ 4 周</div>
+                <div style="margin-top:6px;font-family:var(--mono);font-size:10.5px;color:#E8A878">理论链路:ρ↓(AI 报告质量提升)→ 全流程报告质量改善 → ρ'↓。本模型为简洁假设 ρ' 独立不变;调 ρ 时请脑补此联动。</div>
               </div>
             </span>
-            <span class="param-value" id="delta-val">1.20</span>
+            <span class="param-value" id="rhoT-val">0.276</span>
           </div>
-          <input type="range" class="param-slider" id="delta-slider" min="0.30" max="3.00" step="0.05" value="1.20">
-          <div class="param-range"><span>0.30</span><span>3.00</span></div>
+          <input type="range" class="param-slider" id="rhoT-slider" min="0.10" max="0.40" step="0.01" value="0.276">
+          <div class="param-range"><span>0.10</span><span>0.40</span></div>
+        </div>
+
+        <div class="param-group">
+          <div class="param-label">
+            <span class="param-name">
+              <span class="param-symbol">μ</span> 终审免审比例(业务主杠杆)
+              <div class="tooltip">
+                <strong>μ · 终审免审报告占 (β+γ) 通道比例 = TN' + FN'</strong>
+                S4' 预测"不改"直接签发的报告比例(含 TN' 正确预测 + FN' 漏判)。<em>这是 S4' 创造效率的主要业务指标。</em>
+                <div class="rec">推荐 0.55 – 0.72 · 取决于 S4' 模型成熟度</div>
+                <div style="margin-top:6px;font-family:var(--mono);font-size:10.5px;color:#E8A878">关系:μ = 1 − ρ'R'/P'。固定 R' = 0.995(纯质控)时,μ↑ ⇔ P'↑。μ 上限 = 1−ρ'R' ≈ 0.725(当前 ρ'),要再高需先降 ρ'。</div>
+              </div>
+            </span>
+            <span class="param-value" id="mu-slider-val">0.63</span>
+          </div>
+          <input type="range" class="param-slider" id="mu-slider" min="0.30" max="0.72" step="0.01" value="0.634">
+          <div class="param-range"><span>0.30</span><span>0.72</span></div>
           <div class="fp-readout">
-            <span class="label">推导 · 终审 AHT 增量 ≤ 0.20 硬约束</span>
-            <span class="value" id="delta-mu-readout">0.35</span>
+            <span class="label">推导 · P' = ρ'R'/(1−μ) · S4' 精确率</span>
+            <span class="value" id="mu-PT-readout">P' = 0.75</span>
+          </div>
+          <div class="fp-readout">
+            <span class="label">推导 · FN' = ρ'(1−R') · 终审漏判(纯质控)</span>
+            <span class="value" id="RT-fnt-readout">FN' = 0.0014</span>
           </div>
         </div>
 
@@ -1585,11 +1955,17 @@ ul.clean li::before{
       
         <div class="meta-params">
           <div class="meta-params-header" onclick="document.getElementById('meta-body').classList.toggle('open');this.querySelector('.toggle-icon').textContent=document.getElementById('meta-body').classList.contains('open')?'−':'+'">
-            <span>元参数 · 工作时间基线</span>
+            <span>安全设置 · 召回率 / 元参数 · 工作时间基线</span>
             <span class="toggle-icon">+</span>
           </div>
           <div class="meta-params-body" id="meta-body">
-            <div style="font-size:10.5px;color:var(--ink-faint);margin-bottom:8px;font-style:italic">调整各项工作的基线时间(分钟)</div>
+            <div style="margin:0 0 8px;font-family:var(--mono);font-size:9px;color:var(--ink-faint);letter-spacing:0.1em">安全设置 · 召回率(R / R')</div>
+            <div style="font-size:10.5px;color:var(--ink-faint);margin-bottom:8px;font-style:italic;line-height:1.5">R 和 R' 是临床安全底线,默认锁定。调低会直接增加漏判,主面板 α/μ 滑块上限会相应收紧。</div>
+            <div class="meta-param-row"><label><span class="sym">R</span>S2 召回率(安全)</label><input type="range" class="param-slider" id="R-slider" min="0.80" max="1.00" step="0.005" value="0.99"><span class="val" id="R-val">0.99</span></div>
+            <div class="meta-param-row"><label><span class="sym">R'</span>S4' 召回率(纯质控)</label><input type="range" class="param-slider" id="RT-slider" min="0.90" max="1.00" step="0.005" value="0.995"><span class="val" id="RT-val">0.995</span></div>
+
+            <div style="margin:14px 0 4px;padding-top:8px;border-top:1px solid var(--rule-soft);font-family:var(--mono);font-size:9px;color:var(--ink-faint);letter-spacing:0.1em">T_C 基线(分钟)</div>
+            <div style="font-size:10.5px;color:var(--ink-faint);margin-bottom:8px;font-style:italic">调整各项工作的基线时间</div>
             <div class="meta-param-row"><label><span class="sym">w₁</span>阅读+临床</label><input type="range" class="param-slider" id="mw1-slider" min="1.0" max="2.5" step="0.1" value="1.8"><span class="val" id="mw1-val">1.8</span></div>
             <div class="meta-param-row"><label><span class="sym">w₂</span>异常核对</label><input type="range" class="param-slider" id="mw2-slider" min="0.3" max="1.2" step="0.1" value="0.7"><span class="val" id="mw2-val">0.7</span></div>
             <div class="meta-param-row"><label><span class="sym">w₃</span>一致性</label><input type="range" class="param-slider" id="mw3-slider" min="0.2" max="0.8" step="0.1" value="0.5"><span class="val" id="mw3-val">0.5</span></div>
@@ -1598,6 +1974,9 @@ ul.clean li::before{
             <div class="meta-param-row"><label><span class="sym">w₁'</span>浏览确认</label><input type="range" class="param-slider" id="mw1p-slider" min="0.2" max="0.8" step="0.1" value="0.5"><span class="val" id="mw1p-val">0.5</span></div>
             <div class="meta-param-row"><label><span class="sym">w₂'</span>扫异常</label><input type="range" class="param-slider" id="mw2p-slider" min="0.1" max="0.5" step="0.1" value="0.3"><span class="val" id="mw2p-val">0.3</span></div>
             <div class="meta-param-row"><label><span class="sym">w₃'</span>扫一致性</label><input type="range" class="param-slider" id="mw3p-slider" min="0.1" max="0.4" step="0.1" value="0.2"><span class="val" id="mw3p-val">0.2</span></div>
+            <div style="margin:12px 0 4px;padding-top:8px;border-top:1px solid var(--rule-soft);font-family:var(--mono);font-size:9px;color:var(--ink-faint);letter-spacing:0.1em">二阶杠杆 · 改判操作保留比例</div>
+            <div style="font-size:10.5px;color:var(--ink-faint);margin-bottom:6px;font-style:italic;line-height:1.5">r₄ 由 S5(AI 报告质量)间接降低,不在 4 杠杆主路径上,通常无需调整。</div>
+            <div class="meta-param-row"><label><span class="sym">r₄</span>改判操作保留</label><input type="range" class="param-slider" id="r4-slider" min="0.10" max="1.00" step="0.05" value="0.85"><span class="val" id="r4-val">0.85</span></div>
           </div>
         </div>
 
@@ -1605,37 +1984,59 @@ ul.clean li::before{
 
       <!-- RIGHT: RESULTS -->
       <div class="results-panel">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;color:var(--ink-faint);margin-bottom:8px;text-transform:uppercase">总审通道分流</div>
         <div class="result-row">
-          <span class="result-key"><span class="sym">α</span>跳过总审</span>
-          <span class="result-val"><span class="result-bar"><span class="fill" id="alpha-bar"></span></span><span id="alpha-val">0.487</span></span>
+          <span class="result-key"><span class="sym">α</span>跳过总审 (TN+FN)</span>
+          <span class="result-val"><span class="result-bar"><span class="fill" id="alpha-bar"></span></span><span id="alpha-val">0.604</span></span>
         </div>
         <div class="result-row">
-          <span class="result-key"><span class="sym">β</span>快速确认</span>
-          <span class="result-val"><span class="result-bar"><span class="fill" id="beta-bar"></span></span><span id="beta-val">0.127</span></span>
+          <span class="result-key"><span class="sym">β</span>快速确认 (FP)</span>
+          <span class="result-val"><span class="result-bar"><span class="fill" id="beta-bar"></span></span><span id="beta-val">0.099</span></span>
         </div>
         <div class="result-row">
-          <span class="result-key"><span class="sym">γ</span>改判处理</span>
-          <span class="result-val"><span class="result-bar"><span class="fill" id="gamma-bar"></span></span><span id="gamma-val">0.386</span></span>
+          <span class="result-key"><span class="sym">γ</span>改判处理 (TP)</span>
+          <span class="result-val"><span class="result-bar"><span class="fill" id="gamma-bar"></span></span><span id="gamma-val">0.297</span></span>
         </div>
         <div class="result-row">
           <span class="result-key"><span class="sym">t<span class="sub">B</span></span>快速确认 AHT</span>
-          <span class="result-val" id="tB-val">0.63 min</span>
+          <span class="result-val" id="tB-val">0.50 min</span>
         </div>
         <div class="result-row">
           <span class="result-key"><span class="sym">t<span class="sub">C</span></span>改判 AHT</span>
-          <span class="result-val" id="tC-val">2.54 min</span>
+          <span class="result-val" id="tC-val">2.30 min</span>
         </div>
 
         <div class="result-main">
           <div class="label">总审 AHT</div>
-          <div class="value"><span id="aht-val" class="aht-clickable" onclick="openModal('calc-modal')" title="点击查看计算过程">1.06</span><span class="unit">min</span></div>
-          <div class="status" id="aht-status">~ 临界未达</div>
+          <div class="value"><span id="aht-val" class="aht-clickable" onclick="openModal('calc-modal')" title="点击查看计算过程">0.74</span><span class="unit">min</span></div>
+          <div class="status" id="aht-status">✓ 稳健达成</div>
         </div>
 
-        <div class="terminal-check aht-clickable" onclick="openModal('terminal-modal')" title="点击查看终审 AHT 推导分解" style="cursor:pointer">
-          <div class="row">
-            <span class="label">终审 AHT(点击展开级联推导)</span>
-            <span class="val"><span id="term-val">2.35</span> min <span class="status bad" id="term-status">+18%</span></span>
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;color:var(--ink-faint);margin:16px 0 8px;text-transform:uppercase">终审通道分流 (对全部报告)</div>
+        <div class="result-row">
+          <span class="result-key"><span class="sym">α'</span>免终审 (μ 释放)</span>
+          <span class="result-val" id="fAlpha-val">0.232</span>
+        </div>
+        <div class="result-row">
+          <span class="result-key"><span class="sym">β'</span>终审一次过</span>
+          <span class="result-val" id="fBeta-val">0.638</span>
+        </div>
+        <div class="result-row">
+          <span class="result-key"><span class="sym">γ'</span>终审改判</span>
+          <span class="result-val" id="fGamma-val">0.130</span>
+        </div>
+        <div class="result-row">
+          <span class="result-key">进终审报告占比</span>
+          <span class="result-val" id="enterFinal-val">0.768</span>
+        </div>
+
+        <div class="result-main">
+          <div class="label">终审 AHT(对全部报告平均 · 与总审同口径)</div>
+          <div class="value"><span id="ahtF-val" class="aht-clickable" onclick="openModal('terminal-modal')" title="点击查看终审 AHT 推导分解">1.02</span><span class="unit">min</span></div>
+          <div class="status" id="ahtF-status">~ 临界未达</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin-top:8px;text-align:center;letter-spacing:0.05em">
+            对照 · BI 工程口径(对进终审报告平均)<br/>
+            = <span id="ahtF-entered-val">1.36</span> min
           </div>
         </div>
       </div>
@@ -1727,105 +2128,6 @@ ul.clean li::before{
   </div>
 </section>
 
-<!-- ============ §05 BLOCKERS ============ -->
-<section>
-  <h2 class="section-title"><span class="num">§ 05</span>可能的卡点</h2>
-  <div class="section-sub">数学上五方案在乐观参数下可达 1.0 min,但落地路径上有六个关键卡点必须前置处理。按落地难度从高到低排序,每个卡点都附缓解机制。</div>
-
-  <div class="blocker-grid">
-
-    <div class="blocker-card severity-high">
-      <div class="blocker-tag">
-        <span>BLOCKER · 01 · 文化</span>
-        <span class="severity high">HIGH</span>
-      </div>
-      <h4>医生信任建立(r₂ 这一参数)</h4>
-      <p>r₂ 是整个系统最脆弱的参数——医生敢不敢真的跳过对正常条目的核查,取决于他在心理上信任 S1 多深。这件事不能靠说服,只能靠经验性证据。</p>
-      <p><strong>影响</strong>:r₂ > 0.30 时系统数学上无法达到 1.0 min。最大的工程风险所在。</p>
-      <div class="mitigation">
-        <strong>缓解机制</strong>
-        影子运行 4–8 周展示 S1 零误差记录;在审阅 UI 上显性化"S1 已认证 X 项"标记;同步推进责任结构调整作为制度兜底。三件事必须同步,缺一不可。
-      </div>
-    </div>
-
-    <div class="blocker-card severity-high">
-      <div class="blocker-tag">
-        <span>BLOCKER · 02 · 政治</span>
-        <span class="severity high">HIGH</span>
-      </div>
-      <h4>责任结构调整</h4>
-      <p>医生敢跳过核查不只是信任 AI,更需要在制度上明确"出了事不只是我担责"。这需要医务部、合规部、法务部联合出文件,明确"按协议操作 + 系统监控合格"前提下的责任归属。</p>
-      <p><strong>影响</strong>:制度未调整,即使 S1 完美,r₂ 永远压不下去——这是文化卡点的制度基础。</p>
-      <div class="mitigation">
-        <strong>缓解机制</strong>
-        项目立项时同步启动跨部门沟通;以 S2 高置信 + S4 分级 + 关键发现白名单作为完整合规框架;先以"批量确认"形式过渡(医生看列表统一签字),让责任在形式上仍保留。
-      </div>
-    </div>
-
-    <div class="blocker-card severity-medium">
-      <div class="blocker-tag">
-        <span>BLOCKER · 03 · 监管</span>
-        <span class="severity medium">MEDIUM</span>
-      </div>
-      <h4>合规对"模型跳过总审"的接受度</h4>
-      <p>S2 高置信跳过总审在医疗场景的合规可接受性,需要前置论证。即使技术上有 99% 召回率 + 关键发现白名单双重保护,合规部门可能仍要求"每份报告必须经医生眼"。</p>
-      <p><strong>影响</strong>:如不接受,α 无法实现 → 总审 AHT 直接回落到 1.4+ min。</p>
-      <div class="mitigation">
-        <strong>缓解机制</strong>
-        前置法务沟通,准备完整安全数据;以"批量确认"作为过渡形态——医生不逐份审阅,而看 10–20 份的列表统一签字,在法律意义上仍保留"医生过眼"。
-      </div>
-    </div>
-
-    <div class="blocker-card severity-medium">
-      <div class="blocker-tag">
-        <span>BLOCKER · 04 · 技术</span>
-        <span class="severity medium">MEDIUM</span>
-      </div>
-      <h4>S2 模型精确率不及预期</h4>
-      <p>首版 S2 模型实际精确率可能低于建模假设的 0.75。如果只能做到 0.60–0.65,跳过比例 α 从 49% 缩水到 36%,会让加权 AHT 上升 0.10–0.15 min。</p>
-      <p><strong>影响</strong>:模型表现可控但有不确定性,需要预留兜底空间。</p>
-      <div class="mitigation">
-        <strong>缓解机制</strong>
-        影子运行 4–8 周实测精确率,达不到 0.70 时启动算法迭代或补 P0-2 工具优化作为兜底;不能纸面假设 P 值。
-      </div>
-    </div>
-
-    <div class="blocker-card severity-medium">
-      <div class="blocker-tag">
-        <span>BLOCKER · 05 · 流程</span>
-        <span class="severity medium">MEDIUM</span>
-      </div>
-      <h4>终审承接能力不足</h4>
-      <p>S2 跳过 50%+ 报告直送终审 + S1/S3 核查后置到终审,会让终审工作量显著增加。如果 S4 释放比例 μ 不够,违反硬约束 α·δ·(1−μ) + FN·κ_FN·(1−μ) ≤ 0.20,终审会成为新瓶颈。</p>
-      <p><strong>影响</strong>:违反"终审 AHT 增幅 ≤ 10%"的硬约束,瓶颈从总审转移到终审。</p>
-      <div class="mitigation">
-        <strong>缓解机制</strong>
-        S2 和 S4 必须同期上线,不能错峰;基于历史一致率精细化分级单审规则,争取 μ ≥ 0.5;终审工具同步优化,把 δ 控制在 0.7 以下。
-      </div>
-    </div>
-
-    <div class="blocker-card severity-low">
-      <div class="blocker-tag">
-        <span>BLOCKER · 06 · AI 生成</span>
-        <span class="severity low">LOW</span>
-      </div>
-      <h4>r₄ 改判操作无直接攻击</h4>
-      <p>S1/S2/S3/S4 工作流方案未直接攻击改判操作时间。r₄ 只能依靠 S5(AI 生成质量提升)带来的改判项数下降而间接降低。如果 S5 不同步推进,r₄ 维持 1.0。</p>
-      <p><strong>影响</strong>:r₄ 维持 1.0 时,总审 AHT 上升约 0.06 min,临界达成变临界未达。</p>
-      <div class="mitigation">
-        <strong>缓解机制</strong>
-        AI 生成模型纳入持续迭代;如生成质量提升不显著,补 P0-2 工具优化(前端 1 人月)直接攻击 w₄。这是相对低风险的"加 0.10 min 安全边界"动作。
-      </div>
-    </div>
-
-  </div>
-
-  <div class="callout">
-    <div class="callout-label">最终判断</div>
-    <p>数学上答案是 <strong>yes</strong>——五方案在乐观参数下(P ≥ 0.80, r₂ ≤ 0.15, ρ ≤ 0.25)可达成 1.0 min 目标,且有 0.05–0.10 min 余量。但<strong>工程上的不确定性主要不在数学,而在文化、政治、监管三件事是否同步推进</strong>。前两个卡点(医生信任、责任结构)的难度,可能比加 P0-2 或 P1-2 更高。如果对落地速度有较强要求,补 P0-2(1 人月成本)给系统加一个 0.10 min 安全边界,把"卡线 0.99"变成"稳健 0.85",仍然是性价比很高的选择。最终判断权在决策者。</p>
-  </div>
-</section>
-
 <!-- COLOPHON -->
 <div class="colophon">
   <span>AHT Quantitative Model · F-05</span>
@@ -1835,55 +2137,131 @@ ul.clean li::before{
 </div>
 
 <script>
-// === CORE COMPUTATION ===
+// === CORE COMPUTATION · 总审 + 终审 双环节 ===
 const TARGET = 1.0;
-const T_TERMINAL_BASE = 2.0;
-// 级联模型常数(R/P → FN/α → 终审 AHT 的传导系数)
-const KAPPA_FN = 1.5;        // 漏判改判单份成本 — 终审兜底要做整套改判,额外 ≈1.5 min
-const TERM_CONSTRAINT = 0.20; // 硬约束:终审 AHT 增量 ≤ 0.20 min(≈ +10%)
-// δ 现重新定义为"每份 S1/S2 后置报告(α 通道)的额外耗时";
-// δ 对终审 AHT 的贡献 = α · δ · (1−μ),自然吸收了原 α 增量项,无需 α_ref/κ_α。
+// 工作分解基线(总审/终审复用同一套 w 参数)
+const W = { w1: 1.8, w2: 0.7, w3: 0.5, w4: 0.5,    // t_C 构件: 阅读+临床/异常核对/一致性/改判操作
+            w1p: 0.5, w2p: 0.3, w3p: 0.2 };          // t_B 构件: 浏览/扫异常/扫一致性
 
+// PRESETS · 总审 5 参数 + 终审 3 参数(主面板用 α/μ 业务杠杆 + R/R' 安全锁定)
+// α = 1 − ρR/P, μ = 1 − ρ'R'/P' (推导关系)
 const PRESETS = {
-  conservative: { rho:0.386, R:0.99, P:0.65, r2:1.00, r3:1.00, r5:1.00, mu:0.30, delta:2.45 },
-  medium:       { rho:0.30,  R:0.99, P:0.75, r2:0.00, r3:0.00, r5:0.85, mu:0.50, delta:1.20 },
-  optimistic:   { rho:0.20,  R:0.97, P:0.85, r2:0.00, r3:0.00, r5:0.70, mu:0.70, delta:0.50 },
-  reset:        { rho:0.30,  R:0.99, P:0.75, r2:0.00, r3:0.00, r5:0.85, mu:0.50, delta:1.20 }
+  conservative: { rho:0.386, R:0.99,  alpha:0.412, r2:1.00, r3:1.00, r4:1.00, rhoT:0.276, RT:0.995, mu:0.578 },
+  medium:       { rho:0.30,  R:0.99,  alpha:0.604, r2:0.00, r3:0.00, r4:0.85, rhoT:0.276, RT:0.995, mu:0.634 },
+  optimistic:   { rho:0.20,  R:0.97,  alpha:0.772, r2:0.00, r3:0.00, r4:0.70, rhoT:0.276, RT:0.995, mu:0.677 },
+  reset:        { rho:0.30,  R:0.99,  alpha:0.604, r2:0.00, r3:0.00, r4:0.85, rhoT:0.276, RT:0.995, mu:0.634 }
 };
 
-function compute(rho, R, P, r2, r3) {
+// 通用工作分解
+function tB_of(r2, r3) { return W.w1p + r2 * W.w2p + r3 * W.w3p; }
+function tC_of(r2, r3, r4) { return W.w1 + r2 * W.w2 + r3 * W.w3 + r4 * W.w4; }
+
+// === 总审 ===
+// S2 路由按"预测"分流:
+//   α = TN + FN  (S2 预测"不会改判" → 跳过总审直送终审,其中含漏判 FN)
+//   β = FP        (S2 预测"会改判"但实际不会 → 总审快速确认)
+//   γ = TP        (S2 预测"会改判"且实际会改 → 总审改判)
+function compute(rho, R, P, r2, r3, r4) {
   const TP = rho * R;
   const FN = rho * (1 - R);
   const FP = TP * (1 - P) / P;
   const TN = Math.max(0, (1 - rho) - FP);
-  
-  const alpha = TN;
+
+  const alpha = TN + FN;     // ← 关键修订: α 包含 FN(漏判随 α 通道直送终审)
   const beta = Math.max(0, FP);
-  const gamma = TP + FN;
-  
-  // w₁=1.8(阅读+临床判读, 不可压, 此处拆为 1.3+1.0 历史保留), w₂=0.7×r₂(异常核对), w₃=0.5×r₃(一致性), w₄=0.5(改判操作, 此版本内嵌为固定项)
-  const tC = 1.3 + 0.7 * r2 + 0.5 * r3 + 1.0;
-  // W1'=0.5(浏览+签字), W2'=0.3(扫异常项), W3'=0.2(扫一致性)
-  const tB = 0.5 + 0.3 * r2 + 0.2 * r3;
-  
+  const gamma = TP;
+
+  const tC = tC_of(r2, r3, r4);
+  const tB = tB_of(r2, r3);
   const aht = alpha * 0 + beta * tB + gamma * tC;
-  
-  return { alpha, beta, gamma, tC, tB, aht };
+
+  return { alpha, beta, gamma, TN, FN, FP, TP, tC, tB, aht };
 }
 
-function computeTerminal(mu, delta, FN, alpha) {
-  // 级联版(v2):δ 定义为"每份 S1/S2 后置报告(α 通道)的额外耗时"
-  //   δ 对终审 AHT 的贡献 = α · δ · (1−μ),α 自然吸收了原"α 增量"项
-  //   FN 漏判改判 = FN · κ_FN · (1−μ),独立路径
-  FN = FN == null ? 0 : FN;
-  alpha = alpha == null ? 0 : alpha;
-  const releaseFactor = 1 - mu;
-  const delta_contrib = alpha * delta * releaseFactor;
-  const fn_contrib = FN * KAPPA_FN * releaseFactor;
-  const extra = delta_contrib + fn_contrib;
-  const tFinal = T_TERMINAL_BASE + extra;
-  const increase = extra / T_TERMINAL_BASE;
-  return { tFinal, increase, extra, delta_contrib, fn_contrib };
+// === 终审(级联,镜像总审结构)===
+// 终审混淆矩阵基于"(β+γ) 通道"的报告,即总审审核过的部分。
+//   TP' = ρ'R',  FN' = ρ'(1−R'),  FP' = TP'(1−P')/P',  TN' = (1−ρ')−FP'
+//   μ = TN'  ← 释放比例由终审混淆矩阵推出,不再独立输入
+//
+// 进终审的报告(占全部报告):
+//   α 通道 全进 → α
+//   (β+γ) 通道 释放 μ,其余 (1−μ) 进终审 → (1−μ)(1−α)
+//
+// 终审 r2'/r3' 互补保护:
+//   α 通道 → r2'=r3'=1 (总审跳过,终审兜底核查)
+//   (β+γ) 通道 → r2'=1−r2, r3'=1−r3 (核查只由总审/终审之一做,不重复)
+//
+// α 通道内部按"事后实际结局"加权(医生事前不知道):
+//   TN/α 比例 实际无改判,耗时 t_B'_α
+//   FN/α 比例 实际要改判(漏判被终审抓回),耗时 t_C'_α
+function computeFinal(rt, r2, r3, r4, rhoT, RT, PT, sub) {
+  // 终审混淆矩阵(基于 (β+γ) 通道,该子集内 ρ' = 27.6% 等)
+  const TPT = rhoT * RT;
+  const FNT = rhoT * (1 - RT);
+  const FPT = TPT * (1 - PT) / PT;
+  const TNT = Math.max(0, (1 - rhoT) - FPT);
+  // 对称定义(v3 修正):μ = predicted-不改 = TN' + FN'(与总审 α = TN + FN 一致)
+  //   FN' 是漏判(应改但 S4' 没识别),走 α' 通道直接签发 → 临床事故,由 R' ≥ 0.995 控制
+  const muT = TNT + FNT;
+
+  // α 通道工作分解(终审 r2'=r3'=1)
+  const tB_alpha = tB_of(1, 1);
+  const tC_alpha = tC_of(1, 1, r4);
+
+  // (β+γ) 通道工作分解(终审 r2'=1-r2, r3'=1-r3)
+  const r2T_bg = 1 - r2;
+  const r3T_bg = 1 - r3;
+  const tB_bg = tB_of(r2T_bg, r3T_bg);
+  const tC_bg = tC_of(r2T_bg, r3T_bg, r4);
+
+  const { alpha, beta, gamma, TN, FN } = sub;
+  // α 通道在终审的总耗时(对全部报告占比)
+  //   每份 α 报告平均 = (TN/α)·t_B'_α + (FN/α)·t_C'_α
+  //   total(α) = TN·t_B'_α + FN·t_C'_α
+  const time_alpha_total = TN * tB_alpha + FN * tC_alpha;
+
+  // (β+γ) 通道在终审的总耗时(对全部报告占比)
+  //   每份 (β+γ) 报告平均(含 α' 释放部分,该部分耗时 0)
+  //     = (TN'+FN')·0 + FP'·t_B'_βγ + TP'·t_C'_βγ
+  //   total(β+γ) = (1−α)·(FP'·t_B'_βγ + TP'·t_C'_βγ)
+  const time_bg_total = (1 - alpha) * (FPT * tB_bg + TPT * tC_bg);
+
+  // 进终审报告占全部报告比例
+  const enterFinal = alpha + (1 - muT) * (1 - alpha);
+  // 终审总耗时(对全部报告占比,即 min/份 · 对全部报告平均)
+  const totalTime = time_alpha_total + time_bg_total;
+  // 主口径: 终审 AHT(对全部报告平均) = totalTime / 1.0
+  //   与总审 AHT 同分母,两者可直接相加得"全流程 AHT"
+  const ahtFinal = totalTime;
+  // 对照口径: 终审 AHT(对进终审报告平均,BI 工程口径) = totalTime / enterFinal
+  const ahtFinal_entered = enterFinal > 0 ? totalTime / enterFinal : 0;
+
+  // 衍生量:终审视角的 α'/β'/γ'(对全部报告)
+  const alphaP_share = (1 - alpha) * muT;          // α' = (1−α)·(TN'+FN') 释放
+  const betaP_share  = TN + (1 - alpha) * FPT;     // β' = α 通道实际不改(TN) + (β+γ)-FP'
+  const gammaP_share = FN + (1 - alpha) * TPT;     // γ' = α 通道漏判被抓(FN) + (β+γ)-TP'
+
+  return {
+    rhoT, RT, PT, TPT, FNT, FPT, TNT, muT,
+    tB_alpha, tC_alpha, tB_bg, tC_bg,
+    time_alpha_total, time_bg_total, totalTime,
+    enterFinal, ahtFinal, ahtFinal_entered,
+    alphaP_share, betaP_share, gammaP_share
+  };
+}
+
+// 反推工具: 从 α 推 P,从 μ 推 P'
+//   α = 1 − ρR/P  ⇔  P = ρR / (1−α)
+//   μ = 1 − ρ'R'/P' (基于对称定义 μ = TN'+FN' = (1-ρ')−FP'+FN' = 1−ρ'R'/P')
+function P_from_alpha(alpha, rho, R) {
+  if (alpha >= 1) return 1;
+  const P = (rho * R) / (1 - alpha);
+  return Math.max(0.01, Math.min(1, P));
+}
+function PT_from_mu(mu, rhoT, RT) {
+  if (mu >= 1) return 1;
+  const PT = (rhoT * RT) / (1 - mu);
+  return Math.max(0.01, Math.min(1, PT));
 }
 
 // === UI UPDATE ===
@@ -1893,7 +2271,10 @@ function getParam(id) {
 
 function setParam(id, val) {
   document.getElementById(id + '-slider').value = val;
-  document.getElementById(id + '-val').textContent = val.toFixed(2);
+  // alpha/mu 的滑块值显示用 *-slider-val(避免与 result 区 alpha-val/mu-val 冲突)
+  const valElId = (id === 'alpha' || id === 'mu') ? (id + '-slider-val') : (id + '-val');
+  const el = document.getElementById(valElId);
+  if (el) el.textContent = val.toFixed(id === 'rhoT' || id === 'RT' ? 3 : 2);
   // Sync r2/r3 when either is set
   if (id === 'r2') { document.getElementById('r3-slider').value = val; document.getElementById('r3-val').textContent = val.toFixed(2); }
   if (id === 'r3') { document.getElementById('r2-slider').value = val; document.getElementById('r2-val').textContent = val.toFixed(2); }
@@ -1902,23 +2283,30 @@ function setParam(id, val) {
 function updateDisplay() {
   const rho = getParam('rho');
   const R = getParam('R');
-  const P = getParam('P');
+  const alphaSlider = getParam('alpha');
   const r2 = getParam('r2');
   const r3 = getParam('r3');
-  const mu = getParam('mu');
-  const delta = getParam('delta');
+  const r4 = getParam('r4');
+  const rhoT = getParam('rhoT');
+  const RT = getParam('RT');
+  const muSlider = getParam('mu');
+
+  // 反推 P / P' (主面板用 α/μ 驱动)
+  const P = P_from_alpha(alphaSlider, rho, R);
+  const PT = PT_from_mu(muSlider, rhoT, RT);
 
   document.getElementById('rho-val').textContent = rho.toFixed(2);
-  document.getElementById('R-val').textContent = R.toFixed(2);
-  document.getElementById('P-val').textContent = P.toFixed(2);
+  document.getElementById('R-val').textContent = R.toFixed(3);
+  document.getElementById('alpha-slider-val').textContent = alphaSlider.toFixed(2);
   document.getElementById('r2-val').textContent = r2.toFixed(2);
   document.getElementById('r3-val').textContent = r3.toFixed(2);
-  document.getElementById('mu-val').textContent = mu.toFixed(2);
-  document.getElementById('delta-val').textContent = delta.toFixed(2);
+  const r4el = document.getElementById('r4-val'); if (r4el) r4el.textContent = r4.toFixed(2);
+  document.getElementById('rhoT-val').textContent = rhoT.toFixed(3);
+  document.getElementById('RT-val').textContent = RT.toFixed(3);
+  document.getElementById('mu-slider-val').textContent = muSlider.toFixed(2);
 
-  const r = compute(rho, R, P, r2, r3);
-  const FN = rho * (1 - R);
-  const t = computeTerminal(mu, delta, FN, r.alpha);
+  const r = compute(rho, R, P, r2, r3, r4);
+  const tF = computeFinal(null, r2, r3, r4, rhoT, RT, PT, r);
 
   document.getElementById('alpha-val').textContent = r.alpha.toFixed(3);
   document.getElementById('beta-val').textContent = r.beta.toFixed(3);
@@ -1926,73 +2314,85 @@ function updateDisplay() {
   document.getElementById('tC-val').textContent = r.tC.toFixed(2) + ' min';
   document.getElementById('tB-val').textContent = r.tB.toFixed(2) + ' min';
 
-  // FP readout under P slider (FP = β = ρ × R × (1−P)/P)
-  const fpEl = document.getElementById('P-fp-readout');
-  if (fpEl) fpEl.textContent = r.beta.toFixed(3) + '  (' + (r.beta*100).toFixed(1) + '%)';
-
-  // FN readout under R slider (FN = ρ × (1−R))
-  const fnEl = document.getElementById('R-fn-readout');
-  if (fnEl) fnEl.textContent = FN.toFixed(3) + '  (' + (FN*100).toFixed(1) + '%)';
-
-  // 终审 AHT 增量 readout under δ slider(硬约束 ≤ 0.20)
-  const dmEl = document.getElementById('delta-mu-readout');
-  if (dmEl) {
-    const ok = t.extra <= TERM_CONSTRAINT;
-    dmEl.textContent = t.extra.toFixed(2) + ' min  ' + (ok ? '✓ 满足' : '✗ 违反');
-    dmEl.style.color = ok ? 'var(--success)' : 'var(--data)';
+  // 主面板:α 滑块下方"推导 P" 读出
+  const aPel = document.getElementById('alpha-P-readout');
+  if (aPel) {
+    const saturated = P >= 0.99;
+    aPel.textContent = 'P = ' + P.toFixed(3) + (saturated ? '(已饱和)' : '');
+    aPel.style.color = saturated ? 'var(--data)' : 'var(--data)';
   }
+  // 主面板:μ 滑块下方"推导 P'" 读出
+  const mPTel = document.getElementById('mu-PT-readout');
+  if (mPTel) {
+    const saturated = PT >= 0.99;
+    mPTel.textContent = "P' = " + PT.toFixed(3) + (saturated ? '(已饱和)' : '');
+    mPTel.style.color = saturated ? 'var(--data)' : 'var(--data)';
+  }
+  // FN readout under α slider (FN 是总审漏判,由 ρ、R 推出)
+  const fnEl = document.getElementById('R-fn-readout');
+  if (fnEl) fnEl.textContent = 'FN = ' + r.FN.toFixed(3) + '  (' + (r.FN*100).toFixed(1) + '%)';
+
+  // 终审混淆矩阵推出量 readout
+  const fnTEl = document.getElementById('RT-fnt-readout');
+  if (fnTEl) fnTEl.textContent = "FN' = " + tF.FNT.toFixed(4) + ' (终审漏判,纯质控)';
 
   // Bars
   document.getElementById('alpha-bar').style.width = (r.alpha * 100) + '%';
   document.getElementById('beta-bar').style.width = (r.beta * 100) + '%';
   document.getElementById('gamma-bar').style.width = (r.gamma * 100) + '%';
 
-  // AHT main
+  // 总审 AHT main
   document.getElementById('aht-val').textContent = r.aht.toFixed(2);
-  updateSidebar(r);
+  updateSidebar(r, tF);
   const ahtStatus = document.getElementById('aht-status');
-  if (r.aht <= 0.95) {
-    ahtStatus.textContent = '✓ 稳健达成';
-    ahtStatus.className = 'status success';
-  } else if (r.aht <= 1.00) {
-    ahtStatus.textContent = '✓ 临界达成';
-    ahtStatus.className = 'status warn';
-  } else if (r.aht <= 1.10) {
-    ahtStatus.textContent = '~ 临界未达';
-    ahtStatus.className = 'status warn';
-  } else {
-    ahtStatus.textContent = '✗ 未达';
-    ahtStatus.className = 'status fail';
-  }
+  setStatusEl(ahtStatus, r.aht);
 
-  // Terminal check
-  document.getElementById('term-val').textContent = t.tFinal.toFixed(2);
-  const termStatus = document.getElementById('term-status');
-  const incPct = (t.increase * 100).toFixed(0);
-  if (t.increase <= 0.10) {
-    termStatus.textContent = '+' + incPct + '% ✓';
-    termStatus.className = 'status ok';
-  } else {
-    termStatus.textContent = '+' + incPct + '% ✗';
-    termStatus.className = 'status bad';
-  }
+  // 终审 AHT main(对全部报告平均,与总审同口径)
+  const ahtFEl = document.getElementById('ahtF-val');
+  if (ahtFEl) ahtFEl.textContent = tF.ahtFinal.toFixed(2);
+  const ahtFStatus = document.getElementById('ahtF-status');
+  if (ahtFStatus) setStatusEl(ahtFStatus, tF.ahtFinal);
+  // 终审 AHT 对照口径(BI 工程口径,对进终审报告平均)
+  const ahtFEntered = document.getElementById('ahtF-entered-val');
+  if (ahtFEntered) ahtFEntered.textContent = tF.ahtFinal_entered.toFixed(2);
+
+  // 终审通道占比 readout(右侧)
+  const fAlpha = document.getElementById('fAlpha-val');
+  const fBeta  = document.getElementById('fBeta-val');
+  const fGamma = document.getElementById('fGamma-val');
+  if (fAlpha) fAlpha.textContent = tF.alphaP_share.toFixed(3);
+  if (fBeta)  fBeta.textContent  = tF.betaP_share.toFixed(3);
+  if (fGamma) fGamma.textContent = tF.gammaP_share.toFixed(3);
+  // 进终审报告比例
+  const enterEl = document.getElementById('enterFinal-val');
+  if (enterEl) enterEl.textContent = tF.enterFinal.toFixed(3);
+}
+
+function setStatusEl(el, v) {
+  if (!el) return;
+  if (v <= 0.95) { el.textContent = '✓ 稳健达成'; el.className = 'status success'; }
+  else if (v <= 1.00) { el.textContent = '✓ 临界达成'; el.className = 'status warn'; }
+  else if (v <= 1.10) { el.textContent = '~ 临界未达'; el.className = 'status warn'; }
+  else                { el.textContent = '✗ 未达';     el.className = 'status fail'; }
 }
 
 function applyPreset(name) {
   const p = PRESETS[name];
   setParam('rho', p.rho);
   setParam('R', p.R);
-  setParam('P', p.P);
+  setParam('alpha', p.alpha);
   setParam('r2', p.r2);
   setParam('r3', p.r3);
+  setParam('r4', p.r4);
+  setParam('rhoT', p.rhoT);
+  setParam('RT', p.RT);
   setParam('mu', p.mu);
-  setParam('delta', p.delta);
-  
+
   document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
   if (name !== 'reset') {
     event.target.classList.add('active');
   }
-  
+
   updateDisplay();
 }
 
@@ -2014,7 +2414,7 @@ function buildHeatmapRho() {
     html += `<tr><td class="row-header">P=${P.toFixed(2)}</td>`;
     rhoValues.forEach(rho => {
       // 固定 r₂=r₃=0(信任 S1),R=0.99
-      const result = compute(rho, R, P, 0, 0);
+      const result = compute(rho, R, P, 0, 0, 0.85);
       const aht = result.aht;
       const FP = result.beta; // β = FP
       let cls;
@@ -2055,10 +2455,12 @@ function toggleSidebar(side) {
 });
 
 // Update sidebar live values
-function updateSidebar(r) {
+function updateSidebar(r, tF) {
   const ids = {
     'sb-tc': r.tC.toFixed(2), 'sb-tb': r.tB.toFixed(2),
-    'sb-aht': r.aht.toFixed(2)
+    'sb-aht': r.aht.toFixed(2),
+    'sb-aht-final': tF ? tF.ahtFinal.toFixed(2) : '—',
+    'sb-mu': tF ? tF.muT.toFixed(3) : '—'
   };
   for (const [id, val] of Object.entries(ids)) {
     const el = document.getElementById(id);
@@ -2077,7 +2479,7 @@ function updateSidebar(r) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  ['rho', 'R', 'P', 'r2', 'r3', 'mu', 'delta'].forEach(id => {
+  ['rho', 'R', 'alpha', 'r2', 'r3', 'r4', 'rhoT', 'RT', 'mu'].forEach(id => {
     const el = document.getElementById(id + '-slider');
     if (el) el.addEventListener('input', updateDisplay);
   });
@@ -2117,7 +2519,7 @@ document.getElementById('r3-slider').addEventListener('input', function() {
   <div class="sidebar-body">
     <div class="mini-section">
       <div class="mini-title">审核流程</div>
-      <svg viewBox="0 0 250 700" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+      <svg viewBox="0 0 250 600" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
         <defs><marker id="sa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L7 4L0 8z" fill="#2A2118"/></marker><marker id="sa2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L5 3L0 6z" fill="#8B4513"/></marker></defs>
         <g transform="translate(25,8)">
           <!-- 分科检查 -->
@@ -2145,23 +2547,23 @@ document.getElementById('r3-slider').addEventListener('input', function() {
           <text x="100" y="158" font-family="serif" font-size="9" fill="#F2EBDD" text-anchor="middle" font-style="italic">月 28,706 份</text>
           <line x1="100" y1="164" x2="100" y2="178" stroke="#2A2118" stroke-width="1" marker-end="url(#sa)"/>
 
-          <!-- S2改判预测模型 -->
+          <!-- S2 总审改判预测模型 -->
           <rect x="0" y="180" width="200" height="60" fill="#FBF7EF" stroke="#8B4513" stroke-width="1.2"/>
-          <text x="100" y="196" font-family="monospace" font-size="9" fill="#8B4513" text-anchor="middle" font-weight="600" letter-spacing="0.5">S2 · 改判预测模型</text>
+          <text x="100" y="196" font-family="monospace" font-size="9" fill="#8B4513" text-anchor="middle" font-weight="600" letter-spacing="0.5">S2 · 总审改判预测模型</text>
           <line x1="14" y1="202" x2="186" y2="202" stroke="#C9BBA1" stroke-width="0.5"/>
           <text x="75" y="218" font-family="serif" font-size="10" fill="#2A2118" font-style="italic">精确率 =</text>
           <text x="138" y="218" font-family="monospace" font-size="13" fill="#9B2D1F" font-weight="700">P</text>
           <text x="100" y="232" font-family="sans-serif" font-size="8" fill="#5C4A3A" text-anchor="middle">召回率 ≥ 99% · 关键发现白名单</text>
 
-          <!-- α/β/γ -->
-          <line x1="40" y1="240" x2="40" y2="262" stroke="#5A7048" stroke-width="0.8" marker-end="url(#sa)"/>
+          <!-- α/β/γ 分流箭头 -->
+          <line x1="30" y1="240" x2="30" y2="262" stroke="#5A7048" stroke-width="0.8" marker-end="url(#sa)"/>
           <line x1="100" y1="240" x2="100" y2="262" stroke="#A66D2F" stroke-width="0.8" marker-end="url(#sa)"/>
-          <line x1="160" y1="240" x2="160" y2="262" stroke="#9B2D1F" stroke-width="0.8" marker-end="url(#sa)"/>
-          <text x="32" y="256" font-family="monospace" font-size="10" fill="#5A7048" font-weight="600">α</text>
+          <line x1="170" y1="240" x2="170" y2="262" stroke="#9B2D1F" stroke-width="0.8" marker-end="url(#sa)"/>
+          <text x="22" y="256" font-family="monospace" font-size="10" fill="#5A7048" font-weight="600">α</text>
           <text x="92" y="256" font-family="monospace" font-size="10" fill="#A66D2F" font-weight="600">β</text>
-          <text x="152" y="256" font-family="monospace" font-size="10" fill="#9B2D1F" font-weight="600">γ</text>
+          <text x="162" y="256" font-family="monospace" font-size="10" fill="#9B2D1F" font-weight="600">γ</text>
 
-          <!-- 三路 -->
+          <!-- 总审三个出口框 -->
           <rect x="0" y="264" width="60" height="42" fill="#E6EDDD" stroke="#5A7048" stroke-width="0.8"/>
           <text x="30" y="278" font-family="sans-serif" font-size="8.5" fill="#2A2118" text-anchor="middle" font-weight="500">跳过总审</text>
           <text x="30" y="290" font-family="serif" font-size="8" fill="#5C4A3A" text-anchor="middle" font-style="italic">直送终审</text>
@@ -2175,42 +2577,76 @@ document.getElementById('r3-slider').addEventListener('input', function() {
           <text x="170" y="290" font-family="serif" font-size="8" fill="#5C4A3A" text-anchor="middle" font-style="italic">医生修改</text>
           <text x="170" y="302" font-family="monospace" font-size="9" fill="#9B2D1F" text-anchor="middle" font-weight="600">t_C</text>
 
-          <!-- 汇聚 -->
-          <line x1="30" y1="306" x2="30" y2="326" stroke="#2A2118" stroke-width="0.6"/>
-          <line x1="100" y1="306" x2="100" y2="326" stroke="#2A2118" stroke-width="0.6"/>
-          <line x1="170" y1="306" x2="170" y2="326" stroke="#2A2118" stroke-width="0.6"/>
-          <line x1="30" y1="326" x2="170" y2="326" stroke="#2A2118" stroke-width="0.8"/>
-          <line x1="100" y1="326" x2="100" y2="342" stroke="#2A2118" stroke-width="1" marker-end="url(#sa)"/>
+          <!-- α 侧线: 绕过 S4 直送终审医生 -->
+          <path d="M 30 306 L 30 320 L -15 320 L -15 503 L 0 503" stroke="#5A7048" stroke-width="0.8" fill="none" marker-end="url(#sa)"/>
 
-          <!-- S4 终审分级单审 -->
+          <!-- β/γ 汇合 进 S4 -->
+          <line x1="100" y1="306" x2="100" y2="326" stroke="#A66D2F" stroke-width="0.8"/>
+          <line x1="170" y1="306" x2="170" y2="326" stroke="#9B2D1F" stroke-width="0.8"/>
+          <line x1="100" y1="326" x2="170" y2="326" stroke="#2A2118" stroke-width="0.8"/>
+          <line x1="135" y1="326" x2="135" y2="342" stroke="#2A2118" stroke-width="1" marker-end="url(#sa)"/>
+
+          <!-- S4 终审改判预测模型 -->
           <rect x="0" y="344" width="200" height="52" fill="#FBF7EF" stroke="#8B4513" stroke-width="1.2"/>
-          <text x="100" y="360" font-family="monospace" font-size="9" fill="#8B4513" text-anchor="middle" font-weight="600" letter-spacing="0.5">S4 · 终审分级单审</text>
+          <text x="100" y="360" font-family="monospace" font-size="9" fill="#8B4513" text-anchor="middle" font-weight="600" letter-spacing="0.5">S4 · 终审改判预测模型</text>
           <line x1="14" y1="366" x2="186" y2="366" stroke="#C9BBA1" stroke-width="0.5"/>
-          <text x="70" y="382" font-family="serif" font-size="10" fill="#2A2118" font-style="italic">释放比例 =</text>
-          <text x="150" y="382" font-family="monospace" font-size="13" fill="#9B2D1F" font-weight="700">μ</text>
-          <text x="100" y="394" font-family="sans-serif" font-size="8" fill="#5C4A3A" text-anchor="middle">低风险报告单审 · 核查兜底</text>
+          <text x="60" y="382" font-family="serif" font-size="9.5" fill="#2A2118" font-style="italic">精确率 =</text>
+          <text x="113" y="382" font-family="monospace" font-size="12" fill="#9B2D1F" font-weight="700">P'</text>
+          <text x="128" y="382" font-family="serif" font-size="9.5" fill="#2A2118" font-style="italic">,&nbsp;R'</text>
+          <text x="100" y="394" font-family="sans-serif" font-size="7.5" fill="#5C4A3A" text-anchor="middle">基于 (β+γ) 混淆矩阵推出 μ=TN'</text>
 
-          <line x1="100" y1="396" x2="100" y2="412" stroke="#2A2118" stroke-width="1" marker-end="url(#sa)"/>
+          <!-- S4 → α'/β'/γ' 三框 -->
+          <line x1="100" y1="396" x2="100" y2="408" stroke="#2A2118" stroke-width="1"/>
+          <line x1="30" y1="408" x2="170" y2="408" stroke="#2A2118" stroke-width="0.8"/>
+          <line x1="30" y1="408" x2="30" y2="412" stroke="#5A7048" stroke-width="0.8" marker-end="url(#sa)"/>
+          <line x1="100" y1="408" x2="100" y2="412" stroke="#A66D2F" stroke-width="0.8" marker-end="url(#sa)"/>
+          <line x1="170" y1="408" x2="170" y2="412" stroke="#9B2D1F" stroke-width="0.8" marker-end="url(#sa)"/>
+          <text x="22" y="404" font-family="monospace" font-size="9" fill="#5A7048" font-weight="600">α'</text>
+          <text x="92" y="404" font-family="monospace" font-size="9" fill="#A66D2F" font-weight="600">β'</text>
+          <text x="162" y="404" font-family="monospace" font-size="9" fill="#9B2D1F" font-weight="600">γ'</text>
 
-          <!-- 终审·医生审核 -->
-          <rect x="0" y="414" width="200" height="34" fill="#F5EDDD" stroke="#2A2118" stroke-width="0.8"/>
-          <text x="100" y="428" font-family="sans-serif" font-size="10" fill="#2A2118" text-anchor="middle" font-weight="500">终审 · 医生审核</text>
-          <text x="100" y="442" font-family="serif" font-size="8.5" fill="#5C4A3A" text-anchor="middle" font-style="italic">核查兜底 + 签字确认</text>
+          <!-- 终审三个出口框 -->
+          <rect x="0" y="414" width="60" height="42" fill="#E6EDDD" stroke="#5A7048" stroke-width="0.8"/>
+          <text x="30" y="428" font-family="sans-serif" font-size="8.5" fill="#2A2118" text-anchor="middle" font-weight="500">跳过终审</text>
+          <text x="30" y="440" font-family="serif" font-size="8" fill="#5C4A3A" text-anchor="middle" font-style="italic">直送签发</text>
+          <text x="30" y="452" font-family="monospace" font-size="9" fill="#5A7048" text-anchor="middle" font-weight="600">0 min</text>
+          <rect x="68" y="414" width="64" height="42" fill="#FBF1DC" stroke="#A66D2F" stroke-width="0.8"/>
+          <text x="100" y="428" font-family="sans-serif" font-size="8.5" fill="#2A2118" text-anchor="middle" font-weight="500">终审一次过</text>
+          <text x="100" y="440" font-family="serif" font-size="8" fill="#5C4A3A" text-anchor="middle" font-style="italic">医生快过</text>
+          <text x="100" y="452" font-family="monospace" font-size="9" fill="#A66D2F" text-anchor="middle" font-weight="600">t_B'</text>
+          <rect x="140" y="414" width="60" height="42" fill="#F0DCD3" stroke="#9B2D1F" stroke-width="0.8"/>
+          <text x="170" y="428" font-family="sans-serif" font-size="8.5" fill="#2A2118" text-anchor="middle" font-weight="500">终审改判</text>
+          <text x="170" y="440" font-family="serif" font-size="8" fill="#5C4A3A" text-anchor="middle" font-style="italic">医生修改</text>
+          <text x="170" y="452" font-family="monospace" font-size="9" fill="#9B2D1F" text-anchor="middle" font-weight="600">t_C'</text>
 
-          <line x1="100" y1="448" x2="100" y2="462" stroke="#2A2118" stroke-width="1" marker-end="url(#sa)"/>
+          <!-- α' 侧线: 绕过终审医生直送签发 -->
+          <path d="M 30 456 L 30 466 L 215 466 L 215 552 L 180 552" stroke="#5A7048" stroke-width="0.8" fill="none" marker-end="url(#sa)"/>
+
+          <!-- β'/γ' 汇合 进终审医生 -->
+          <line x1="100" y1="456" x2="100" y2="476" stroke="#A66D2F" stroke-width="0.8"/>
+          <line x1="170" y1="456" x2="170" y2="476" stroke="#9B2D1F" stroke-width="0.8"/>
+          <line x1="100" y1="476" x2="170" y2="476" stroke="#2A2118" stroke-width="0.8"/>
+          <line x1="135" y1="476" x2="135" y2="488" stroke="#2A2118" stroke-width="1" marker-end="url(#sa)"/>
+
+          <!-- 终审·医生审核(接收 α 通道 + β'/γ' 通道) -->
+          <rect x="0" y="490" width="200" height="34" fill="#F5EDDD" stroke="#2A2118" stroke-width="0.8"/>
+          <text x="100" y="504" font-family="sans-serif" font-size="10" fill="#2A2118" text-anchor="middle" font-weight="500">终审 · 医生审核</text>
+          <text x="100" y="518" font-family="serif" font-size="7.5" fill="#5C4A3A" text-anchor="middle" font-style="italic">α 全核查 + β'/γ' 按预测处理</text>
+
+          <line x1="100" y1="524" x2="100" y2="538" stroke="#2A2118" stroke-width="1" marker-end="url(#sa)"/>
 
           <!-- 签发 -->
-          <rect x="0" y="464" width="200" height="24" fill="#2A2118"/>
-          <text x="100" y="480" font-family="sans-serif" font-size="10" fill="#F2EBDD" text-anchor="middle">签发给用户</text>
+          <rect x="20" y="540" width="160" height="24" fill="#2A2118"/>
+          <text x="100" y="556" font-family="sans-serif" font-size="10" fill="#F2EBDD" text-anchor="middle">签发给用户</text>
         </g>
       </svg>
     </div>
     <div class="mini-section">
       <div class="mini-title">五方案</div>
       <div class="mini-row"><span class="sym">S1</span><span>AI 初审助手 → r₂, r₃</span></div>
-      <div class="mini-row"><span class="sym">S2</span><span>改判预测模型 → P → α</span></div>
+      <div class="mini-row"><span class="sym">S2</span><span>总审改判预测模型 → P → α</span></div>
       <div class="mini-row"><span class="sym">S3</span><span>初审质量反馈 → r₂, r₃ 下限</span></div>
-      <div class="mini-row"><span class="sym">S4</span><span>终审分级单审 → μ, δ</span></div>
+      <div class="mini-row"><span class="sym">S4</span><span>终审改判预测模型 → P' → μ</span></div>
       <div class="mini-row"><span class="sym">S5</span><span>AI 报告质量优化 → ρ, r₄</span></div>
     </div>
     <div class="mini-section">
@@ -2243,13 +2679,16 @@ document.getElementById('r3-slider').addEventListener('input', function() {
     </div>
     <div class="mini-section">
       <div class="mini-title">核心公式</div>
-      <div class="mini-formula">AHT = α·0 + β·t_B + γ·t_C<br/>= <span id="sb-aht" style="color:var(--data);font-weight:600">—</span> min</div>
+      <div class="mini-formula">总审 AHT(对全部报告)<br/>= α·0 + β·t_B + γ·t_C<br/>= <span id="sb-aht" style="color:var(--data);font-weight:600">—</span> min</div>
+      <div class="mini-formula" style="margin-top:6px">终审 AHT(对全部报告,同口径)<br/>= <span id="sb-aht-final" style="color:var(--data);font-weight:600">—</span> min</div>
+      <div class="mini-formula" style="margin-top:6px;font-size:10px">μ = TN' = <span id="sb-mu">—</span><br/>(由终审 P'/R'/ρ' 推出)</div>
     </div>
     <div class="mini-section">
       <div class="mini-title">关键约束</div>
       <div class="mini-row"><span>r₂=r₃</span><span>联动,0或1</span></div>
       <div class="mini-row"><span>核查</span><span>总审/终审至少一次</span></div>
-      <div class="mini-row"><span>终审</span><span>δ(1−μ) ≤ 0.2</span></div>
+      <div class="mini-row"><span>终审 r'</span><span>r₂/r₃ 互补取反</span></div>
+      <div class="mini-row"><span>双 AHT</span><span>都 ≤ 1 min 才达成</span></div>
     </div>
   </div>
 </div>
@@ -2257,10 +2696,14 @@ document.getElementById('r3-slider').addEventListener('input', function() {
 <!-- MODALS -->
 <div class="modal-overlay" id="confusion-modal" onclick="if(event.target===this)closeModal(this.id)">
   <div class="modal-box">
-    <div class="modal-header"><span>混淆矩阵到 α/β/γ 的推导</span><button class="modal-close" onclick="closeModal('confusion-modal')">×</button></div>
-    <div class="modal-body">
+    <div class="modal-header"><span>混淆矩阵到 α/β/γ 的完整推导</span><button class="modal-close" onclick="closeModal('confusion-modal')">×</button></div>
+    <div style="display:flex;border-bottom:1px solid var(--rule);background:var(--paper);position:sticky;top:47px;z-index:1">
+      <button class="cm-tab cm-tab-active" data-tab="total" onclick="switchCmTab('total')" style="flex:1;padding:12px 18px;border:none;background:none;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--accent);border-bottom:2px solid var(--accent);letter-spacing:0.02em">总审混淆矩阵 · S2</button>
+      <button class="cm-tab" data-tab="final" onclick="switchCmTab('final')" style="flex:1;padding:12px 18px;border:none;background:none;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink-soft);border-bottom:2px solid transparent;letter-spacing:0.02em">终审混淆矩阵 · S4'</button>
+    </div>
+    <div class="modal-body cm-pane" id="cm-pane-total">
       <h5>问题背景</h5>
-      <p>S2 改判预测模型对每份 AI 报告做一次二分类预测:这份报告医生<strong>会改判</strong> vs <strong>不会改判</strong>。预测结果决定:报告是否要进入总审环节、医生在总审里的工作量预期、是否能直送终审。</p>
+      <p>S2 总审改判预测模型对每份 AI 报告做一次二分类预测:这份报告医生<strong>会改判</strong> vs <strong>不会改判</strong>。预测结果决定:报告是否要进入总审环节、医生在总审里的工作量预期、是否能直送终审。</p>
       <p>所有 28,706 份报告按"医生实际是否会改判"和"模型是否预测会改判"两个维度,可分为 2×2 = 4 类——这就是机器学习中的<strong>混淆矩阵</strong>(Confusion Matrix)。理解这四类的分布,是理解 α/β/γ 三种处理方式占比的关键。</p>
 
       <h5>2×2 混淆矩阵 · 直观对照</h5>
@@ -2292,28 +2735,106 @@ document.getElementById('r3-slider').addEventListener('input', function() {
       <div class="math">TP = ρ × R<br/>FN = ρ × (1 − R)<br/>FP = TP × (1 − P) / P<br/>TN = (1 − ρ) − FP</div>
       <p style="font-size:12.5px;color:var(--ink-soft)">直观理解:实际改判的报告占比为 ρ,其中 R 比例被模型识别(TP),剩下 (1−R) 漏掉(FN)。模型的精确率 P 定义为"预测会改判中真的会改判的比例",反推出 FP = TP×(1−P)/P。最后剩余的就是 TN。</p>
 
-      <h5>三类报告的业务归宿</h5>
-      <p><strong style="color:var(--success)">TN(真阴)→ α 跳过总审 · 0 min</strong></p>
-      <p>模型高置信判定"不会改判"且实际也不会改的报告,直送终审。<em>这是 S2 模型创造价值的核心</em>——把"显然不会改"的报告从总审挪走,把医生时间释放给真正需要审的报告。这部分总审耗时为 0。</p>
+      <h5>三类报告的业务归宿(S2 按预测路由,本模型 v2 修订)</h5>
+      <p><strong style="color:var(--success)">α 跳过总审 = TN + FN · 耗时 0 min</strong></p>
+      <p>S2 预测"不会改判"的所有报告(包含 TN 正确预测 + FN 漏判)统一跳过总审,直送终审。<em>注意</em>:FN 报告虽然实际需要改判,但 S2 把它当作"不改"放过去了,临床上由终审兜底抓回(R 不能太低就是这个原因)。</p>
 
-      <p><strong style="color:var(--warn)">FP(假阳)→ β 快速确认 · t_B</strong></p>
-      <p>模型预测"会改判"但实际不会改。医生进入总审,扫一眼后快速通过。这是模型精度不够带来的"白看"工作,耗时 t_B ≈ 0.5–1.0 min。<em>P 越高,FP 越小,白看越少。</em></p>
+      <p><strong style="color:var(--warn)">β 快速确认 = FP · 耗时 t_B</strong></p>
+      <p>S2 预测"会改判"但实际不会改。医生进入总审,扫一眼后快速通过。这是模型精度不够带来的"白看"工作,耗时 t_B ≈ 0.5–1.0 min。<em>P 越高,FP 越小,白看越少。</em></p>
 
-      <p><strong style="color:var(--data)">TP + FN(≈ ρ)→ γ 改判处理 · t_C</strong></p>
-      <p>所有实际需要改判的报告——无论模型是否预测对,都必须进入医生改判流程。这部分耗时 t_C ≈ 2.5–3.5 min。<em>γ 的总额由 AI 报告质量(ρ)决定,模型再准也改不了 γ。</em></p>
+      <p><strong style="color:var(--data)">γ 改判处理 = TP · 耗时 t_C</strong></p>
+      <p>S2 预测"会改判"且实际真要改的报告。这是总审改判的主力,耗时 t_C ≈ 2.0–3.5 min。<em>γ = TP = ρ·R,与 ρ 几乎成正比(因 R 接近 1)。</em></p>
 
-      <h5>汇总公式</h5>
-      <div class="math">α = TN → 跳过总审<br/>β = FP → 快速确认<br/>γ = TP + FN ≈ ρ → 改判处理<br/><br/>α + β + γ = 1</div>
+      <h5>汇总公式(本模型 v2)</h5>
+      <div class="math">α = TN + FN → 跳过总审(含漏判)<br/>β = FP → 快速确认<br/>γ = TP → 总审改判<br/><br/>α + β + γ = TN+FN+FP+TP = 1 ✓</div>
 
       <h5>三个非直觉的关键洞察</h5>
-      <p><strong>① γ ≈ ρ,与 P 无关。</strong>这是建模中最反直觉的结论。S2 模型本身减少不了改判量,只决定改判量的处理方式(精准识别 vs 误报)。要降低 γ,必须从源头——AI 报告质量(S3,降低 ρ)着手,而不是优化 S2。</p>
-      <p><strong>② P 只决定 α 和 β 的分配。</strong>P 升高意味着 FP 缩小,β 收缩,把原本"白看"的报告挪到 α(跳过总审)。但 (α + β) 之和(即"实际不会改的报告"总占比 = 1 − ρ)是固定的。</p>
-      <p><strong>③ R 是临床安全底线,不可低。</strong>FN 是漏判——模型放过了实际会改的报告,直送终审,终审若也漏掉就是事故。R ≥ 99% 即漏判率 ≤ 1%。R 一旦低于 0.95,5% 的真改判被漏掉,临床上完全不可接受。这就是为什么把 R 设为<strong>硬约束</strong>而不是可调参数。</p>
+      <p><strong>① γ ≈ ρ·R,降 γ 要降 ρ。</strong>S2 模型本身减少不了改判量,只决定改判量的处理方式(精准识别 vs 误报)。要降低 γ,必须从源头——AI 报告质量(S5,降低 ρ)着手,而不是优化 S2。</p>
+      <p><strong>② P 只决定 α 和 β 的分配。</strong>P 升高意味着 FP 缩小,β 收缩,把原本"白看"的报告挪到 α。但 (α + β) 之和(即"实际不会改的报告"加上漏判部分,接近 1 − ρ·R)基本恒定。</p>
+      <p><strong>③ R 是临床安全底线,且通过 FN 影响终审 AHT。</strong>R 太低 → FN 大 → α 通道里漏判多 → 终审必须抓回并改判 → 终审 AHT 上升。R 既是<strong>纯安全约束</strong>(终审 R' 失误就签发了),又是<strong>效率约束</strong>(总审 R 失误推高终审 AHT)。</p>
 
       <h5>一个数值示例</h5>
       <p>取 ρ=0.30, R=0.99, P=0.75:</p>
-      <div class="math">TP = 0.30 × 0.99 = 0.297<br/>FN = 0.30 × 0.01 = 0.003<br/>FP = 0.297 × 0.25 / 0.75 = 0.099<br/>TN = (1 − 0.30) − 0.099 = 0.601<br/><br/>α = 0.601(60.1% 跳过总审)<br/>β = 0.099(9.9% 快速确认)<br/>γ = 0.300(30.0% 改判处理)</div>
-      <p>含义:每 100 份报告,60 份不用医生看,10 份扫一眼通过,30 份真改判。总审 AHT = 0×0 + 0.099×t_B + 0.30×t_C。</p>
+      <div class="math">TP = 0.30 × 0.99 = 0.297<br/>FN = 0.30 × 0.01 = 0.003<br/>FP = 0.297 × 0.25 / 0.75 = 0.099<br/>TN = (1 − 0.30) − 0.099 = 0.601<br/><br/>α = TN + FN = 0.604(60.4% 跳过总审,含 0.3% 漏判)<br/>β = FP = 0.099(9.9% 快速确认)<br/>γ = TP = 0.297(29.7% 总审改判)</div>
+      <p>含义:每 100 份报告,60 份跳过总审(其中含 0.3 份漏判,由终审抓回),10 份扫一眼通过,30 份总审改判。总审 AHT = 0×α + 0.099×t_B + 0.297×t_C。</p>
+
+      <p style="margin-top:18px;padding:12px 14px;background:var(--accent-bg);border-left:2px solid var(--accent);font-size:12.5px;color:var(--ink);font-style:italic">→ 切换上方 <strong>"终审混淆矩阵 · S4'"</strong> 标签,查看终审环节同构建模(基于 (β+γ) 子集,参数 ρ'/R'/P')。两个混淆矩阵的公式结构完全一致,但适用范围、参数语义、业务归宿都有重要差异。</p>
+    </div>
+
+    <!-- ===== TAB 2: 终审 ===== -->
+    <div class="modal-body cm-pane" id="cm-pane-final" style="display:none">
+      <h5>问题背景 · 终审环节为何也需要混淆矩阵?</h5>
+      <p>终审环节(S4 终审改判预测模型 + 分级单审制度)与总审环节<strong>本质同构</strong>——都是"分类预测 + 分流处理"的复合流程。终审 S4 对每份进入终审视野的报告做一次预测:这份报告<strong>会被终审医生改判</strong> vs <strong>不会改判</strong>。预测高置信"不会改"的部分被释放(总审单审通过,不进终审),其余进终审。</p>
+      <p>由于终审 S4' 在临床决策链的<strong>最后一环</strong>——没有下游兜底,所以终审的混淆矩阵不只是效率指标,更是<strong>纯质控指标</strong>:终审漏判 = 直接签发给用户 = 临床事故。</p>
+
+      <h5>关键差异 · 建立在 (β+γ) 通道上,不包含 α 通道</h5>
+      <p>终审混淆矩阵的<strong>分母不是全部报告</strong>,而是"总审审核过的报告"(β + γ 通道,占全部报告 1−α 比例)。原因:</p>
+      <ul class="clean">
+        <li>α 通道(总审跳过的报告)统一进入终审,在终审做完整核查(r₂'=r₃'=1 强制),<strong>不允许被 μ 释放</strong>——因为它们没经过总审过眼,临床上不允许两端都跳。所以 α 通道不参与终审 S4' 的"释放决策"分类。</li>
+        <li>只有 (β+γ) 通道的报告才进入终审 S4' 的预测分类:释放 / 一次过 / 改判。</li>
+      </ul>
+      <p>这种"建立在子集上"的设计也是 μ = TN' 推导的前提。</p>
+
+      <h5>2×2 终审混淆矩阵 · 直观对照</h5>
+      <p>把 (β+γ) 通道的报告按"实际 × 终审 S4' 预测"的真值四象限填入下表:</p>
+      <table style="margin:10px 0">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="center">S4' 预测:会改判</th>
+            <th class="center">S4' 预测:不会改判</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label"><strong>实际:会改判</strong></td>
+            <td class="center"><strong style="color:var(--success)">TP'</strong> 真阳<br/><span style="font-size:11.5px;color:var(--ink-soft);font-style:italic">→ γ' 终审改判</span></td>
+            <td class="center"><strong style="color:var(--data)">FN'</strong> 假阴<br/><span style="font-size:11.5px;color:var(--data);font-style:italic">→ <strong>漏判,直接签发(事故!)</strong></span></td>
+          </tr>
+          <tr>
+            <td class="label"><strong>实际:不会改判</strong></td>
+            <td class="center"><strong style="color:var(--warn)">FP'</strong> 假阳<br/><span style="font-size:11.5px;color:var(--ink-soft);font-style:italic">→ β' 终审一次过</span></td>
+            <td class="center"><strong style="color:var(--success)">TN'</strong> 真阴<br/><span style="font-size:11.5px;color:var(--ink-soft);font-style:italic">→ <strong>μ 释放,不进终审</strong></span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h5>四个量的计算(与总审同形式)</h5>
+      <p>用三个参数 ρ'(进终审报告中的实际改判率)、R'(终审 S4' 召回率)、P'(终审 S4' 精确率)推出:</p>
+      <div class="math">TP' = ρ' × R'<br/>FN' = ρ' × (1 − R')&nbsp;&nbsp;<span style="color:var(--data)">← 终审漏判,纯质控</span><br/>FP' = TP' × (1 − P') / P'<br/>TN' = (1 − ρ') − FP'</div>
+      <p style="font-size:12.5px;color:var(--ink-soft)">注:ρ' 默认 = 0.276,是 BI 实测值(2026-04~05),代表"整体进终审报告"的实际改判率。建模时把它当作 (β+γ) 子集内的改判率使用,这在 FN 极小(≈ 0.3%)时是 mild 简化,工程上可接受。</p>
+
+      <h5>三类报告的业务归宿(终审 S4' 按预测路由,占全部报告)</h5>
+      <p><strong style="color:var(--success)">α' 免终审 = (1−α) × TN' · 耗时 0 min</strong></p>
+      <p>终审 S4' 高置信预测"不会改判"且实际不会改的报告,由总审单审通过签发,<strong>μ = TN'</strong> 即释放比例。这是终审环节创造价值的核心——把"显然不会改"的报告从终审挪走,把医生时间释放给真正需要把关的报告。</p>
+
+      <p><strong style="color:var(--warn)">β' 终审一次过 = (1−α) × FP' · 耗时 t_B'_βγ</strong></p>
+      <p>终审 S4' 预测"会改判"但实际不会改。终审医生进入终审界面,扫一眼后快速通过。这部分是"终审白看",耗时 t_B'_βγ ≈ 0.5–1.0 min(取决于 r₂'/r₃')。<em>P' 越高,FP' 越小,终审白看越少。</em></p>
+
+      <p><strong style="color:var(--data)">γ' 终审改判 = (1−α) × (TP'+FN') ≈ (1−α) × ρ' · 耗时 t_C'_βγ</strong></p>
+      <p>终审 S4' 涉及实际会改的报告(TP'+FN' ≈ ρ')。这是终审改判的主力,耗时 t_C'_βγ ≈ 2.2–3.5 min。<em>γ' ≈ (1−α)·ρ',与 ρ' 几乎成正比(因 R' 接近 1)。</em></p>
+
+      <h5>汇总公式</h5>
+      <div class="math">α' = (1−α) × TN'&nbsp;&nbsp;→ 免终审 (μ 释放)<br/>β' = (1−α) × FP'&nbsp;&nbsp;&nbsp;→ 终审一次过<br/>γ' = (1−α) × (TP'+FN') ≈ (1−α)·ρ'&nbsp;&nbsp;→ 终审改判<br/><br/>α' + β' + γ' = 1 − α &nbsp;((β+γ) 通道占比)<br/><br/>α 通道(占比 α)单独进终审做完整核查,不在 S4' 分流之内</div>
+
+      <h5>四个非直觉的关键洞察(与总审对比)</h5>
+      <p><strong>① R' 是纯质控,比 R 更严格。</strong>总审 R 失误还有终审兜底;终审 R' 失误就是"漏判直接签发给用户" = 临床事故。所以 R' 推荐 ≥ 0.995(总审 R ≥ 0.99 即可)。</p>
+      <p><strong>② μ 的上限 = 1 − ρ'。</strong>即便 P'=1(完美精度),FP'=0,μ 最大也只能达到 TN' = 1−ρ'。当前 ρ'=0.276 时,μ 上限 = 0.724。要进一步抬 μ,只能<strong>降 ρ'</strong>。</p>
+      <p><strong>③ ρ' 不是独立参数,理论上受 ρ 影响。</strong>AI 报告质量提升(ρ↓)→ 全流程报告质量改善 → 终审看到"需要改"的报告减少 → ρ'↓。本模型为简洁起见假设 ρ' 独立不变;实际工程上,优化 S5(降 ρ)应同步带动 ρ' 下降。</p>
+      <p><strong>④ 与总审 α/α' 的语义差异。</strong>总审 α(跳过总审)是"S2 预测不改 + 直送终审";终审 α'(免终审)是"S4' 预测不改 + 总审单审通过签发"。两者结构同构,语义不同——总审 α 走向终审,终审 α' 走向用户。</p>
+
+      <h5>一个数值示例</h5>
+      <p>取 ρ'=0.276(BI 实测), R'=0.995, P'=0.75:</p>
+      <div class="math">TP' = 0.276 × 0.995 = 0.2746<br/>FN' = 0.276 × 0.005 = 0.00138(终审漏判率 ≈ 0.14%)<br/>FP' = 0.2746 × 0.25 / 0.75 = 0.0915<br/>TN' = (1 − 0.276) − 0.0915 = 0.6325<br/><br/>μ = TN' = 0.633((β+γ) 内 63.3% 可释放)<br/>β'/(β+γ) = FP' = 0.092(9.2% 终审一次过)<br/>γ'/(β+γ) ≈ ρ' = 0.276(27.6% 终审改判)</div>
+      <p>若 α=0.60,则对全部报告:</p>
+      <div class="math">α' = (1−0.60)·0.633 = 0.253(25.3% 免终审)<br/>β' = (1−0.60)·0.092 = 0.037(3.7% 终审一次过)<br/>γ' = (1−0.60)·0.276 = 0.110(11.0% 终审改判)<br/><br/>α 通道 = 60.0%(强制进终审做完整核查)<br/>进终审报告占比 = 60% + 3.7% + 11.0% = 74.7%</div>
+
+      <h5>P' 的边际效应 · 直接抬 μ</h5>
+      <p>P' 从 0.75 提到 0.95(其他参数不变):</p>
+      <div class="math">P'=0.75 → FP' = 0.092, μ = 0.633<br/>P'=0.95 → FP' = 0.0145, μ = 0.710<br/><br/>μ 上升 = 0.077(7.7 pp)<br/>每 100 份 (β+γ) 报告多释放 7.7 份免终审</div>
+      <p>这就是 §02 中"4 杠杆"分析里 P' 的具体作用——它通过缩小 FP' 直接放大 μ,从而压低终审 AHT。</p>
+
+      <p style="margin-top:18px;padding:12px 14px;background:var(--accent-bg);border-left:2px solid var(--accent);font-size:12.5px;color:var(--ink);font-style:italic">→ 切换上方 <strong>"总审混淆矩阵 · S2"</strong> 标签查看总审环节原始建模。两个标签的公式结构完全相同,只是参数和归宿不同。</p>
     </div>
   </div>
 </div>
@@ -2338,74 +2859,109 @@ function openModal(id){
   if(id==='calc-modal') fillCalcModal();
   if(id==='terminal-modal') fillTerminalModal();
 }
+function openConfusionModal(tab){
+  openModal('confusion-modal');
+  if (tab === 'final' || tab === 'total') switchCmTab(tab);
+}
+function switchCmTab(which){
+  const tabs = document.querySelectorAll('.cm-tab');
+  tabs.forEach(t => {
+    const active = t.getAttribute('data-tab') === which;
+    t.style.color = active ? 'var(--accent)' : 'var(--ink-soft)';
+    t.style.borderBottom = active ? '2px solid var(--accent)' : '2px solid transparent';
+    if (active) t.classList.add('cm-tab-active'); else t.classList.remove('cm-tab-active');
+  });
+  document.getElementById('cm-pane-total').style.display = which === 'total' ? 'block' : 'none';
+  document.getElementById('cm-pane-final').style.display = which === 'final' ? 'block' : 'none';
+  // 滚到弹窗顶部
+  const body = (which === 'total') ? document.getElementById('cm-pane-total') : document.getElementById('cm-pane-final');
+  if (body && body.parentElement) body.parentElement.scrollTop = 0;
+}
 function closeModal(id){document.getElementById(id).classList.remove('active');document.body.style.overflow='';}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.active').forEach(m=>{m.classList.remove('active');document.body.style.overflow='';});});
 
 function fillCalcModal(){
-  const rho=getParam('rho'),R=getParam('R'),P=getParam('P'),r2=getParam('r2'),r3=getParam('r3');
-  const mu=getParam('mu'),delta=getParam('delta');
-  const r=compute(rho,R,P,r2,r3);
-  const FN=rho*(1-R);
-  const t=computeTerminal(mu,delta,FN,r.alpha);
+  const rho=getParam('rho'),R=getParam('R');
+  const alphaSlider=getParam('alpha'),muSlider=getParam('mu');
+  const r2=getParam('r2'),r3=getParam('r3'),r4=getParam('r4');
+  const rhoT=getParam('rhoT'),RT=getParam('RT');
+  const P=P_from_alpha(alphaSlider,rho,R);
+  const PT=PT_from_mu(muSlider,rhoT,RT);
+  const r=compute(rho,R,P,r2,r3,r4);
+  const tF=computeFinal(null,r2,r3,r4,rhoT,RT,PT,r);
   const status=r.aht<=0.95?'稳健达成':r.aht<=1.0?'临界达成':r.aht<=1.10?'临界未达':'未达';
   document.getElementById('calc-modal-body').innerHTML=`
     <h5>当前参数</h5>
-    <div class="math">ρ=${rho.toFixed(2)}, R=${R.toFixed(2)}, P=${P.toFixed(2)}, r₂=${r2}, r₃=${r3}, μ=${mu.toFixed(2)}, δ=${delta.toFixed(2)}</div>
-    <h5>分流计算</h5>
-    <div class="math">TP=ρ×R=${(rho*R).toFixed(3)}, FN=ρ×(1−R)=${FN.toFixed(4)}<br/>FP=TP×(1−P)/P=${r.beta.toFixed(3)}, TN=(1−ρ)−FP=${r.alpha.toFixed(3)}<br/><br/><strong>α=${r.alpha.toFixed(3)}(${(r.alpha*100).toFixed(1)}%), β=${r.beta.toFixed(3)}(${(r.beta*100).toFixed(1)}%), γ=${r.gamma.toFixed(3)}(${(r.gamma*100).toFixed(1)}%)</strong></div>
-    <h5>通道内处理时间</h5>
-    <div class="math">t_C=1.3+${r2}×0.7+${r3}×0.5+1.0=<strong>${r.tC.toFixed(2)} min</strong><br/>t_B=0.5+${r2}×0.3+${r3}×0.2=<strong>${r.tB.toFixed(2)} min</strong></div>
-    <h5>加权计算</h5>
-    <div class="math">AHT=α×0+β×t_B+γ×t_C<br/>=${r.alpha.toFixed(3)}×0+${r.beta.toFixed(3)}×${r.tB.toFixed(2)}+${r.gamma.toFixed(3)}×${r.tC.toFixed(2)}<br/>=0+${(r.beta*r.tB).toFixed(3)}+${(r.gamma*r.tC).toFixed(3)}<br/>=<strong style="color:${r.aht<=1.0?'var(--success)':'var(--data)'}">${r.aht.toFixed(2)} min · ${status}</strong></div>
-    <h5>终审 AHT(级联版,详见"终审 AHT"点击)</h5>
-    <div class="math">终审 AHT = 2.0 + α × δ × (1−μ) + FN × κ_FN × (1−μ)<br/>= 2.0 + ${r.alpha.toFixed(3)} × ${delta.toFixed(2)} × ${(1-mu).toFixed(2)} + ${FN.toFixed(4)} × ${KAPPA_FN} × ${(1-mu).toFixed(2)}<br/>= 2.0 + ${t.delta_contrib.toFixed(3)} + ${t.fn_contrib.toFixed(3)}<br/>= <strong>${t.tFinal.toFixed(2)} min</strong> · 增量 ${t.extra.toFixed(2)} min(+${(t.increase*100).toFixed(0)}%) · ${t.extra<=TERM_CONSTRAINT?'<span style="color:var(--success)">✓ 满足</span>':'<span style="color:var(--data)">✗ 违反</span>'}硬约束</div>`;
+    <div class="math">总审: ρ=${rho.toFixed(2)}, R=${R.toFixed(2)}, P=${P.toFixed(2)}, r₂=${r2}, r₃=${r3}, r₄=${r4.toFixed(2)}<br/>终审: ρ'=${rhoT.toFixed(3)}, R'=${RT.toFixed(3)}, P'=${PT.toFixed(2)}</div>
+    <h5>总审混淆矩阵 + 分流(α=TN+FN, β=FP, γ=TP)</h5>
+    <div class="math">TP=ρ×R=${(rho*R).toFixed(3)}, FN=ρ×(1−R)=${r.FN.toFixed(4)}<br/>FP=TP×(1−P)/P=${r.beta.toFixed(3)}, TN=(1−ρ)−FP=${r.TN.toFixed(3)}<br/><br/><strong>α=TN+FN=${r.alpha.toFixed(3)}, β=FP=${r.beta.toFixed(3)}, γ=TP=${r.gamma.toFixed(3)}</strong>(α+β+γ=${(r.alpha+r.beta+r.gamma).toFixed(3)})</div>
+    <h5>总审通道处理时间(复用 w 工作分解)</h5>
+    <div class="math">t_B = w₁'+r₂·w₂'+r₃·w₃' = 0.5 + ${r2}×0.3 + ${r3}×0.2 = <strong>${r.tB.toFixed(2)} min</strong><br/>t_C = w₁+r₂·w₂+r₃·w₃+r₄·w₄ = 1.8 + ${r2}×0.7 + ${r3}×0.5 + ${r4.toFixed(2)}×0.5 = <strong>${r.tC.toFixed(2)} min</strong></div>
+    <h5>总审 AHT</h5>
+    <div class="math">总审 AHT = α×0 + β×t_B + γ×t_C<br/>= 0 + ${r.beta.toFixed(3)}×${r.tB.toFixed(2)} + ${r.gamma.toFixed(3)}×${r.tC.toFixed(2)}<br/>= ${(r.beta*r.tB).toFixed(3)} + ${(r.gamma*r.tC).toFixed(3)}<br/>= <strong style="color:${r.aht<=1.0?'var(--success)':'var(--data)'}">${r.aht.toFixed(2)} min · ${status}</strong></div>
+    <h5>终审 AHT(详见"终审 AHT"卡片点击)</h5>
+    <div class="math">μ = TN' = ${tF.muT.toFixed(3)}(由终审混淆矩阵推出)<br/>进终审报告占比 = α + (1−μ)(1−α) = ${tF.enterFinal.toFixed(3)}<br/><br/>终审 AHT(<strong>对全部报告平均</strong>,与总审同口径)= <strong style="color:${tF.ahtFinal<=1.0?'var(--success)':'var(--data)'}">${tF.ahtFinal.toFixed(2)} min</strong><br/>终审 AHT(对进终审报告平均,BI 口径,仅对照)= ${tF.ahtFinal_entered.toFixed(2)} min<br/><br/>全流程 AHT(总审 + 终审)= ${(r.aht + tF.ahtFinal).toFixed(2)} min</div>`;
 }
 
 function fillTerminalModal(){
-  const rho=getParam('rho'),R=getParam('R'),P=getParam('P');
-  const mu=getParam('mu'),delta=getParam('delta');
-  const r=compute(rho,R,P,getParam('r2'),getParam('r3'));
-  const FN=rho*(1-R);
-  const t=computeTerminal(mu,delta,FN,r.alpha);
-  const ok = t.extra<=TERM_CONSTRAINT;
-  const statusHTML = ok
-    ? '<span style="color:var(--success);font-weight:600">✓ 满足硬约束(≤ 0.20 min,+10%)</span>'
-    : '<span style="color:var(--data);font-weight:600">✗ 违反硬约束(增量 > 0.20 min)</span>';
+  const rho=getParam('rho'),R=getParam('R');
+  const alphaSlider=getParam('alpha'),muSlider=getParam('mu');
+  const r2=getParam('r2'),r3=getParam('r3'),r4=getParam('r4');
+  const rhoT=getParam('rhoT'),RT=getParam('RT');
+  const P=P_from_alpha(alphaSlider,rho,R);
+  const PT=PT_from_mu(muSlider,rhoT,RT);
+  const r=compute(rho,R,P,r2,r3,r4);
+  const tF=computeFinal(null,r2,r3,r4,rhoT,RT,PT,r);
+  const status=tF.ahtFinal<=0.95?'稳健达成':tF.ahtFinal<=1.0?'临界达成':tF.ahtFinal<=1.10?'临界未达':'未达';
+  const okStatusHTML = tF.ahtFinal<=1.0
+    ? '<span style="color:var(--success);font-weight:600">✓ 达成终审 1 min 目标</span>'
+    : '<span style="color:var(--data);font-weight:600">✗ 未达成终审 1 min 目标</span>';
   document.getElementById('terminal-modal-body').innerHTML=`
-    <h5>模型升级 · 级联版(v2)</h5>
-    <p>终审 AHT 不再只依赖 δ 和 μ。R 与 P 通过 FN(漏判)和 α(跳过总审,即 S1/S2 后置报告)两条路径,显式地传导到终审环节。拖动 R/P 时,终审 AHT 会同步变化。</p>
-    <p>δ 已重新定义为"<strong>每份 S1/S2 后置报告</strong>的额外耗时",而不是"均摊到全部报告的单份增量"。这样业务上更直观——可以直接按"终审处理一份未经总审过眼的报告需多花几分钟"来预估。</p>
+    <h5>终审 AHT · 镜像总审的同构推导(v2 双环节)</h5>
+    <p>终审环节与总审完全同构——都是"混淆矩阵分流 + 工作分解"的复合。终审环节经 r₂/r₃ 互补保护与总审耦合:核查工作总量守恒,只在两环节间转移。</p>
 
-    <h5>推导式</h5>
-    <div class="math">终审 AHT = 2.0(基线) + α × δ × (1−μ) + FN × κ_FN × (1−μ)</div>
+    <h5>终审混淆矩阵(基于 (β+γ) 通道)</h5>
+    <div class="math">TP' = ρ'×R' = ${rhoT.toFixed(3)}×${RT.toFixed(3)} = ${tF.TPT.toFixed(4)}<br/>FN' = ρ'×(1−R') = ${tF.FNT.toFixed(5)}&nbsp;&nbsp;<span style="color:var(--data)">← 终审漏判,纯质控</span><br/>FP' = TP'×(1−P')/P' = ${tF.FPT.toFixed(4)}<br/>TN' = (1−ρ')−FP' = ${tF.TNT.toFixed(4)}<br/><br/>μ = TN' = <strong>${tF.muT.toFixed(3)}</strong>(释放比例,免终审报告占 (β+γ) 通道比例)</div>
 
-    <h5>当前参数代入</h5>
-    <div class="math">ρ=${rho.toFixed(2)}, R=${R.toFixed(2)}, P=${P.toFixed(2)}, μ=${mu.toFixed(2)}, δ=${delta.toFixed(2)}<br/>α = TN = ${r.alpha.toFixed(3)}(S1/S2 后置报告占全部报告的比例)<br/>FN = ρ × (1−R) = ${FN.toFixed(4)}(漏判占全部报告的比例)</div>
+    <h5>r₂/r₃ 互补保护(详见 §02)</h5>
+    <div class="math">α 通道(全进终审):r₂'=r₃'=1<br/>(β+γ) 通道:r₂'=1−r₂=${1-r2}, r₃'=1−r₃=${1-r3}</div>
 
-    <h5>分项计算</h5>
+    <h5>终审通道工作分解(复用 w 工作分解,r₂'/r₃' 按通道取值)</h5>
+    <div class="math">α 通道(r₂'=r₃'=1):<br/>&nbsp;&nbsp;t_B'_α = 0.5+0.3+0.2 = <strong>${tF.tB_alpha.toFixed(2)} min</strong><br/>&nbsp;&nbsp;t_C'_α = 1.8+0.7+0.5+${r4.toFixed(2)}×0.5 = <strong>${tF.tC_alpha.toFixed(2)} min</strong><br/><br/>(β+γ) 通道(r₂'=${1-r2}, r₃'=${1-r3}):<br/>&nbsp;&nbsp;t_B'_βγ = 0.5+${1-r2}×0.3+${1-r3}×0.2 = <strong>${tF.tB_bg.toFixed(2)} min</strong><br/>&nbsp;&nbsp;t_C'_βγ = 1.8+${1-r2}×0.7+${1-r3}×0.5+${r4.toFixed(2)}×0.5 = <strong>${tF.tC_bg.toFixed(2)} min</strong></div>
+
+    <h5>α 通道处理(事后实际结局加权)</h5>
+    <p>所有 α 报告统一进终审,医生事前不知道是 TN 还是 FN,统一做完整核查。事后看耗时按实际结局分布:</p>
+    <div class="math">α 通道总耗时 = TN·t_B'_α + FN·t_C'_α<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${r.TN.toFixed(3)}×${tF.tB_alpha.toFixed(2)} + ${r.FN.toFixed(4)}×${tF.tC_alpha.toFixed(2)}<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${tF.time_alpha_total.toFixed(4)}</strong>(对全部报告占比)</div>
+
+    <h5>(β+γ) 通道处理(按终审混淆矩阵分流)</h5>
+    <div class="math">(β+γ) 通道每份平均 = TN'×0 + FP'×t_B'_βγ + ρ'×t_C'_βγ<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = 0 + ${tF.FPT.toFixed(4)}×${tF.tB_bg.toFixed(2)} + ${rhoT.toFixed(3)}×${tF.tC_bg.toFixed(2)}<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ${(tF.FPT*tF.tB_bg+rhoT*tF.tC_bg).toFixed(4)} min/份<br/>(β+γ) 总耗时 = (1−α) × 此值 = ${(1-r.alpha).toFixed(3)} × ${(tF.FPT*tF.tB_bg+rhoT*tF.tC_bg).toFixed(4)} = <strong>${tF.time_bg_total.toFixed(4)}</strong></div>
+
+    <h5>终审 AHT 计算 · 双口径对照</h5>
+    <p>本模型采用"<strong>对全部报告平均</strong>"作为主口径——与总审 AHT 同分母,两者可直接相加得"全流程 AHT"。</p>
     <div class="math">
-    ① 基线 = <strong>2.0 min</strong>(每份过终审报告的审阅 + 签字)<br/><br/>
-    ② 后处理负担 = α × δ × (1−μ) = ${r.alpha.toFixed(3)} × ${delta.toFixed(2)} × ${(1-mu).toFixed(2)} = <strong>${t.delta_contrib.toFixed(3)} min</strong><br/>
-    &nbsp;&nbsp;(α 份后置报告 × δ min/份,再按 (1−μ) 释放比例折算到终审 AHT)<br/><br/>
-    ③ FN 漏判负担 = FN × κ_FN × (1−μ) = ${FN.toFixed(4)} × ${KAPPA_FN} × ${(1-mu).toFixed(2)} = <strong>${t.fn_contrib.toFixed(3)} min</strong><br/>
-    &nbsp;&nbsp;(每份漏判额外做整套改判,κ_FN ≈ t_C − 2.0 ≈ 1.5 min)<br/><br/>
-    <strong>终审 AHT = 2.0 + ${t.delta_contrib.toFixed(3)} + ${t.fn_contrib.toFixed(3)} = ${t.tFinal.toFixed(2)} min</strong><br/>
-    <strong>终审 AHT 增量 = ${t.extra.toFixed(2)} min(+${(t.increase*100).toFixed(0)}%)</strong><br/>
-    ${statusHTML}
+    <strong>主口径(对全部报告平均):</strong><br/>
+    终审 AHT = 总耗时 / 全部报告 = ${tF.totalTime.toFixed(4)} / 1.0<br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong style="color:${tF.ahtFinal<=1.0?'var(--success)':'var(--data)'}">${tF.ahtFinal.toFixed(2)} min · ${status}</strong><br/><br/>
+    <strong>对照口径(BI 工程口径,对进终审报告平均):</strong><br/>
+    进终审报告占比 = α + (1−μ)(1−α) = ${tF.enterFinal.toFixed(3)}<br/>
+    终审 AHT (BI) = 总耗时 / 进终审占比 = ${tF.totalTime.toFixed(4)} / ${tF.enterFinal.toFixed(3)}<br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = <strong>${tF.ahtFinal_entered.toFixed(2)} min</strong>(医生体感"每份终审报告"耗时)
     </div>
+    <p>${okStatusHTML}</p>
 
-    <h5>各参数的意义</h5>
-    <p><strong>δ · 后处理报告单份增量</strong>(min/份):<em>每份 S1/S2 后置报告</em>(α 通道,跳过总审直送终审)因承接 S1/S2 后置工作而额外耗费的 min 数。这是面向"具体一份后置报告"的单份耗时,业务上可直接按"终审处理一份未经总审过眼的报告需多花几分钟"来评估。与 P/R 无关,由 S1 设计和终审工具效率决定。</p>
-    <p><strong>μ · 终审释放比例</strong>(0–1):低风险报告由总审单审通过、不进终审的比例。(1−μ) 决定上述所有负担实际有多少落到终审。μ 越大,终审压力越小。</p>
-    <p><strong>α · 跳过总审比例</strong> = TN:S2 高置信"不会改判"的报告占全部报告的比例,也是 S1/S2 后置报告占全部报告的比例。α 在公式里同时充当"后置报告的份数权重"。P↑ → α↑ → 后置报告增多 → 终审负担↑。</p>
-    <p><strong>FN · 漏判率</strong> = ρ × (1−R):S2 应识别为"会改判"却漏掉的报告占比。这些报告也走 α 通道直送终审,终审必须发现并完成整套改判。R↓ → FN↑ → 终审负担↑。</p>
-    <p><strong>κ_FN = ${KAPPA_FN}</strong>:每份漏判的额外改判成本(min)。终审发现漏判后要做完整的临床判断 + 改判操作,约等于 t_C 减去基础审阅时间。</p>
+    <h5>两种口径的差别 · 一句话总结</h5>
+    <p><strong>对全部报告</strong>(主口径)= 终审环节给每份报告"贡献"的平均时长,与总审同分母可叠加;<strong>对进终审报告</strong>(BI 口径)= 医生处理每份打开的终审报告平均花的时间,与 BI 报表数字对齐。两者关系:主口径 = BI 口径 × 进终审占比。</p>
 
-    <h5>两条级联路径回顾</h5>
-    <p><strong>路径 1 · R → FN → 终审</strong>:R 降低 → 漏判增加 → 终审做改判 → FN 项 +</p>
-    <p><strong>路径 2 · P → α → 终审</strong>:P 提高 → α 增加 → 后置报告增多 → α·δ 项 +(注意:P 提升对总审有利,但对终审是新增负担,需 S4 释放 μ 来对冲。这条路径自然包含了"α 暴增"的影响,无需独立 α 增量项)</p>
+    <h5>终审视角的 α'/β'/γ' 占比(占全部报告)</h5>
+    <div class="math">α' 免终审(μ 释放) = (1−α)·μ = <strong>${tF.alphaP_share.toFixed(3)}</strong>(${(tF.alphaP_share*100).toFixed(1)}%)<br/>β' 终审一次过 = TN + (1−α)·FP' = <strong>${tF.betaP_share.toFixed(3)}</strong>(${(tF.betaP_share*100).toFixed(1)}%)<br/>γ' 终审改判 = FN + (1−α)·ρ' = <strong>${tF.gammaP_share.toFixed(3)}</strong>(${(tF.gammaP_share*100).toFixed(1)}%)</div>
 
-    <p style="font-size:12px;color:var(--ink-faint);font-style:italic;margin-top:14px">注:δ、κ_FN 的取值是基于业务直觉的工程近似,实际部署前应通过影子运行回测校准。原模型中的 α_excess/κ_α 已被"α·δ"自然吸收,无需独立参数。</p>`;
+    <h5>关键洞察</h5>
+    <p><strong>① α 通道难以压缩</strong>:r₂'=r₃'=1 强核查,α 通道单份均时基本贴近 t_B'_α ≈ 1.0 min。如 α 占进终审报告比例高(>0.6),终审 AHT 下界就被锁定在 ~1 min。</p>
+    <p><strong>② μ 的杠杆有限</strong>:μ = TN' = (1−ρ') − FP',受 ρ' 上限制约。即便 P'=1(完美精度),μ 也只能达到 1−ρ' = ${(1-rhoT).toFixed(2)}。</p>
+    <p><strong>③ R' 是临床安全死线</strong>:R' 失误 → FN' 漏判 → 直接签发给用户。终审 R' 应 ≥ 0.995,比总审 R ≥ 0.99 更严。</p>
+    <p><strong>④ ρ' 是结构约束</strong>:ρ' 越高,γ' 越大,t_C'_βγ 的权重越大。要让终审 AHT < 1 min,理论上需要 ρ' 显著低于当前实测 0.276。理论链路:ρ↓(AI 报告质量提升)→ ρ'↓(终审改判率改善)→ 终审 AHT 改善,本模型未自动联动,需手工调 ρ' 滑块。</p>
+
+    <p style="font-size:12px;color:var(--ink-faint);font-style:italic;margin-top:14px">注:计算口径与 BI 图表一致——终审 AHT = 终审总耗时 / 进终审报告数(=进终审占比 × 全部报告)。原版 v1 的 δ/κ_FN/α_excess 等参数已退役,改为复用 w 工作分解 + r₂/r₃ 互补保护建模。</p>`;
 }
 </script>
 
